@@ -1,23 +1,26 @@
 baseurl = "https://sahirbhatnagar.github.io/blog/"
 languageCode = "en-us"
-title = "A Hugo website"
+title = "Sahir's blog"
 theme = "hugo-lithium"
-googleAnalytics = ""
-disqusShortname = ""
+googleAnalytics = "UA-60189402-1"
+disqusShortname = "sahirbhatnagar"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [permalinks]
     post = "/:year/:month/:day/:slug/"
 
 [[menu.main]]
-    name = "About"
-    url = "/about/"
+    name = "Home"
+    url = "https://sahirbhatnagar.github.io/blog/"
+#[[menu.main]]
+#    name = "About"
+#    url = "/about/"
 [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/rstudio/blogdown"
+    url = "https://github.com/sahirbhatnagar"
 [[menu.main]]
     name = "Twitter"
-    url = "https://twitter.com/rstudio"
+    url = "https://twitter.com/syfi_24"
 
 [params]
     description = "A website built through Hugo and blogdown."
