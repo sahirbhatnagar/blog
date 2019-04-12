@@ -28,12 +28,6 @@
   </url>
   
   <url>
-    <loc>https://sahirbhatnagar.github.io/blog/</loc>
-    <lastmod>2019-04-12T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/</loc>
     <priority>0</priority>
   </url>
@@ -65,6 +59,12 @@
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/regression/</loc>
     <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/</loc>
+    <lastmod>2019-04-12T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
