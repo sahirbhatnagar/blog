@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555108914258.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1111607405",
+    "id" : "71E32EA8",
+    "lastKnownWriteTime" : 1555109023,
+    "last_content_update" : 1555109023164,
+    "path" : "~/git_repositories/blog/content/post/2019-04-12-academic-site-with-separate-blogdown-based-blog-via-gh-pages.Rmd",
+    "project_path" : "content/post/2019-04-12-academic-site-with-separate-blogdown-based-blog-via-gh-pages.Rmd",
+    "properties" : {
+        "cursorPosition" : "13,0",
+        "scrollLine" : "6"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

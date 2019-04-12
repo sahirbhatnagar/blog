@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555109049974.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1FB73C5C",
+    "lastKnownWriteTime" : 1555112122,
+    "last_content_update" : 1555112122736,
+    "path" : "~/git_repositories/blog/deploy.sh",
+    "project_path" : "deploy.sh",
+    "properties" : {
+        "cursorPosition" : "23,0",
+        "scrollLine" : "3"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "sh"
+}

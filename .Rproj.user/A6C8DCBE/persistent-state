@@ -1,0 +1,8 @@
+build-last-errors="[]"
+build-last-errors-base-dir=""
+build-last-outputs="[{\"output\":\"==> rmarkdown::render_site(encoding = 'UTF-8')\\n\\n\",\"type\":0},{\"output\":\"Rendering content/post/2015-07-23-r-rmarkdown.Rmd\\n\",\"type\":2},{\"output\":\"Building sites … \\n                   | EN  \\n+------------------+----+\\n  Pages            | 20  \\n  Paginator pages  |  0  \\n  Non-page files   |  0  \\n  Static files     | 12  \\n  Processed images |  0  \\n  Aliases          |  0  \\n  Sitemaps         |  1  \\n  Cleaned          |  0  \\n\\nTotal in 13 ms\\n\",\"type\":1},{\"output\":\"\\nOutput created: public/index.html\\n\",\"type\":2}]"
+compile_pdf_state="{\"errors\":[],\"output\":\"\",\"running\":false,\"tab_visible\":false,\"target_file\":\"\"}"
+files.monitored-path=""
+find-in-files-state="{\"handle\":\"\",\"input\":\"\",\"path\":\"\",\"regex\":false,\"results\":{\"file\":[],\"line\":[],\"lineValue\":[],\"matchOff\":[],\"matchOn\":[]},\"running\":false}"
+imageDirtyState="0"
+saveActionState="0"

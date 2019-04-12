@@ -1,0 +1,15 @@
+---
+title: Academic site with separate blogdown based blog via gh-pages
+author: ~
+date: '2019-04-12'
+slug: academic-site-with-separate-blogdown-based-blog-via-gh-pages
+categories: []
+tags: []
+---
+
+```{r, message=FALSE}
+pacman::p_load(mosaic)
+pacman::p_load(hrbrthemes)
+ggformula::gf_boxplot(age ~ substance, data = mosaicData::HELPrct) + hrbrthemes::theme_ipsum()
+```
+
