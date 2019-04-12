@@ -16,8 +16,8 @@ if ! git diff-index --quiet HEAD --; then
     git add -fA
     git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci skip]"
     git push -f -q origin $SRC_BRANCH
-    echo "Aborting."
-    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+    #echo "Aborting."
+    #[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
 #DEPLOY_BRANCH="master"

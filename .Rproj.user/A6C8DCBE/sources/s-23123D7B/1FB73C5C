@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "3218399162",
     "id" : "1FB73C5C",
-    "lastKnownWriteTime" : 1555112122,
-    "last_content_update" : 1555112122736,
+    "lastKnownWriteTime" : 1555112220,
+    "last_content_update" : 1555112220560,
     "path" : "~/git_repositories/blog/deploy.sh",
     "project_path" : "deploy.sh",
     "properties" : {
-        "cursorPosition" : "23,0",
-        "scrollLine" : "3"
+        "cursorPosition" : "20,2",
+        "scrollLine" : "9"
     },
     "relative_order" : 4,
     "source_on_save" : false,
