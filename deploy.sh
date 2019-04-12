@@ -26,4 +26,4 @@ echo "Generating site"
 Rscript -e "blogdown::build_site()"
 
 echo "Updating gh-pages branch"
-cd public && git add --all && git commit -m "Publishing to gh-pages (publish_to_ghpages.sh)"
+cd public && git add --all && git commit -m "Publishing to gh-pages (publish_to_ghpages.sh)" && git push origin gh-pages
