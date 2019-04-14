@@ -13,11 +13,11 @@ if ! git diff-index --quiet HEAD --; then
     git diff-index --name-only HEAD --
     echo "Please commit the changes before proceeding."
     # Push to SRC_BRANCH
-    git add -fA
-    git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci skip]"
-    git push -f -q origin $SRC_BRANCH
-    #echo "Aborting."
-    #[[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+    #git add -fA
+    #git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci skip]"
+    #git push -f -q origin $SRC_BRANCH
+    echo "Aborting."
+    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
 #DEPLOY_BRANCH="master"
