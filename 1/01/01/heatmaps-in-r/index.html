@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<title>Heatmaps in R - Sahir&#39;s blog</title>
+<meta property="og:title" content="Heatmaps in R - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">6 min read</span>
+    
+
+    <h1 class="article-title">Heatmaps in R</h1>
+
+    
+    <span class="article-date">0001-01-01</span>
+    
+
+    <div class="article-content">
+      <p>In every statistical analysis, the first thing one should do is try and visualise the data before any modeling. In microarray studies, a common visualisation is a heatmap of gene expression data. In this post I simulate some gene expression data and visualise it using the <code>pheatmap</code> function from the <a href="http://cran.r-project.org/web/packages/pheatmap/">pheatmap</a> package in <code>R</code>. You will also need the <code>mvrnorm</code> function from the <a href="http://cran.r-project.org/web/packages/MASS/index.html">MASS</a> library to simulate from a multivariate normal distribution, and the <code>brewer.pal</code> function from the <a href="http://cran.r-project.org/web/packages/RColorBrewer/index.html">RColorBrewer</a> library for easier customization of colors.</p>
+
+<h2 id="components-of-a-heatmap">Components of a Heatmap</h2>
+
+<p>There are four main components that should be considered when drawing a heatmap:</p>
+
+<ol>
+<li><a href="#data">Formatting the data</a></li>
+<li><a href="#color">Choosing the color scheme</a></li>
+<li><a href="#annotate">Annotating the rows and/or columns</a></li>
+<li><a href="#color">Clustering</a></li>
+</ol>
+
+<hr />
+
+<h3 id="formatting-the-data-a-name-data-a">Formatting the data<a name="data"></a></h3>
+
+<p>First I simulate some gene expression data, based on a function that I created, for genes which are correlated conditional on an exposure status (the function definition is given <a href="#function">at the end of this post</a>):</p>
+
+<p>{% highlight r %}
+n = 100 ; n0 = 50 ; n1 = 50; p = 100
+genes &lt;- sim.expr.data(n = 100, n0 = 50, p = 100,
+                       rho.0 = 0.01, rho.1 = 0.95)
+{% endhighlight %}</p>
+
+<p>In order to properly label the heatmap, we must label the matrix of gene expressions:</p>
+
+<p>{% highlight r %}
+colnames(genes) &lt;- paste0(&ldquo;Gene&rdquo;, 1:p)
+rownames(genes) &lt;- paste0(&ldquo;Subject&rdquo;, 1:n)
+genes[1:5, 1:5]
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="gene1-gene2-gene3-gene4-gene5">Gene1      Gene2      Gene3      Gene4      Gene5</h2>
+
+<h2 id="subject1-0-3330860-0-2515602-0-7263684-0-1257963-1-3159837">Subject1 -0.3330860  0.2515602 -0.7263684 -0.1257963  1.3159837</h2>
+
+<h2 id="subject2-0-4128702-0-9761655-0-2132626-0-7267015-0-3634427">Subject2 -0.4128702 -0.9761655  0.2132626  0.7267015 -0.3634427</h2>
+
+<h2 id="subject3-0-9432688-0-2973164-1-1210232-0-9017424-0-8098157">Subject3  0.9432688  0.2973164 -1.1210232  0.9017424 -0.8098157</h2>
+
+<h2 id="subject4-0-2894936-0-6708301-0-8209677-0-2204200-1-0602915">Subject4  0.2894936 -0.6708301 -0.8209677  0.2204200 -1.0602915</h2>
+
+<h2 id="subject5-1-2131869-1-2346285-0-1120417-0-9439494-0-5893691">Subject5 -1.2131869 -1.2346285 -0.1120417  0.9439494  0.5893691</h2>
+
+<p>{% endhighlight %}</p>
+
+<hr />
+
+<h3 id="choosing-the-color-scheme-a-name-color-a">Choosing the color scheme<a name="color"></a></h3>
+
+<p>To avoid wasting time choosing colors, I recommend using the <a href="http://cran.r-project.org/web/packages/RColorBrewer/index.html">RColorBrewer</a> package based on the design of geographer <a href="http://colorbrewer2.org/">Cynthia Brewer</a>. From the <a href="http://cran.r-project.org/web/packages/RColorBrewer/index.html">RColorBrewer</a> help page:</p>
+
+<p>There are 3 types of palettes, sequential, diverging, and qualitative:</p>
+
+<ol>
+<li>Sequential palettes are suited to ordered data that progress from low to high. Lightness steps dominate the look of these schemes, with light colors for low data values to dark colors for high data values.</li>
+<li>Diverging palettes put equal emphasis on mid-range critical values and extremes at both ends of the data range. The critical class or break in the middle of the legend is emphasized with light colors and low and high extremes are emphasized with dark colors that have contrasting hues.</li>
+<li>Qualitative palettes do not imply magnitude differences between legend classes, and hues are used to create the primary visual differences between classes. Qualitative schemes are best suited
+to representing nominal or categorical data</li>
+</ol>
+
+<p>To see the palettes available for coloring the heatmap:</p>
+
+<p>{% highlight r %}
+pacman::p_load(RColorBrewer)
+RColorBrewer::display.brewer.all()
+{% endhighlight %}</p>
+
+<p><img src="/figure/posts/2015-06-10-heatmaps/unnamed-chunk-4-1.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" style="display: block; margin: auto;" /></p>
+
+<p>You need to provide the <code>RColorBrewer::brewer.pal</code> function with two arguments; the number of values (All the diverging palettes are available in variations from 3 different values up to 11 different values), and the name of the palette as shown in the figure above. We will use the <em>Reds</em> palette which has a maximum number of 9 colors:</p>
+
+<p>{% highlight r %}
+(col.pal &lt;- RColorBrewer::brewer.pal(9, &ldquo;Reds&rdquo;))
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="1-fff5f0-fee0d2-fcbba1-fc9272-fb6a4a-ef3b2c">[1] &ldquo;#FFF5F0&rdquo; &ldquo;#FEE0D2&rdquo; &ldquo;#FCBBA1&rdquo; &ldquo;#FC9272&rdquo; &ldquo;#FB6A4A&rdquo; &ldquo;#EF3B2C&rdquo;</h2>
+
+<h2 id="7-cb181d-a50f15-67000d">[7] &ldquo;#CB181D&rdquo; &ldquo;#A50F15&rdquo; &ldquo;#67000D&rdquo;</h2>
+
+<p>{% endhighlight %}</p>
+
+<hr />
+
+<h3 id="annotating-the-rows-and-or-columns-a-name-annotate-a">Annotating the rows and/or columns<a name="annotate"></a></h3>
+
+<p>If the subjects can be contrasted, it is useful to display this information on the heatmap e.g. case/control status or exposed vs. unexposed. To do so, we first need to create a separate data frame which contains that information. This data frame can contain many columns or just one column. (Note that the rownames of this data frame need to correspond to the rownames i.e. Subjects IDs of the gene expression data created above). In this example we create a data frame which has exposure status and tumor type for each subject:</p>
+
+<p>{% highlight r %}
+annotation_col &lt;- data.frame(
+        Exposure = factor(c(rep(&ldquo;X=0&rdquo;,n0), c(rep(&ldquo;X=1&rdquo;, n1)))),
+        Type = factor(sample(c(&ldquo;T-cell&rdquo;,&ldquo;B-cell&rdquo;),n, replace=T)))</p>
+
+<p>rownames(annotation_col) = paste0(&ldquo;Subject&rdquo;, 1:n)</p>
+
+<p>head(annotation_col)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="exposure-type">Exposure   Type</h2>
+
+<h2 id="subject1-x-0-b-cell">Subject1      X=0 B-cell</h2>
+
+<h2 id="subject2-x-0-t-cell">Subject2      X=0 T-cell</h2>
+
+<h2 id="subject3-x-0-t-cell">Subject3      X=0 T-cell</h2>
+
+<h2 id="subject4-x-0-b-cell">Subject4      X=0 B-cell</h2>
+
+<h2 id="subject5-x-0-b-cell">Subject5      X=0 B-cell</h2>
+
+<h2 id="subject6-x-0-t-cell">Subject6      X=0 T-cell</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>We also want to annotate information on the genes, such as pathway membership. To do so, we create another data frame which has the gene annotations. Note once again that the rownames of this data frame need to correspond to the columnames i.e. Gene IDs of the gene expression data created above.</p>
+
+<p>{% highlight r %}
+annotation_row &lt;- data.frame(
+                  Pathway = factor(rep(1:4,each=25)))</p>
+
+<p>rownames(annotation_row) = paste0(&ldquo;Gene&rdquo;, 1:n)</p>
+
+<p>head(annotation_row)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="pathway">Pathway</h2>
+
+<h2 id="gene1-1">Gene1       1</h2>
+
+<h2 id="gene2-1">Gene2       1</h2>
+
+<h2 id="gene3-1">Gene3       1</h2>
+
+<h2 id="gene4-1">Gene4       1</h2>
+
+<h2 id="gene5-1">Gene5       1</h2>
+
+<h2 id="gene6-1">Gene6       1</h2>
+
+<p>{% endhighlight %}</p>
+
+<hr />
+
+<h3 id="clustering-a-name-cluster-a">Clustering<a name="cluster"></a></h3>
+
+<p>You need to decide if its important to cluster the rows and/or columns of your heatmap. If you decide to cluster, you must then choose the <a href="https://stat.ethz.ch/R-manual/R-devel/library/stats/html/dist.html">distance metric</a> to use and the <a href="https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html">clustering method</a>.
+The pheatmap comes with lots of customizations (see the <a href="http://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf">help page</a> for a complete list of options). In this example I only want to cluster the genes (i.e. the rows), and place a gap between subject who were exposed and unexposed. Note that we must pass the transpose of the matrix for the <code>pheatmap</code> function, which is not the case for other functions such as <code>gplots::heatmap.2</code>.</p>
+
+<p>{% highlight r %}
+pacman::p_load(pheatmap)
+pheatmap::pheatmap(t(genes),
+                   cluster_row = T,
+                   cluster_cols = F,
+                   annotation_col = annotation_col,
+                   annotation_row = annotation_row,
+                   color = col.pal,
+                   fontsize = 6.5,
+                   fontsize_row=6,
+                   fontsize_col = 6,
+                   gaps_col=50)
+{% endhighlight %}</p>
+
+<p><img src="/figure/posts/2015-06-10-heatmaps/unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" style="display: block; margin: auto;" /></p>
+
+<hr />
+
+<h2 id="update-june-25-2015"><em>Update: June 25, 2015</em></h2>
+
+<h3 id="interactive-heatmaps-using-d3heatmap-https-github-com-rstudio-d3heatmap">Interactive Heatmaps using <a href="https://github.com/rstudio/d3heatmap"><code>d3heatmap</code></a></h3>
+
+<p>It is also possible to create Interactive heatmaps (in the sense that you can see the actual values by hovering your mouse over the plot) using the <a href="https://github.com/rstudio/d3heatmap"><code>d3heatmap</code></a> pacakge available on github:</p>
+
+<p>{% highlight r %}
+pacman::p_install_gh(&ldquo;rstudio/d3heatmap&rdquo;)
+pacman::p_load(webshot)
+{% endhighlight %}</p>
+
+<p>This is useful if you are producible markdown reports. The syntax is standard, though does not allow for multiple annotations as in <code>pheatmap</code>.</p>
+
+<p>{% highlight r %}
+library(d3heatmap)
+d3heatmap(t(genes), colors = &ldquo;Reds&rdquo;, Colv = FALSE)
+{% endhighlight %}</p>
+
+<p><img src="/figure/posts/2015-06-10-heatmaps/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10" /></p>
+
+<p>For some reason, this map is not showing up on this website, but it should work when compiling Rmarkdown scripts and viewing the resulting HTML document in your browser or within RStudio.</p>
+
+<h2 id="update-august-7-2015"><em>Update: August 7, 2015</em></h2>
+
+<h3 id="interactive-heatmaps-using-plotly-https-plot-ly-r-heatmaps">Interactive Heatmaps using <a href="https://plot.ly/r/heatmaps/"><code>plotly</code></a></h3>
+
+<p>After some user setup (see the plotly <a href="https://plot.ly/r/getting-started/">help page</a>), the following code creates an interactive heatmap:</p>
+
+<p>{% highlight r %}
+expression &lt;- t(genes)
+plotly::plot_ly(z = expression, colorscale = col.pal, type = &ldquo;heatmap&rdquo;)
+{% endhighlight %}</p>
+
+<iframe width="900" height="800" frameborder="0" scrolling="no" src="//plot.ly/~sahirbhatnagar/36.embed"></iframe>
+
+<hr />
+
+<h3 id="simulate-gene-expression-data-function-a-name-function-a">Simulate Gene Expression Data function<a name="function"></a></h3>
+
+<p>{% highlight r %}
+sim.expr.data &lt;- function(n, n0, p, rho.0, rho.1){</p>
+
+<h1 id="initiate-simulation-parameters">Initiate Simulation parameters</h1>
+
+<h1 id="n-total-number-of-subjects">n: total number of subjects</h1>
+
+<h1 id="n0-number-of-subjects-with-x-0">n0: number of subjects with X=0</h1>
+
+<h1 id="n1-number-of-subjects-with-x-1">n1: number of subjects with X=1</h1>
+
+<h1 id="p-number-of-genes">p: number of genes</h1>
+
+<h1 id="rho-0-rho-between-z-i-and-z-j-when-x-0">rho.0: rho between Z_i and Z_j when X=0</h1>
+
+<h1 id="rho-1-rho-between-z-i-and-z-j-when-x-1">rho.1: rho between Z_i and Z_j when X=1</h1>
+
+<h1 id="simulate-gene-expression-values-according-to-exposure-x-0-x-1-according-to-a-centered-multivariate-normal-distribution-with-covariance-between-z-i-and-z-j-being-rho-i-j">Simulate gene expression values according to exposure X=0, X=1, according to a centered multivariate normal distribution with covariance between Z_i and Z_j being rho^|i-j|</h1>
+
+<p>times = 1:p # used for creating covariance matrix
+  H &lt;- abs(outer(times, times, &ldquo;-&rdquo;))
+  V0 &lt;- rho.0^H
+  V1 &lt;- rho.1^H</p>
+
+<p># rows are people, columns are genes
+  genes0 &lt;- MASS::mvrnorm(n = n0, mu = rep(0,p), Sigma = V0)
+  genes1 &lt;- MASS::mvrnorm(n = n1, mu = rep(0,p), Sigma = V1)
+  genes &lt;- rbind(genes0,genes1)
+  return(genes)
+}
+{% endhighlight %}</p>
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

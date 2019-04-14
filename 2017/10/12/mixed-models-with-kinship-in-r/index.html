@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<title>Mixed Models with Kinship in R - Sahir&#39;s blog</title>
+<meta property="og:title" content="Mixed Models with Kinship in R - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">9 min read</span>
+    
+
+    <h1 class="article-title">Mixed Models with Kinship in R</h1>
+
+    
+    <span class="article-date">2017-10-12</span>
+    
+
+    <div class="article-content">
+      
+
+<p>In this post, I describe how to estimate a kinship matrix and subsequently fit a mixed model using that estimated kinship. In particular, I show how this can be done on an arbitrary matrix of genotype data, which is not stored in <code>plink</code> format. I also show how to deal with missing genotypes.</p>
+
+<h2 id="load-packages">Load Packages</h2>
+
+<pre><code class="language-r"># install.packages(&quot;gaston&quot;)
+library(gaston)
+</code></pre>
+
+<h2 id="set-simulation-parameters">Set Simulation Parameters</h2>
+
+<pre><code class="language-r"># number of subjects
+n &lt;- 1000
+
+# number of genotypes
+p &lt;- 1e4
+
+# number of causal genotypes
+p_causal &lt;- 50
+
+# Signal to noise ratio
+signal_to_noise_ratio &lt;- 2
+
+# vector of allele frequencies from which to sample
+probs &lt;- c(0.05, 0.1, 0.3, 0.4)
+</code></pre>
+
+<h2 id="generate-sample-data-with-missing-genotypes">Generate Sample Data with Missing Genotypes</h2>
+
+<pre><code class="language-r">set.seed(345321)
+geno &lt;- replicate(p, rbinom(n, 2, sample(probs, 1)))
+dim(geno)
+</code></pre>
+
+<pre><code>## [1]  1000 10000
+</code></pre>
+
+<pre><code class="language-r">geno[1:5,1:5]
+</code></pre>
+
+<pre><code>##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    0    0    1    1    0
+## [2,]    1    0    0    1    0
+## [3,]    1    1    0    0    0
+## [4,]    2    1    1    0    0
+## [5,]    1    2    1    0    0
+</code></pre>
+
+<pre><code class="language-r">geno[sample(1:p, 100)] &lt;- NA
+geno[1:5,1:5]
+</code></pre>
+
+<pre><code>##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    0    0    1    1    0
+## [2,]    1    0    0    1    0
+## [3,]    1    1    0    0    0
+## [4,]    2    1    1    0    0
+## [5,]    1    2    1    0    0
+</code></pre>
+
+<h2 id="convert-to-bed-matrix">Convert to BED Matrix</h2>
+
+<p>This is so that we can use the functions in the <code>gaston</code> package for fitting mixed models</p>
+
+<pre><code class="language-r">DT &lt;- gaston::as.bed.matrix(geno)
+
+# can access the data by 
+as.matrix(DT)[1:5, 1:5]
+</code></pre>
+
+<pre><code>##   M_1 M_2 M_3 M_4 M_5
+## 1   0   0   1   1   0
+## 2   1   0   0   1   0
+## 3   1   1   0   0   0
+## 4   2   1   1   0   0
+## 5   1   2   1   0   0
+</code></pre>
+
+<pre><code class="language-r"># see the contents of DT
+slotNames(DT)
+</code></pre>
+
+<pre><code>## [1] &quot;ped&quot;                  &quot;snps&quot;                 &quot;bed&quot;                 
+## [4] &quot;p&quot;                    &quot;mu&quot;                   &quot;sigma&quot;               
+## [7] &quot;standardize_p&quot;        &quot;standardize_mu_sigma&quot;
+</code></pre>
+
+<pre><code class="language-r"># to access the different contents of DT use @ 
+DT@snps[1:5,]
+</code></pre>
+
+<pre><code>##   chr  id dist pos A1 A2  N0  N1  N2 NAs N0.f N1.f N2.f NAs.f callrate
+## 1  NA M_1   NA  NA NA NA 480 411 101   8   NA   NA   NA    NA    0.992
+## 2  NA M_2   NA  NA NA NA 349 477 167   7   NA   NA   NA    NA    0.993
+## 3  NA M_3   NA  NA NA NA 461 442  85  12   NA   NA   NA    NA    0.988
+## 4  NA M_4   NA  NA NA NA 781 200   9  10   NA   NA   NA    NA    0.990
+## 5  NA M_5   NA  NA NA NA 886  95   3  16   NA   NA   NA    NA    0.984
+##          maf         hz
+## 1 0.30897177 0.41431452
+## 2 0.40835851 0.48036254
+## 3 0.30971660 0.44736842
+## 4 0.11010101 0.20202020
+## 5 0.05132114 0.09654472
+</code></pre>
+
+<pre><code class="language-r">DT@ped[1:5,]
+</code></pre>
+
+<pre><code>##   famid id father mother sex pheno   N0   N1  N2 NAs N0.x N1.x N2.x NAs.x
+## 1     1  1      0      0   0     0 6431 2916 652   1    0    0    0     0
+## 2     2  2      0      0   0     0 6450 2873 677   0    0    0    0     0
+## 3     3  3      0      0   0     0 6441 2899 660   0    0    0    0     0
+## 4     4  4      0      0   0     0 6374 2986 640   0    0    0    0     0
+## 5     5  5      0      0   0     0 6339 2978 683   0    0    0    0     0
+##   N0.y N1.y N2.y NAs.y N0.mt N1.mt N2.mt NAs.mt callrate    hz callrate.x
+## 1    0    0    0     0     0     0     0      0     -Inf -2916        NaN
+## 2    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+## 3    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+## 4    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+## 5    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+##   hz.x callrate.y hz.y callrate.mt hz.mt
+## 1  NaN        NaN  NaN         NaN   NaN
+## 2  NaN        NaN  NaN         NaN   NaN
+## 3  NaN        NaN  NaN         NaN   NaN
+## 4  NaN        NaN  NaN         NaN   NaN
+## 5  NaN        NaN  NaN         NaN   NaN
+</code></pre>
+
+<pre><code class="language-r"># p contains the alternate allele frequency 
+# mu is equal to 2*p and is the expected value of the genotype (coded in 0, 1, 2)
+# sigma is the genotype standard error
+DT@p[1:10]
+</code></pre>
+
+<pre><code>##  [1] 0.30897177 0.40835851 0.30971660 0.11010101 0.05132114 0.05393145
+##  [7] 0.28556911 0.04984894 0.30502513 0.39635996
+</code></pre>
+
+<pre><code class="language-r">DT@mu[1:10]
+</code></pre>
+
+<pre><code>##  [1] 0.61794355 0.81671702 0.61943320 0.22020202 0.10264228 0.10786290
+##  [7] 0.57113821 0.09969789 0.61005025 0.79271992
+</code></pre>
+
+<pre><code class="language-r">DT@sigma[1:10]
+</code></pre>
+
+<pre><code>##  [1] 0.6607853 0.6950724 0.6350671 0.4338020 0.3110142 0.3155285 0.6256291
+##  [8] 0.3053246 0.6458457 0.6949752
+</code></pre>
+
+<pre><code class="language-r">plot(2*DT@p, DT@mu)
+abline(a=0,b=1, col = &quot;red&quot;)
+</code></pre>
+
+<p><img src="/figure/posts/lmm_example_files/figure-html/unnamed-chunk-4-1.png" alt="" /><!-- --></p>
+
+<p>If the Hardy-Weinberg equilibrium holds, <code>sigma</code> should be close to $$ \sqrt{2*p(1-p)} $$. This is illustrated on the figure below</p>
+
+<pre><code class="language-r">plot(DT@p, DT@sigma, xlim=c(0,1))
+t &lt;- seq(0,1,length=101);
+lines(t, sqrt(2*t*(1-t)), col=&quot;red&quot;)
+</code></pre>
+
+<p><img src="/figure/posts/lmm_example_files/figure-html/unnamed-chunk-5-1.png" alt="" /><!-- --></p>
+
+<h2 id="standardized-snp-matrix">Standardized SNP matrix</h2>
+
+<pre><code class="language-r"># this will center the columns of DT to mean 0, and standard deviation sqrt(2p(1-p))
+gaston::standardize(DT) &lt;- &quot;p&quot;
+X &lt;- as.matrix(DT)
+X[1:5, 1:5]
+</code></pre>
+
+<pre><code>##          M_1        M_2        M_3        M_4      M_5
+## 1 -0.9456415 -1.1749151  0.5819959  1.7615748 -0.32893
+## 2  0.5846625 -1.1749151 -0.9472912  1.7615748 -0.32893
+## 3  0.5846625  0.2636678 -0.9472912 -0.4974395 -0.32893
+## 4  2.1149665  0.2636678  0.5819959 -0.4974395 -0.32893
+## 5  0.5846625  1.7022506  0.5819959 -0.4974395 -0.32893
+</code></pre>
+
+<h2 id="dealing-with-missing-values">Dealing With Missing Values</h2>
+
+<p>In standardized matrices, the <code>NA</code> values are replaced by zeroes, which amount to impute the missing genotypes by the mean genotype.</p>
+
+<pre><code class="language-r">X[is.na(X)] &lt;- 0
+X[1:5,1:5]
+</code></pre>
+
+<pre><code>##          M_1        M_2        M_3        M_4      M_5
+## 1 -0.9456415 -1.1749151  0.5819959  1.7615748 -0.32893
+## 2  0.5846625 -1.1749151 -0.9472912  1.7615748 -0.32893
+## 3  0.5846625  0.2636678 -0.9472912 -0.4974395 -0.32893
+## 4  2.1149665  0.2636678  0.5819959 -0.4974395 -0.32893
+## 5  0.5846625  1.7022506  0.5819959 -0.4974395 -0.32893
+</code></pre>
+
+<p>The object <code>X</code> is what will be used as the data matrix in the LMM analysis. We also need to create the kinship matrix, which we do next.</p>
+
+<h2 id="calculate-kinship-matrix">Calculate Kinship Matrix</h2>
+
+<p>If $$ X_s $$ is a standardized $$ n \times p $$ matrix of genotypes, a Genetic Relationship Matrix of individuals can be computed as</p>
+
+<p>$$
+GRM = \frac{1}{p-1} X_s X_s^\top
+$$</p>
+
+<p>where $$ p $$ is the number of SNPs and $$ n $$ is the number of individuals. This computation is done by the <code>gaston::GRM</code> function. Note that we could also use</p>
+
+<pre><code class="language-r">(1 / (p - 1)) * tcrossprod(X)
+</code></pre>
+
+<p>to calculate the kinship (covariance) matrix, but the <code>gaston::GRM</code> function is faster.</p>
+
+<p>Note that the <code>gaston::GRM</code> function internally standardizes the genotype data, which is why we provide it the object <code>DT</code>. The object <code>X</code> will be used for fitting the model. We specify <code>autosome.only = FALSE</code> because we don&rsquo;t have that information.</p>
+
+<pre><code class="language-r">kin &lt;- gaston::GRM(DT, autosome.only = FALSE)
+kin[1:5,1:5]
+</code></pre>
+
+<pre><code>##              1            2             3             4             5
+## 1  0.994037390 -0.020637164 -2.610047e-03  1.937922e-02 -0.0050506615
+## 2 -0.020637164  0.970255971  1.689422e-03 -1.211568e-02  0.0014872842
+## 3 -0.002610047  0.001689422  9.864578e-01 -9.975582e-05  0.0006858376
+## 4  0.019379225 -0.012115683 -9.975582e-05  9.979130e-01  0.0061614369
+## 5 -0.005050662  0.001487284  6.858376e-04  6.161437e-03  1.0134803057
+</code></pre>
+
+<h2 id="principal-components">Principal Components</h2>
+
+<p>From the GRM, we can compute the Principal components. The eigenvectors are normalized. The Principal Components (PC) can be computed by multiplying them by the square root of the associated eigenvalues</p>
+
+<pre><code class="language-r">eiK &lt;- eigen(kin)
+
+# deal with a small negative eigen value
+eiK$values[ eiK$values &lt; 0 ] &lt;- 0
+
+PC &lt;- sweep(eiK$vectors, 2, sqrt(eiK$values), &quot;*&quot;)
+dim(PC)
+</code></pre>
+
+<pre><code>## [1] 1000 1000
+</code></pre>
+
+<pre><code class="language-r">plot(PC[,1], PC[,2])
+</code></pre>
+
+<p><img src="/figure/posts/lmm_example_files/figure-html/unnamed-chunk-10-1.png" alt="" /><!-- --></p>
+
+<h2 id="simulate-phenotype">Simulate Phenotype</h2>
+
+<p><code>p_causal</code> SNPs are randomly assigned to a Uniform(0.9,1.1) distribution.</p>
+
+<pre><code class="language-r">beta &lt;- rep(0, p)
+beta[sample(1:p, p_causal)] &lt;- runif(p_causal, min = 0.9, max = 1.1)
+
+y.star &lt;- X %*% beta 
+
+error &lt;- stats::rnorm(n)
+
+k &lt;- as.numeric(sqrt(stats::var(y.star)/(signal_to_noise_ratio*stats::var(error))))
+
+Y &lt;- y.star + k*error
+</code></pre>
+
+<h2 id="run-univariate-lmm">Run Univariate LMM</h2>
+
+<p>There are two packages we can use to fit uni/multivariate LMMs.</p>
+
+<h3 id="gaston-package"><code>gaston</code> package</h3>
+
+<p>Here we use the <code>gaston</code> package {% cite gaston %}.</p>
+
+<pre><code class="language-r"># make design matrix with intercept
+x1 &lt;- cbind(1, X[,1,drop=FALSE])
+
+# with 1 random effect this function is faster than lmm.aireml
+# in gaston::lmm.diago you provide the eigen decomposition 
+# in gaston::lmm.aireml you provide the kinship matrix
+fit &lt;- gaston::lmm.diago(Y, x1, eigenK = eiK)
+</code></pre>
+
+<pre><code>## Optimization in interval [0, 1]
+## Optimizing with p = 0
+## [Iteration 1] Current point = 0 df = 28.579
+## [Iteration 2] Current point = 0.54494 df = 2.00363
+## [Iteration 3] Current point = 0.585132 df = -0.018836
+## [Iteration 4] Current point = 0.584762 df = -1.81023e-06
+</code></pre>
+
+<pre><code class="language-r"># equivalently you can also fit using 
+# fit &lt;- gaston::lmm.aireml(Y, x1, K = kin, verbose = FALSE)
+
+# the second coefficient is x1, the first is the intercept
+(z_score &lt;- fit$BLUP_beta[2]/sqrt(fit$varbeta[2,2]))
+</code></pre>
+
+<pre><code>## [1] 0.4642883
+</code></pre>
+
+<pre><code class="language-r"># pvalue
+2*pnorm(z_score, lower.tail = F)
+</code></pre>
+
+<pre><code>## [1] 0.6424412
+</code></pre>
+
+<pre><code class="language-r"># random effect variance
+fit$tau
+</code></pre>
+
+<pre><code>## [1] 44.29653
+</code></pre>
+
+<pre><code class="language-r"># error variance
+fit$sigma2
+</code></pre>
+
+<pre><code>## [1] 31.45491
+</code></pre>
+
+<pre><code class="language-r"># error sd
+sqrt(fit$sigma2)
+</code></pre>
+
+<pre><code>## [1] 5.608468
+</code></pre>
+
+<h3 id="coxme-package"><code>coxme</code> package</h3>
+
+<p>Here we use the <code>coxme</code> package {% cite coxme %}.</p>
+
+<pre><code class="language-r"># install.packages(&quot;coxme&quot;)
+library(coxme)
+
+# need an ID variable
+dat &lt;- data.frame(Y, x=X[,1], id = 1:n)
+
+# provide the kinship matrix 
+gfit1 &lt;- lmekin(Y ~ x + (1|id), data=dat, varlist=kin)
+gfit1
+</code></pre>
+
+<pre><code>## Linear mixed-effects kinship model fit by maximum likelihood
+##   Data: dat 
+##   Log-likelihood = -3572.846 
+##   n= 1000 
+## 
+## 
+## Model:  Y ~ x + (1 | id) 
+## Fixed coefficients
+##                 Value Std Error    z     p
+## (Intercept) 0.3185476 0.1720343 1.85 0.064
+## x           0.1320349 0.2748453 0.48 0.630
+## 
+## Random effects
+##  Group Variable Std Dev   Variance 
+##  id    Vmat.1    6.790932 46.116756
+## Residual error= 5.440202
+</code></pre>
+
+<h2 id="references">References</h2>
+
+<p>{% bibliography &ndash;cited %}</p>
+
+<h2 id="session-info">Session Info</h2>
+
+<pre><code>##  setting  value                       
+##  version  R version 3.4.1 (2017-06-30)
+##  system   x86_64, linux-gnu           
+##  ui       X11                         
+##  language en_US                       
+##  collate  en_US.UTF-8                 
+##  tz       Canada/Eastern              
+##  date     2017-10-12                  
+## 
+##  package      * version date       source                          
+##  backports      1.1.0   2017-05-22 cran (@1.1.0)                   
+##  base         * 3.4.1   2017-07-08 local                           
+##  bdsmatrix    * 1.3-2   2014-08-22 CRAN (R 3.4.1)                  
+##  compiler       3.4.1   2017-07-08 local                           
+##  coxme        * 2.2-5   2015-06-15 CRAN (R 3.4.1)                  
+##  datasets     * 3.4.1   2017-07-08 local                           
+##  devtools       1.13.3  2017-08-02 CRAN (R 3.4.1)                  
+##  digest         0.6.12  2017-01-27 CRAN (R 3.4.1)                  
+##  evaluate       0.10.1  2017-06-24 cran (@0.10.1)                  
+##  gaston       * 1.5     2017-05-25 CRAN (R 3.4.1)                  
+##  graphics     * 3.4.1   2017-07-08 local                           
+##  grDevices    * 3.4.1   2017-07-08 local                           
+##  grid           3.4.1   2017-07-08 local                           
+##  htmltools      0.3.6   2017-04-28 cran (@0.3.6)                   
+##  knitr          1.17    2017-08-10 cran (@1.17)                    
+##  lattice        0.20-35 2017-03-25 CRAN (R 3.3.3)                  
+##  magrittr       1.5     2014-11-22 CRAN (R 3.4.1)                  
+##  Matrix         1.2-11  2017-08-16 CRAN (R 3.4.1)                  
+##  memoise        1.1.0   2017-04-21 CRAN (R 3.4.1)                  
+##  methods      * 3.4.1   2017-07-08 local                           
+##  nlme           3.1-131 2017-02-06 CRAN (R 3.4.0)                  
+##  Rcpp         * 0.12.12 2017-07-15 CRAN (R 3.4.1)                  
+##  RcppParallel * 4.3.20  2016-08-16 CRAN (R 3.4.1)                  
+##  rmarkdown      1.6     2017-06-15 CRAN (R 3.4.1)                  
+##  rprojroot      1.2     2017-01-16 CRAN (R 3.4.1)                  
+##  splines        3.4.1   2017-07-08 local                           
+##  stats        * 3.4.1   2017-07-08 local                           
+##  stringi        1.1.5   2017-04-07 CRAN (R 3.4.1)                  
+##  stringr        1.2.0   2017-02-18 CRAN (R 3.4.1)                  
+##  survival     * 2.41-3  2017-04-04 CRAN (R 3.4.0)                  
+##  tools          3.4.1   2017-07-08 local                           
+##  utils        * 3.4.1   2017-07-08 local                           
+##  withr          2.0.0   2017-09-18 Github (jimhester/withr@d1f0957)
+##  yaml           2.1.14  2016-11-12 cran (@2.1.14)
+</code></pre>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

@@ -21,6 +21,66 @@
     </item>
     
     <item>
+      <title>Getting Travis to Auto Push to GitHub</title>
+      <link>https://sahirbhatnagar.github.io/blog/2018/08/23/getting-travis-to-auto-push-to-github/</link>
+      <pubDate>Thu, 23 Aug 2018 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2018/08/23/getting-travis-to-auto-push-to-github/</guid>
+      <description>Following the advice given on the bookdown site, I use Travis-CI to automatically build my bookdown book and push it to gh-pages. I always forget how to do this, so I&amp;rsquo;m writing these notes to supplement what is already written there.
+ Follow these instructions on GitHub to create a personal access token (PAT) Copy the generated PAT to your clipboard
+ From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:</description>
+    </item>
+    
+    <item>
+      <title>Documenting R Packages</title>
+      <link>https://sahirbhatnagar.github.io/blog/2018/04/03/documenting-r-packages/</link>
+      <pubDate>Tue, 03 Apr 2018 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2018/04/03/documenting-r-packages/</guid>
+      <description>Some brief notes on my R package documentation workflow.
+styler I first use the styler package for pretty-printing of R source code
+pacman::p_load_gh(&amp;quot;r-lib/styler&amp;quot;) # run style_dir on R directory styler::style_dir(&amp;quot;./R&amp;quot;)  prefixer Next I use the prefixer package to prefix all my functions with their NAMESPACE
+pacman::p_load_gh(&amp;quot;dreamRs/prefixer&amp;quot;) # launch the addin via RStudio&#39;s Addins menu  sinew In a third step, I use the sinew package to generate a roxygen2 skeleton on all my R source code files</description>
+    </item>
+    
+    <item>
+      <title>I Am Color Blind</title>
+      <link>https://sahirbhatnagar.github.io/blog/2018/04/03/i-am-color-blind/</link>
+      <pubDate>Tue, 03 Apr 2018 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2018/04/03/i-am-color-blind/</guid>
+      <description>I recently gave a mini-course on regression trees. As I talked about the red region in the following figure:
+one of the audience members said they had no clue what I was referring to. It turns out they were color blind and could not identify the red region. Yikes!
+Here is a colorblind friendly pallette courtesy of Cookbook for R
+{% highlight r %} cbbPalette &amp;lt;- c(&amp;ldquo;#000000&amp;rdquo;, &amp;ldquo;#E69F00&amp;rdquo;, &amp;ldquo;#56B4E9&amp;rdquo;, &amp;ldquo;#009E73&amp;rdquo;, &amp;ldquo;#F0E442&amp;rdquo;, &amp;ldquo;#0072B2&amp;rdquo;, &amp;ldquo;#D55E00&amp;rdquo;, &amp;ldquo;#CC79A7&amp;rdquo;) {% endhighlight %}</description>
+    </item>
+    
+    <item>
+      <title>Mixed Models with Kinship in R</title>
+      <link>https://sahirbhatnagar.github.io/blog/2017/10/12/mixed-models-with-kinship-in-r/</link>
+      <pubDate>Thu, 12 Oct 2017 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2017/10/12/mixed-models-with-kinship-in-r/</guid>
+      <description>In this post, I describe how to estimate a kinship matrix and subsequently fit a mixed model using that estimated kinship. In particular, I show how this can be done on an arbitrary matrix of genotype data, which is not stored in plink format. I also show how to deal with missing genotypes.
+Load Packages # install.packages(&amp;quot;gaston&amp;quot;) library(gaston)  Set Simulation Parameters # number of subjects n &amp;lt;- 1000 # number of genotypes p &amp;lt;- 1e4 # number of causal genotypes p_causal &amp;lt;- 50 # Signal to noise ratio signal_to_noise_ratio &amp;lt;- 2 # vector of allele frequencies from which to sample probs &amp;lt;- c(0.</description>
+    </item>
+    
+    <item>
+      <title>Polygenic Risks Scores with data.table in R</title>
+      <link>https://sahirbhatnagar.github.io/blog/2017/08/11/polygenic-risks-scores-with-data.table-in-r/</link>
+      <pubDate>Fri, 11 Aug 2017 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2017/08/11/polygenic-risks-scores-with-data.table-in-r/</guid>
+      <description>&lt;p&gt;In this short post, I show how to calculate &lt;a href=&#34;https://en.wikipedia.org/wiki/Polygenic_score&#34;&gt;polygenic risk scores&lt;/a&gt; (PRS) using the &lt;a href=&#34;https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html&#34;&gt;&lt;code&gt;data.table&lt;/code&gt;&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. I will show an example on a small dataset, but can be easily extended to much larger datasets. The PRS based on $$ p $$ SNPs is given by:&lt;/p&gt;
+
+&lt;p&gt;$$
+PRS&lt;em&gt;i = \sum&lt;/em&gt;{j=1}^{p}\beta&lt;em&gt;j \times SNP&lt;/em&gt;{ij}
+$$&lt;/p&gt;
+
+&lt;p&gt;where $$ \beta&lt;em&gt;j $$ is the beta coefficient for the $$ j^{th} $$ SNP, and $$ SNP&lt;/em&gt;{ij} $$ is the value of $$ j^{th} $$ SNP for the $$ i^{th} $$ individual.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>A Plain Markdown Post</title>
       <link>https://sahirbhatnagar.github.io/blog/2016/12/30/a-plain-markdown-post/</link>
       <pubDate>Fri, 30 Dec 2016 21:49:57 -0700</pubDate>
@@ -42,12 +102,128 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
     </item>
     
     <item>
+      <title>Contrasts in R</title>
+      <link>https://sahirbhatnagar.github.io/blog/2015/03/04/contrasts-in-r/</link>
+      <pubDate>Wed, 04 Mar 2015 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2015/03/04/contrasts-in-r/</guid>
+      <description>&lt;p&gt;In this post I discuss how to create custom contrasts for factor variables in &lt;code&gt;R&lt;/code&gt;. First lets create some simulated data. Create the data, and factor Disease status:&lt;/p&gt;
+
+&lt;p&gt;{% highlight r %}
+Disease &amp;lt;- c(rep(&amp;ldquo;RA&amp;rdquo;, 5), rep(&amp;ldquo;SLE&amp;rdquo;, 5), rep(&amp;ldquo;Scleroderma&amp;rdquo;, 5),
+             rep(&amp;ldquo;Myositis&amp;rdquo;, 5), rep(&amp;ldquo;Control&amp;rdquo;, 5))
+set.seed(1234)
+sex &amp;lt;-  rbinom(25,1, 0.5)
+age &amp;lt;-  rnorm(25, 40, 5)
+y &amp;lt;- rnorm(25, 0.5, 0.12)
+data &amp;lt;- data.frame(y,sex,age,Disease=factor(Disease))
+str(data)
+{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;{% highlight text %}&lt;/p&gt;
+
+&lt;h2 id=&#34;data-frame-25-obs-of-4-variables&#34;&gt;&amp;lsquo;data.frame&amp;rsquo;:    25 obs. of  4 variables:&lt;/h2&gt;
+
+&lt;h2 id=&#34;y-num-0-506-0-323-0-552-0-492-0-513&#34;&gt;$ y      : num  0.506 0.323 0.552 0.492 0.513 &amp;hellip;&lt;/h2&gt;
+
+&lt;h2 id=&#34;sex-int-0-1-1-1-1-1-0-0-1-1&#34;&gt;$ sex    : int  0 1 1 1 1 1 0 0 1 1 &amp;hellip;&lt;/h2&gt;
+
+&lt;h2 id=&#34;age-num-44-4-46-9-31-6-36-9-40-1&#34;&gt;$ age    : num  44.4 46.9 31.6 36.9 40.1 &amp;hellip;&lt;/h2&gt;
+
+&lt;h2 id=&#34;disease-factor-w-5-levels-control-myositis-3-3-3-3-3-5-5-5-5-5&#34;&gt;$ Disease: Factor w/ 5 levels &amp;ldquo;Control&amp;rdquo;,&amp;ldquo;Myositis&amp;rdquo;,..: 3 3 3 3 3 5 5 5 5 5 &amp;hellip;&lt;/h2&gt;
+
+&lt;p&gt;{% endhighlight %}&lt;/p&gt;
+
+&lt;p&gt;We want the following contrasts:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Control versus all 4 diseases combined&lt;/li&gt;
+&lt;li&gt;RA versus the combination of (SLE, Scleroderma, Myositis), leaving out the Controls&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
       <title>Lorem Ipsum</title>
       <link>https://sahirbhatnagar.github.io/blog/2015/01/01/lorem-ipsum/</link>
       <pubDate>Thu, 01 Jan 2015 13:09:13 -0600</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2015/01/01/lorem-ipsum/</guid>
       <description>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</description>
+    </item>
+    
+    <item>
+      <title>Gradient Descent</title>
+      <link>https://sahirbhatnagar.github.io/blog/2014/11/15/gradient-descent/</link>
+      <pubDate>Sat, 15 Nov 2014 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2014/11/15/gradient-descent/</guid>
+      <description>&lt;p&gt;I am taking the Machine Learning course on &lt;a href=&#34;https://class.coursera.org/ml-007/lecture&#34;&gt;Coursera&lt;/a&gt; being taught by Andrew Ng. It is turning out to be useful so far, and he has presented the material clearly. It&amp;rsquo;s a nice introduction to the Machine Learning/Computer Science language, since I come from a statistics background.&lt;/p&gt;
+
+&lt;p&gt;I learned about gradient descent today for simple linear regression. The following is my code in R and I compare it to the &lt;em&gt;lm&lt;/em&gt; function in base &lt;em&gt;R&lt;/em&gt;.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CDPATH in Bash</title>
+      <link>https://sahirbhatnagar.github.io/blog/2014/07/04/cdpath-in-bash/</link>
+      <pubDate>Fri, 04 Jul 2014 11:03:16 -0400</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2014/07/04/cdpath-in-bash/</guid>
+      <description>&lt;p&gt;Instead of constantly typing the full path when using the &lt;code&gt;cd&lt;/code&gt; command, &lt;code&gt;BASH&lt;/code&gt; has a built-in feature called &lt;code&gt;CDPATH&lt;/code&gt;. Thanks to &lt;em&gt;lhunath&lt;/em&gt; who explained in this &lt;a href=&#34;http://stackoverflow.com/questions/670488/how-to-manage-long-paths-in-bash&#34;&gt;SO Post&lt;/a&gt; how to use this feature.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Bayesian Non-Linear Multilevel Models</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/bayesian-non-linear-multilevel-models/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/bayesian-non-linear-multilevel-models/</guid>
+      <description>&lt;p&gt;Consider the following repeated measures model:&lt;/p&gt;
+
+&lt;p&gt;$$ y_{ij} =\beta_0 + \beta&lt;em&gt;1 a&lt;/em&gt;{ij}  + \beta&lt;em&gt;1^2 b&lt;/em&gt;{ij} + \mu&lt;em&gt;i + \varepsilon&lt;/em&gt;{ij}$$&lt;/p&gt;
+
+&lt;p&gt;for $$i = 1, \ldots, n$$, $$j = 1, 2$$ where $$n$$ is the sample size, $$j$$ represents the index of the repeated measure, i.e., each subject has two measurements, $$\mu&lt;em&gt;i$$ is a normally distributed random effect, $$\varepsilon&lt;/em&gt;{ij}$$ is a normally distributed error term, $$y&lt;em&gt;{ij}$$ is the continuous response, and $$a&lt;/em&gt;{ij}, b_{ij}$$ are covariates. This is a multilevel model because of the nested structure of the data, and also non-linear in the $$\beta_1$$ parameter. In this post I simulate some data under this model, and try to leverage Bayesian computation techniques to estimate the parameters using the &lt;a href=&#34;https://github.com/paul-buerkner/brms&#34;&gt;brms&lt;/a&gt; which is an interface to fit Bayesian generalized (non-)linear multilevel models using &lt;a href=&#34;http://mc-stan.org/&#34;&gt;Stan&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Heatmaps in R</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/heatmaps-in-r/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/heatmaps-in-r/</guid>
+      <description>&lt;p&gt;In every statistical analysis, the first thing one should do is try and visualise the data before any modeling. In microarray studies, a common visualisation is a heatmap of gene expression data. In this post I simulate some gene expression data and visualise it using the &lt;code&gt;pheatmap&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/pheatmap/&#34;&gt;pheatmap&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. You will also need the &lt;code&gt;mvrnorm&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/MASS/index.html&#34;&gt;MASS&lt;/a&gt; library to simulate from a multivariate normal distribution, and the &lt;code&gt;brewer.pal&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; library for easier customization of colors.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Limma Moderated and Ordinary t-statistics</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/limma-moderated-and-ordinary-t-statistics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/limma-moderated-and-ordinary-t-statistics/</guid>
+      <description>&lt;p&gt;When analyzing large amounts of genetic and genomic data, the first line of analysis is usually some sort of univariate test. That is, conduct a statistical test for each SNP or CpG site or Gene and then correct for multiple testing. The &lt;a href=&#34;https://bioconductor.org/packages/release/bioc/html/limma.html&#34;&gt;limma&lt;/a&gt; package on Bioconductor is a popular method for computing &lt;em&gt;moderated&lt;/em&gt; t-statistics using a combination of the &lt;code&gt;limma::lmFit&lt;/code&gt; and &lt;code&gt;limma::eBayes&lt;/code&gt; functions. In this post, I show how to calculate the &lt;em&gt;ordinary&lt;/em&gt; t-statistics from &lt;code&gt;limma&lt;/code&gt; output.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Math Expressions with Facets in ggplot2</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/math-expressions-with-facets-in-ggplot2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/math-expressions-with-facets-in-ggplot2/</guid>
+      <description>&lt;p&gt;In this post I show how we can use $$\LaTeX$$ math expressions to label the panels in facets to produce the following plot:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-08-facet_wrap_labels/unnamed-chunk-1-1.png&#34; title=&#34;plot of chunk unnamed-chunk-1&#34; alt=&#34;plot of chunk unnamed-chunk-1&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Statistical Power in t tests with Unequal Group Sizes</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/statistical-power-in-t-tests-with-unequal-group-sizes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
+      <description>&lt;p&gt;When performing &lt;a href=&#34;https://en.wikipedia.org/wiki/Student%27s_t-test&#34;&gt;Student&amp;rsquo;s t-test&lt;/a&gt; to compare difference in means between two group, it is a useful exercise to determine the effect of unequal sample sizes in the comparison groups on power. Large imbalances generally will not have adequate statistical power to detect even large effect sizes associated with a factor, leading to a high Type II error rate as shown in the figure below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34; /&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<title>Math Expressions with Facets in ggplot2 - Sahir&#39;s blog</title>
+<meta property="og:title" content="Math Expressions with Facets in ggplot2 - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">Math Expressions with Facets in ggplot2</h1>
+
+    
+    <span class="article-date">0001-01-01</span>
+    
+
+    <div class="article-content">
+      <p>In this post I show how we can use $$\LaTeX$$ math expressions to label the panels in facets to produce the following plot:</p>
+
+<p><img src="/figure/posts/2016-02-08-facet_wrap_labels/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
+
+<p>The updated version of <a href="http://docs.ggplot2.org/dev/index.html">ggplot2 V 2.0</a> has improved the way we can label panels in <a href="http://docs.ggplot2.org/dev/facet_wrap.html">facet plots</a> with the use of a <a href="http://docs.ggplot2.org/dev/labeller.html">generic labeller</a> function. The <a href="https://cran.r-project.org/web/packages/latex2exp/index.html">latex2exp</a> package has made it much easier to write $$\LaTeX$$ expressions in <code>R</code>.</p>
+
+<p>You will need to load the following packages for the code below to work:</p>
+
+<ol>
+<li><a href="https://cran.r-project.org/web/packages/devtools/index.html">devtools</a></li>
+<li><a href="https://cran.r-project.org/web/packages/ggplot2/">ggplot2</a></li>
+<li><a href="https://cran.r-project.org/web/packages/latex2exp/index.html">latex2exp</a></li>
+</ol>
+
+<p>I have posted some sample data in a <a href="https://gist.github.com/sahirbhatnagar/ed3caf50247cae8e3e1c">GitHub Gist</a> which you can import into your <code>R</code> session using the <code>source_gist</code> function from the devtools package:</p>
+
+<p>{% highlight r %}
+data &lt;- devtools::source_gist(id = &ldquo;ed3caf50247cae8e3e1c&rdquo;, filename = &ldquo;facet_data.R&rdquo;)$value
+{% endhighlight %}</p>
+
+<p>Then we create a labelling function which takes as input a string and prepends $$\log(\lambda_{\gamma})$$ to it. Note that <code>latex2exp::TeX</code> is the workhorse function that parses $$\LaTeX$$ syntax so that <code>R</code> understands it. Otherwise it becomes very messy to try and write more complex math expressions in <code>R</code>.</p>
+
+<p>{% highlight r %}
+appender &lt;- function(string)
+    TeX(paste(&ldquo;$\log(\lambda_{\gamma}) = $&ldquo;, string))<br />
+{% endhighlight %}</p>
+
+<p>The code to produce the plot above is given by:</p>
+
+<p>{% highlight r %}
+ggplot(data, aes(log(lambda.beta), ymin = lower, ymax = upper)) +
+    geom_errorbar(color = &ldquo;grey&rdquo;) +
+    geom_point(aes(x = log(lambda.beta), y = mse),
+               colour = &ldquo;red&rdquo;) +
+    theme_bw() +
+    facet_wrap(~lg, scales = &ldquo;fixed&rdquo;,
+               labeller = as_labeller(appender,
+                            default = label_parsed)) +
+    theme(strip.background = element_blank(),
+          strip.text.x = element<em>text(size = 14)) +
+    xlab(TeX(&ldquo;$\log(\lambda</em>{\beta})$&ldquo;))
+{% endhighlight %}</p>
+
+<p>Note that we need to provide the <code>default = label_parsed</code> argument to the <code>facet_wrap</code> function so that it interprets the result from the <code>appender</code> function as math expressions.</p>
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

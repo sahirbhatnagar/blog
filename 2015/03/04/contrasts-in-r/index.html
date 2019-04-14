@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<title>Contrasts in R - Sahir&#39;s blog</title>
+<meta property="og:title" content="Contrasts in R - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">Contrasts in R</h1>
+
+    
+    <span class="article-date">2015-03-04</span>
+    
+
+    <div class="article-content">
+      <p>In this post I discuss how to create custom contrasts for factor variables in <code>R</code>. First lets create some simulated data. Create the data, and factor Disease status:</p>
+
+<p>{% highlight r %}
+Disease &lt;- c(rep(&ldquo;RA&rdquo;, 5), rep(&ldquo;SLE&rdquo;, 5), rep(&ldquo;Scleroderma&rdquo;, 5),
+             rep(&ldquo;Myositis&rdquo;, 5), rep(&ldquo;Control&rdquo;, 5))
+set.seed(1234)
+sex &lt;-  rbinom(25,1, 0.5)
+age &lt;-  rnorm(25, 40, 5)
+y &lt;- rnorm(25, 0.5, 0.12)
+data &lt;- data.frame(y,sex,age,Disease=factor(Disease))
+str(data)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="data-frame-25-obs-of-4-variables">&lsquo;data.frame&rsquo;:    25 obs. of  4 variables:</h2>
+
+<h2 id="y-num-0-506-0-323-0-552-0-492-0-513">$ y      : num  0.506 0.323 0.552 0.492 0.513 &hellip;</h2>
+
+<h2 id="sex-int-0-1-1-1-1-1-0-0-1-1">$ sex    : int  0 1 1 1 1 1 0 0 1 1 &hellip;</h2>
+
+<h2 id="age-num-44-4-46-9-31-6-36-9-40-1">$ age    : num  44.4 46.9 31.6 36.9 40.1 &hellip;</h2>
+
+<h2 id="disease-factor-w-5-levels-control-myositis-3-3-3-3-3-5-5-5-5-5">$ Disease: Factor w/ 5 levels &ldquo;Control&rdquo;,&ldquo;Myositis&rdquo;,..: 3 3 3 3 3 5 5 5 5 5 &hellip;</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>We want the following contrasts:</p>
+
+<ul>
+<li>Control versus all 4 diseases combined</li>
+<li>RA versus the combination of (SLE, Scleroderma, Myositis), leaving out the Controls</li>
+</ul>
+
+<h2 id="default-settings">Default settings</h2>
+
+<p>Let $$x_1,x_2,x_3,x_4$$ be the indicators for Myositis, RA, Scleroderma and SLE, respectively. The standard linear model <code>R</code> will fit is given by (for simplicity I am ignoring age and sex, but it won&rsquo;t make a difference when you add them in the model):</p>
+
+<p>$$ \mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4 $$</p>
+
+<p>{% highlight r %}
+summary(fit &lt;- lm(y ~ Disease, data=data))
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="call">Call:</h2>
+
+<h2 id="lm-formula-y-disease-data-data">lm(formula = y ~ Disease, data = data)</h2>
+
+<h2 id="residuals">Residuals:</h2>
+
+<h2 id="min-1q-median-3q-max">Min       1Q   Median       3Q      Max</h2>
+
+<h2 id="0-18718-0-05324-0-02859-0-07511-0-12395">-0.18718 -0.05324  0.02859  0.07511  0.12395</h2>
+
+<h2 id="coefficients">Coefficients:</h2>
+
+<h2 id="estimate-std-error-t-value-pr-t">Estimate Std. Error t value Pr(&gt;|t|)</h2>
+
+<h2 id="intercept-0-60943-0-04756-12-814-4-22e-11">(Intercept)         0.60943    0.04756  12.814 4.22e-11 ***</h2>
+
+<h2 id="diseasemyositis-0-24835-0-06726-3-692-0-00144">DiseaseMyositis    -0.24835    0.06726  -3.692  0.00144 **</h2>
+
+<h2 id="diseasera-0-13225-0-06726-1-966-0-06330">DiseaseRA          -0.13225    0.06726  -1.966  0.06330 .</h2>
+
+<h2 id="diseasescleroderma-0-15540-0-06726-2-310-0-03165">DiseaseScleroderma -0.15540    0.06726  -2.310  0.03165 *</h2>
+
+<h2 id="diseasesle-0-05650-0-06726-0-840-0-41081">DiseaseSLE         -0.05650    0.06726  -0.840  0.41081</h2>
+
+<h2 id="toc_18">&mdash;</h2>
+
+<h2 id="signif-codes-0-0-001-0-01-0-05-0-1-1">Signif. codes:  0 &lsquo;*<strong>&rsquo; 0.001 &lsquo;</strong>&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1</h2>
+
+<h2 id="residual-standard-error-0-1063-on-20-degrees-of-freedom">Residual standard error: 0.1063 on 20 degrees of freedom</h2>
+
+<h2 id="multiple-r-squared-0-4452-adjusted-r-squared-0-3342">Multiple R-squared:  0.4452, Adjusted R-squared:  0.3342</h2>
+
+<h2 id="f-statistic-4-012-on-4-and-20-df-p-value-0-01507">F-statistic: 4.012 on 4 and 20 DF,  p-value: 0.01507</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>This is the default contrast matrix with unordered factor variables:</p>
+
+<p>{% highlight r %}
+contrasts(data$Disease)
+{% endhighlight %}</p>
+
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="right">Myositis</th>
+<th align="right">RA</th>
+<th align="right">Scleroderma</th>
+<th align="right">SLE</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">Control</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+
+<tr>
+<td align="left">Myositis</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+
+<tr>
+<td align="left">RA</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+
+<tr>
+<td align="left">Scleroderma</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+
+<tr>
+<td align="left">SLE</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+
+<p>This compares the mean of the response for the Controls to the mean of the response for Myositis, RA, Scleroderma, and SLE separately. The table can be read by column, and the numbers in the columns represent the weight of the regression coefficient, e.g. in the first column Myositis is being compare to Control.</p>
+
+<h2 id="custom-contrats">Custom Contrats</h2>
+
+<p>Since we want only two contrasts, we want <code>R</code> to fit the following model:</p>
+
+<p>$$ \mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 $$</p>
+
+<p>where $$\beta_1$$ represents the contrast estimate for the comparison between controls and all other diseases, and $$\beta_2$$ represents the contrast estimate of RA versus the combination of SLE, Scleroderma, Myositis.</p>
+
+<p>To create custom contrasts, we must specify the contrast matrix as follows:</p>
+
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="right">Control_vs_All</th>
+<th align="right">RA_vs_Myos_Scle_SLE</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">Control</td>
+<td align="right">0.8</td>
+<td align="right">0.0000000</td>
+</tr>
+
+<tr>
+<td align="left">Myositis</td>
+<td align="right">-0.2</td>
+<td align="right">-0.3333333</td>
+</tr>
+
+<tr>
+<td align="left">RA</td>
+<td align="right">-0.2</td>
+<td align="right">1.0000000</td>
+</tr>
+
+<tr>
+<td align="left">Scleroderma</td>
+<td align="right">-0.2</td>
+<td align="right">-0.3333333</td>
+</tr>
+
+<tr>
+<td align="left">SLE</td>
+<td align="right">-0.2</td>
+<td align="right">-0.3333333</td>
+</tr>
+</tbody>
+</table>
+
+<p>Again we look at the above table, column by column. The variables we want to contrast should have opposite signs and the columns should sum to 0. This contrast matrix leads to the following mean response equations for each of the groups:</p>
+
+<p>$$
+\begin{align}
+\mu_{control} &amp; = \beta_0 + 0.8 \beta<em>1<br />
+\mu</em>{myos} &amp; = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta<em>2 <br />
+\mu</em>{ra} &amp; = \beta_0 - 0.2 \beta_1 + \beta<em>2 <br />
+\mu</em>{scler} &amp; = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta<em>2 <br />
+\mu</em>{sle} &amp; = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta_2 <br />
+\end{align}
+$$</p>
+
+<p>To solve for $$\beta_0$$ we can add up all the equations to get</p>
+
+<p>$$
+\begin{align}
+\mu<em>{control}+\mu</em>{myos}+\mu<em>{ra}+\mu</em>{scler}+\mu_{sle} &amp; = 5 \beta_0 <br />
+\beta<em>0 &amp; = \frac{\mu</em>{control}+\mu<em>{myos}+mu</em>{ra}+\mu<em>{scler}+\mu</em>{sle}}{5}
+\end{align}
+$$</p>
+
+<p>To solve for $$\beta<em>1$$ we substract $$\mu</em>{control}$$ from the combined mean of $$\mu<em>{myos},\mu</em>{ra},\mu<em>{scler}$$ and $$\mu</em>{sle}$$ which gives:</p>
+
+<p>$$
+\begin{align}
+\mu<em>{control}-\frac{\mu</em>{myos}+\mu<em>{ra}+\mu</em>{scler}+\mu_{sle}}{4} &amp; = \beta_0 + 0.8 \beta_1 - \frac{4\beta_0 -0.8\beta_1}{4}\
+  &amp; = \beta_0 + 0.8 \beta_1 - \beta_0 + 0.2 \beta_1 <br />
+ &amp; = \beta_1<br />
+\end{align}
+$$</p>
+
+<p>To solve for $$\beta<em>2$$ we substract $$\mu</em>{ra}$$ from the combined mean of $$\mu<em>{myos},\mu</em>{scler}$$ and $$\mu_{sle}$$ which gives:</p>
+
+<p>$$
+\begin{align}
+\mu<em>{ra}-\frac{\mu</em>{myos}+\mu<em>{scler}+\mu</em>{sle}}{3} &amp; = \beta_0 - 0.2 \beta_1 + \beta_2 - \frac{3\beta_0 -0.6\beta_1 - \beta_2}{3}\
+  &amp; = \beta_0 - 0.2 \beta_1 + \beta_2 - \beta_0 + 0.2 \beta_1 +\frac{1}{3}\beta_2 <br />
+ &amp; = \frac{4}{3} \beta_2 <br />
+ \beta<em>2 &amp; = \frac{3}{4} \left( \mu</em>{ra}-\frac{\mu<em>{myos}+\mu</em>{scler}+\mu_{sle}}{3}  \right)
+\end{align}
+$$</p>
+
+<p>First we create the contrast matrix with appropriate row and column names for clarity:</p>
+
+<p>{% highlight r %}
+my.contr &lt;- matrix(c( <sup>4</sup>&frasl;<sub>5</sub>, -<sup>1</sup>&frasl;<sub>5</sub>, -<sup>1</sup>&frasl;<sub>5</sub>, -<sup>1</sup>&frasl;<sub>5</sub>, -<sup>1</sup>&frasl;<sub>5</sub>,
+                 0,-<sup>1</sup>&frasl;<sub>3</sub>,1,-<sup>1</sup>&frasl;<sub>3</sub>,-<sup>1</sup>&frasl;<sub>3</sub>),
+              ncol = 2, dimnames = list(c(&ldquo;Control&rdquo;, &ldquo;Myositis&rdquo;, &ldquo;RA&rdquo;,&ldquo;Scleroderma&rdquo;,&ldquo;SLE&rdquo;),
+    c(&ldquo;Control_vs_All&rdquo;,&ldquo;RA_vs_Myos_Scle_SLE&rdquo;)))
+{% endhighlight %}</p>
+
+<p>Then we store the contrasts attribute to the <em>Disease</em> variable. The <code>how.many</code> argument specifies how many contrasts we want, therefore this should correspond to the number of columns in the contrast matrix.</p>
+
+<p>{% highlight r %}
+contrasts(data$Disease,how.many=2) &lt;- my.contr
+contrasts(data$Disease)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="control-vs-all-ra-vs-myos-scle-sle">Control_vs_All RA_vs_Myos_Scle_SLE</h2>
+
+<h2 id="control-0-8-0-0000000">Control                0.8           0.0000000</h2>
+
+<h2 id="myositis-0-2-0-3333333">Myositis              -0.2          -0.3333333</h2>
+
+<h2 id="ra-0-2-1-0000000">RA                    -0.2           1.0000000</h2>
+
+<h2 id="scleroderma-0-2-0-3333333">Scleroderma           -0.2          -0.3333333</h2>
+
+<h2 id="sle-0-2-0-3333333">SLE                   -0.2          -0.3333333</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight r %}
+summary(fit &lt;- lm(y ~ Disease, data=data))
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="call-1">Call:</h2>
+
+<h2 id="lm-formula-y-disease-data-data-1">lm(formula = y ~ Disease, data = data)</h2>
+
+<h2 id="residuals-1">Residuals:</h2>
+
+<h2 id="min-1q-median-3q-max-1">Min       1Q   Median       3Q      Max</h2>
+
+<h2 id="0-18778-0-09120-0-01436-0-06365-0-19806">-0.18778 -0.09120  0.01436  0.06365  0.19806</h2>
+
+<h2 id="coefficients-1">Coefficients:</h2>
+
+<h2 id="estimate-std-error-t-value-pr-t-1">Estimate Std. Error t value Pr(&gt;|t|)</h2>
+
+<h2 id="intercept-0-49093-0-02405-20-410-8-72e-16">(Intercept)                 0.49093    0.02405  20.410 8.72e-16 ***</h2>
+
+<h2 id="diseasecontrol-vs-all-0-14812-0-06013-2-463-0-0221">DiseaseControl_vs_All       0.14812    0.06013   2.463   0.0221 *</h2>
+
+<h2 id="diseasera-vs-myos-scle-sle-0-01587-0-04658-0-341-0-7365">DiseaseRA_vs_Myos_Scle_SLE  0.01587    0.04658   0.341   0.7365</h2>
+
+<h2 id="toc_40">&mdash;</h2>
+
+<h2 id="signif-codes-0-0-001-0-01-0-05-0-1-1-1">Signif. codes:  0 &lsquo;*<strong>&rsquo; 0.001 &lsquo;</strong>&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1</h2>
+
+<h2 id="residual-standard-error-0-1203-on-22-degrees-of-freedom">Residual standard error: 0.1203 on 22 degrees of freedom</h2>
+
+<h2 id="multiple-r-squared-0-2194-adjusted-r-squared-0-1484">Multiple R-squared:  0.2194, Adjusted R-squared:  0.1484</h2>
+
+<h2 id="f-statistic-3-092-on-2-and-22-df-p-value-0-06557">F-statistic: 3.092 on 2 and 22 DF,  p-value: 0.06557</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>Here we check to make sure that the <code>lm</code> fit is giving the same result as the formulas derived above:</p>
+
+<p>{% highlight r %}
+#&rsquo; group level means
+mu.control &lt;- mean(data[which(data$Disease==&ldquo;Control&rdquo;),&ldquo;y&rdquo;])
+mu.myos &lt;- mean(data[which(data$Disease==&ldquo;Myositis&rdquo;),&ldquo;y&rdquo;])
+mu.ra &lt;- mean(data[which(data$Disease==&ldquo;RA&rdquo;),&ldquo;y&rdquo;])
+mu.scler &lt;- mean(data[which(data$Disease==&ldquo;Scleroderma&rdquo;),&ldquo;y&rdquo;])
+mu.sle &lt;- mean(data[which(data$Disease==&ldquo;SLE&rdquo;),&ldquo;y&rdquo;])</p>
+
+<p>#&rsquo; beta0
+mean(c(mu.control,mu.myos,mu.ra,mu.scler,mu.sle))
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="1-0-4909311">[1] 0.4909311</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight r %}
+#&rsquo; beta1
+mu.control - mean(c(mu.myos,mu.ra,mu.scler,mu.sle))
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="1-0-1481237">[1] 0.1481237</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight r %}
+#&rsquo; beta2
+(mu.ra - mean(c(mu.myos,mu.scler,mu.sle)))*(<sup>3</sup>&frasl;<sub>4</sub>)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="1-0-01587466">[1] 0.01587466</h2>
+
+<p>{% endhighlight %}</p>
+
+<h2 id="references">References</h2>
+
+<ul>
+<li><a href="http://www.unc.edu/courses/2006spring/ecol/145/001/docs/lectures/lecture26.htm">http://www.unc.edu/courses/2006spring/ecol/145/001/docs/lectures/lecture26.htm</a></li>
+<li><a href="http://www.ats.ucla.edu/stat/r/library/contrast_coding.htm#User">http://www.ats.ucla.edu/stat/r/library/contrast_coding.htm#User</a></li>
+</ul>
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

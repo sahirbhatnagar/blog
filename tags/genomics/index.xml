@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Genomics on Sahir&#39;s blog</title>
+    <link>https://sahirbhatnagar.github.io/blog/tags/genomics/</link>
+    <description>Recent content in Genomics on Sahir&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/genomics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Limma Moderated and Ordinary t-statistics</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/limma-moderated-and-ordinary-t-statistics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/limma-moderated-and-ordinary-t-statistics/</guid>
+      <description>&lt;p&gt;When analyzing large amounts of genetic and genomic data, the first line of analysis is usually some sort of univariate test. That is, conduct a statistical test for each SNP or CpG site or Gene and then correct for multiple testing. The &lt;a href=&#34;https://bioconductor.org/packages/release/bioc/html/limma.html&#34;&gt;limma&lt;/a&gt; package on Bioconductor is a popular method for computing &lt;em&gt;moderated&lt;/em&gt; t-statistics using a combination of the &lt;code&gt;limma::lmFit&lt;/code&gt; and &lt;code&gt;limma::eBayes&lt;/code&gt; functions. In this post, I show how to calculate the &lt;em&gt;ordinary&lt;/em&gt; t-statistics from &lt;code&gt;limma&lt;/code&gt; output.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

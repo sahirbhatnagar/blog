@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<title>Bayesian Non-Linear Multilevel Models - Sahir&#39;s blog</title>
+<meta property="og:title" content="Bayesian Non-Linear Multilevel Models - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">7 min read</span>
+    
+
+    <h1 class="article-title">Bayesian Non-Linear Multilevel Models</h1>
+
+    
+    <span class="article-date">0001-01-01</span>
+    
+
+    <div class="article-content">
+      <p>Consider the following repeated measures model:</p>
+
+<p>$$ y_{ij} =\beta_0 + \beta<em>1 a</em>{ij}  + \beta<em>1^2 b</em>{ij} + \mu<em>i + \varepsilon</em>{ij}$$</p>
+
+<p>for $$i = 1, \ldots, n$$, $$j = 1, 2$$ where $$n$$ is the sample size, $$j$$ represents the index of the repeated measure, i.e., each subject has two measurements, $$\mu<em>i$$ is a normally distributed random effect, $$\varepsilon</em>{ij}$$ is a normally distributed error term, $$y<em>{ij}$$ is the continuous response, and $$a</em>{ij}, b_{ij}$$ are covariates. This is a multilevel model because of the nested structure of the data, and also non-linear in the $$\beta_1$$ parameter. In this post I simulate some data under this model, and try to leverage Bayesian computation techniques to estimate the parameters using the <a href="https://github.com/paul-buerkner/brms">brms</a> which is an interface to fit Bayesian generalized (non-)linear multilevel models using <a href="http://mc-stan.org/">Stan</a>.</p>
+
+<p><img src="http://i.imgur.com/r0IXN1w.jpg" alt="" /></p>
+
+<h2 id="load-packages">Load Packages</h2>
+
+<p>We first load the required packages:</p>
+
+<p>{% highlight r %}
+if (!requireNamespace(&ldquo;pacman&rdquo;, quietly = TRUE))
+  install.packages(&ldquo;pacman&rdquo;)
+pacman::p_load(&lsquo;brms&rsquo;)
+{% endhighlight %}</p>
+
+<h2 id="simulate-data-n-500-two-timepoints">Simulate Data (n = 500, two timepoints)</h2>
+
+<p>Next I simulate some multilevel data:</p>
+
+<p>{% highlight r %}
+rm(list=ls())</p>
+
+<h1 id="number-of-subjects">number of subjects</h1>
+
+<p>n = 500</p>
+
+<h1 id="number-of-time-points">number of time points</h1>
+
+<p>t = 2</p>
+
+<h1 id="snr">SNR</h1>
+
+<p>SNR = 2</p>
+
+<h1 id="true-coefficient-value">true coefficient value</h1>
+
+<p>b &lt;- 3</p>
+
+<h1 id="simulate-independent-covariates">simulate independent covariates</h1>
+
+<p>A &lt;- rgamma(n*t, shape = 3)
+B &lt;- rnorm(n*t)</p>
+
+<h1 id="random-effect-same-for-time-1-and-time-2">random effect: same for time 1 and time 2</h1>
+
+<p>random_eff &lt;- rpois(n, lambda = 10)</p>
+
+<p>y.star &lt;- b * A + b^2 * B + rep(random_eff,2)
+error &lt;- rnorm(n*t)
+k &lt;- sqrt(stats::var(y.star)/(SNR*stats::var(error)))</p>
+
+<h1 id="response">response</h1>
+
+<p>yij &lt;- y.star + k*error</p>
+
+<p>dat1 &lt;- data.frame(yij,
+                   aij = A,
+                   bij = B,
+                   ID = rep(1:n, times = 2))
+{% endhighlight %}</p>
+
+<h2 id="fit-non-linear-multilevel-bayesian-model">Fit Non-linear Multilevel Bayesian Model</h2>
+
+<p>We first need to specify priors for $$\beta_1$$ and the random effect $$\mu_i$$. I have found the easiest way to do this, is to first get information for which priors may be specified using the <code>brms::get_prior</code> function:</p>
+
+<p>{% highlight r %}
+(prior &lt;- brms::get_prior(
+  brms::bf(yij ~ beta * aij + (beta^2) * bij + mui,
+           mui ~ 1 + (1|ID),
+           beta ~ 1,
+           nl = TRUE),
+  data = dat1,
+  family = gaussian()))
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="prior-class-coef-group-nlpar-bound">prior class      coef group nlpar bound</h2>
+
+<h2 id="1-student-t-3-0-13-sigma">1 student_t(3, 0, 13) sigma</h2>
+
+<h2 id="2-b-beta">2                         b                  beta</h2>
+
+<h2 id="3-b-intercept-beta">3                         b Intercept        beta</h2>
+
+<h2 id="4-b-mui">4                         b                   mui</h2>
+
+<h2 id="5-b-intercept-mui">5                         b Intercept         mui</h2>
+
+<h2 id="6-student-t-3-0-13-sd-mui">6 student_t(3, 0, 13)    sd                   mui</h2>
+
+<h2 id="7-sd-id-mui">7                        sd              ID   mui</h2>
+
+<h2 id="8-sd-intercept-id-mui">8                        sd Intercept    ID   mui</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>The <code>nl = TRUE</code> argument indicates that this should be treated as a non-linear model. We need to specify priors for the population level effects as well as the standard deviation of the random effect (what is referred to as group-level effects in the output):</p>
+
+<p>{% highlight r %}
+prior$prior[c(2,4)] &lt;- &ldquo;normal(0,10)&rdquo;
+prior$prior[8] &lt;- &ldquo;student_t(3, 0, 11)&rdquo;
+prior
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="prior-class-coef-group-nlpar-bound-1">prior class      coef group nlpar bound</h2>
+
+<h2 id="1-student-t-3-0-13-sigma-1">1 student_t(3, 0, 13) sigma</h2>
+
+<h2 id="2-normal-0-10-b-beta">2        normal(0,10)     b                  beta</h2>
+
+<h2 id="3-b-intercept-beta-1">3                         b Intercept        beta</h2>
+
+<h2 id="4-normal-0-10-b-mui">4        normal(0,10)     b                   mui</h2>
+
+<h2 id="5-b-intercept-mui-1">5                         b Intercept         mui</h2>
+
+<h2 id="6-student-t-3-0-13-sd-mui-1">6 student_t(3, 0, 13)    sd                   mui</h2>
+
+<h2 id="7-sd-id-mui-1">7                        sd              ID   mui</h2>
+
+<h2 id="8-student-t-3-0-11-sd-intercept-id-mui">8 student_t(3, 0, 11)    sd Intercept    ID   mui</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>We can check the corresponding STAN code to verify that the prior information has been updated accordingly using the <code>brms::make_stancode</code> function:</p>
+
+<p>{% highlight r %}
+brms::make_stancode(
+  bf(yij ~ beta * aij + (beta^2) * bij + mui,
+     mui ~ 1 +  (1|ID),
+     beta ~ 1,
+     nl = TRUE),
+  data = dat1,
+  family = gaussian(),
+  prior = prior)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="generated-with-brms-1-5-0">// generated with brms 1.5.0</h2>
+
+<h2 id="functions">functions {</h2>
+
+<h2 id="toc_30">}</h2>
+
+<h2 id="data">data {</h2>
+
+<h2 id="int-lower-1-n-total-number-of-observations">int<lower=1> N;  // total number of observations</h2>
+
+<h2 id="vector-n-y-response-variable">vector[N] Y;  // response variable</h2>
+
+<h2 id="int-lower-1-k-mui-number-of-population-level-effects">int<lower=1> K_mui;  // number of population-level effects</h2>
+
+<h2 id="matrix-n-k-mui-x-mui-population-level-design-matrix">matrix[N, K_mui] X_mui;  // population-level design matrix</h2>
+
+<h2 id="int-lower-1-k-beta-number-of-population-level-effects">int<lower=1> K_beta;  // number of population-level effects</h2>
+
+<h2 id="matrix-n-k-beta-x-beta-population-level-design-matrix">matrix[N, K_beta] X_beta;  // population-level design matrix</h2>
+
+<h2 id="int-lower-1-kc-number-of-covariates">int<lower=1> KC;  // number of covariates</h2>
+
+<h2 id="matrix-n-kc-c-covariate-matrix">matrix[N, KC] C;  // covariate matrix</h2>
+
+<h2 id="data-for-group-level-effects-of-id-1">// data for group-level effects of ID 1</h2>
+
+<h2 id="int-lower-1-j-1-n">int<lower=1> J_1[N];</h2>
+
+<h2 id="int-lower-1-n-1">int<lower=1> N_1;</h2>
+
+<h2 id="int-lower-1-m-1">int<lower=1> M_1;</h2>
+
+<h2 id="vector-n-z-1-mui-1">vector[N] Z_1_mui_1;</h2>
+
+<h2 id="int-prior-only-should-the-likelihood-be-ignored">int prior_only;  // should the likelihood be ignored?</h2>
+
+<h2 id="toc_46">}</h2>
+
+<h2 id="transformed-data">transformed data {</h2>
+
+<h2 id="toc_48">}</h2>
+
+<h2 id="parameters">parameters {</h2>
+
+<h2 id="vector-k-mui-b-mui-population-level-effects">vector[K_mui] b_mui;  // population-level effects</h2>
+
+<h2 id="vector-k-beta-b-beta-population-level-effects">vector[K_beta] b_beta;  // population-level effects</h2>
+
+<h2 id="real-lower-0-sigma-residual-sd">real<lower=0> sigma;  // residual SD</h2>
+
+<h2 id="vector-lower-0-m-1-sd-1-group-level-standard-deviations">vector<lower=0>[M_1] sd_1;  // group-level standard deviations</h2>
+
+<h2 id="vector-n-1-z-1-m-1-unscaled-group-level-effects">vector[N_1] z_1[M_1];  // unscaled group-level effects</h2>
+
+<h2 id="toc_55">}</h2>
+
+<h2 id="transformed-parameters">transformed parameters {</h2>
+
+<h2 id="group-level-effects">// group-level effects</h2>
+
+<h2 id="vector-n-1-r-1-mui-1">vector[N_1] r_1_mui_1;</h2>
+
+<h2 id="r-1-mui-1-sd-1-1-z-1-1">r_1_mui_1 = sd_1[1] * (z_1[1]);</h2>
+
+<h2 id="toc_60">}</h2>
+
+<h2 id="model">model {</h2>
+
+<h2 id="vector-n-mu-mui">vector[N] mu_mui;</h2>
+
+<h2 id="vector-n-mu-beta">vector[N] mu_beta;</h2>
+
+<h2 id="vector-n-mu">vector[N] mu;</h2>
+
+<h2 id="mu-mui-x-mui-b-mui">mu_mui = X_mui * b_mui;</h2>
+
+<h2 id="mu-beta-x-beta-b-beta">mu_beta = X_beta * b_beta;</h2>
+
+<h2 id="for-n-in-1-n">for (n in 1:N) {</h2>
+
+<h2 id="mu-mui-n-mu-mui-n-r-1-mui-1-j-1-n-z-1-mui-1-n">mu_mui[n] = mu_mui[n] + (r_1_mui_1[J_1[n]]) * Z_1_mui_1[n];</h2>
+
+<h2 id="compute-non-linear-predictor">// compute non-linear predictor</h2>
+
+<h2 id="mu-n-mu-beta-n-c-n-1-mu-beta-n-2-c-n-2-mu-mui-n">mu[n] = mu_beta[n] * C[n, 1] + (mu_beta[n] ^ 2) * C[n, 2] + mu_mui[n];</h2>
+
+<h2 id="toc_71">}</h2>
+
+<h2 id="prior-specifications">// prior specifications</h2>
+
+<h2 id="b-mui-normal-0-10">b_mui ~ normal(0,10);</h2>
+
+<h2 id="b-beta-normal-0-10">b_beta ~ normal(0,10);</h2>
+
+<h2 id="sigma-student-t-3-0-13">sigma ~ student_t(3, 0, 13);</h2>
+
+<h2 id="sd-1-student-t-3-0-11">sd_1 ~ student_t(3, 0, 11);</h2>
+
+<h2 id="z-1-1-normal-0-1">z_1[1] ~ normal(0, 1);</h2>
+
+<h2 id="likelihood-contribution">// likelihood contribution</h2>
+
+<h2 id="if-prior-only">if (!prior_only) {</h2>
+
+<h2 id="y-normal-mu-sigma">Y ~ normal(mu, sigma);</h2>
+
+<h2 id="toc_81">}</h2>
+
+<h2 id="toc_82">}</h2>
+
+<h2 id="generated-quantities">generated quantities {</h2>
+
+<h2 id="toc_84">}</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>Next we fit the model with 6 Markov chains:</p>
+
+<p>{% highlight r %}</p>
+
+<h1 id="refresh-0-to-surpress-output">refresh = 0 to surpress output</h1>
+
+<p>fit1 &lt;- brms::brm(
+  bf(yij ~ beta * aij + (beta^2) * bij + mui,
+     mui ~ 1 + (1|ID),
+     beta ~ 1,
+     nl = TRUE),
+  data = dat1,
+  family = gaussian(),
+  prior = prior,
+  control = list(adapt_delta = 0.9),
+  iter = 10000,
+  thin = 2,
+  chains = 6,
+  cores = 6,
+  refresh = 0)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="compiling-the-c-model">Compiling the C++ model</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="start-sampling">Start sampling</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="warning-there-were-14-divergent-transitions-after-warmup-increasing-adapt-delta-above-0-9-may-help-see">Warning: There were 14 divergent transitions after warmup. Increasing adapt_delta above 0.9 may help. See</h2>
+
+<h2 id="http-mc-stan-org-misc-warnings-html-divergent-transitions-after-warmup"><a href="http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup">http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup</a></h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="warning-examine-the-pairs-plot-to-diagnose-sampling-problems">Warning: Examine the pairs() plot to diagnose sampling problems</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>We can check the summary to see if the model was able to accurately estimate $$\beta_1$$:</p>
+
+<p>{% highlight r %}
+(res &lt;- summary(fit1))
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="family-gaussian-identity">Family: gaussian (identity)</h2>
+
+<h2 id="formula-yij-beta-aij-beta-2-bij-mui">Formula: yij ~ beta * aij + (beta^2) * bij + mui</h2>
+
+<h2 id="mui-1-1-id">mui ~ 1 + (1 | ID)</h2>
+
+<h2 id="beta-1">beta ~ 1</h2>
+
+<h2 id="data-dat1-number-of-observations-1000">Data: dat1 (Number of observations: 1000)</h2>
+
+<h2 id="samples-6-chains-each-with-iter-10000-warmup-5000-thin-2">Samples: 6 chains, each with iter = 10000; warmup = 5000; thin = 2;</h2>
+
+<h2 id="total-post-warmup-samples-15000">total post-warmup samples = 15000</h2>
+
+<h2 id="waic-not-computed">WAIC: Not computed</h2>
+
+<h2 id="group-level-effects-1">Group-Level Effects:</h2>
+
+<h2 id="id-number-of-levels-500">~ID (Number of levels: 500)</h2>
+
+<h2 id="estimate-est-error-l-95-ci-u-95-ci-eff-sample">Estimate Est.Error l-95% CI u-95% CI Eff.Sample</h2>
+
+<h2 id="sd-mui-intercept-2-13-0-79-0-28-3-42-2384">sd(mui_Intercept)     2.13      0.79     0.28     3.42       2384</h2>
+
+<h2 id="rhat">Rhat</h2>
+
+<h2 id="sd-mui-intercept-1">sd(mui_Intercept)    1</h2>
+
+<h2 id="population-level-effects">Population-Level Effects:</h2>
+
+<h2 id="estimate-est-error-l-95-ci-u-95-ci-eff-sample-rhat">Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat</h2>
+
+<h2 id="mui-intercept-10-28-0-30-9-69-10-87-13058-1">mui_Intercept     10.28      0.30     9.69    10.87      13058    1</h2>
+
+<h2 id="beta-intercept-2-97-0-04-2-89-3-06-12924-1">beta_Intercept     2.97      0.04     2.89     3.06      12924    1</h2>
+
+<h2 id="family-specific-parameters">Family Specific Parameters:</h2>
+
+<h2 id="estimate-est-error-l-95-ci-u-95-ci-eff-sample-rhat-1">Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat</h2>
+
+<h2 id="sigma-8-05-0-25-7-56-8-55-4058-1">sigma     8.05      0.25     7.56     8.55       4058    1</h2>
+
+<h2 id="samples-were-drawn-using-sampling-nuts-for-each-parameter-eff-sample">Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample</h2>
+
+<h2 id="is-a-crude-measure-of-effective-sample-size-and-rhat-is-the-potential">is a crude measure of effective sample size, and Rhat is the potential</h2>
+
+<h2 id="scale-reduction-factor-on-split-chains-at-convergence-rhat-1">scale reduction factor on split chains (at convergence, Rhat = 1).</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>The estimate of interest in the output above is <code>beta_Intercept</code> under <code>Population-Level Effects</code>. This corresponds to the estimate of $$\beta_1$$ in the equation above. We see that the estimate is close to the true value of 3. We also see that the estimate of the standard deviation of the random effect is 2.13 [95% CI: 0.28, 3.42], indicating a strong subject specific effect (which is what we would expect since we generated the data this way).</p>
+
+<p>We can also plot some model diagnostics to ensure proper mixing of the Markov chains:</p>
+
+<p>{% highlight r %}
+plot(fit1)
+{% endhighlight %}</p>
+
+<p><img src="/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9" /></p>
+
+<p>{% highlight r %}
+plot(marginal_effects(fit1), points = TRUE, ask = FALSE)
+{% endhighlight %}</p>
+
+<p><img src="/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-2.png" alt="plot of chunk unnamed-chunk-9" /><img src="/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-3.png" alt="plot of chunk unnamed-chunk-9" /><img src="/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-4.png" alt="plot of chunk unnamed-chunk-9" /></p>
+
+<h2 id="session-info">Session Info</h2>
+
+<p>{% highlight text %}</p>
+
+<h2 id="r-version-3-4-0-2017-04-21">R version 3.4.0 (2017-04-21)</h2>
+
+<h2 id="platform-x86-64-pc-linux-gnu-64-bit">Platform: x86_64-pc-linux-gnu (64-bit)</h2>
+
+<h2 id="running-under-ubuntu-16-04-2-lts">Running under: Ubuntu 16.04.2 LTS</h2>
+
+<h2 id="matrix-products-default">Matrix products: default</h2>
+
+<h2 id="blas-usr-lib-openblas-base-libblas-so-3">BLAS: /usr/lib/openblas-base/libblas.so.3</h2>
+
+<h2 id="lapack-usr-lib-libopenblasp-r0-2-18-so">LAPACK: /usr/lib/libopenblasp-r0.2.18.so</h2>
+
+<h2 id="attached-base-packages">attached base packages:</h2>
+
+<h2 id="1-methods-stats-graphics-grdevices-utils-datasets">[1] methods   stats     graphics  grDevices utils     datasets</h2>
+
+<h2 id="7-base">[7] base</h2>
+
+<h2 id="other-attached-packages">other attached packages:</h2>
+
+<h2 id="1-brms-1-5-0-ggplot2-2-2-1-rcpp-0-12-11">[1] brms_1.5.0    ggplot2_2.2.1 Rcpp_0.12.11</h2>
+
+<h2 id="loaded-via-a-namespace-and-not-attached">loaded via a namespace (and not attached):</h2>
+
+<h2 id="1-highr-0-6-compiler-3-4-0-plyr-1-8-4">[1] highr_0.6            compiler_3.4.0       plyr_1.8.4</h2>
+
+<h2 id="4-tools-3-4-0-digest-0-6-12-bayesplot-1-1-0">[4] tools_3.4.0          digest_0.6.12        bayesplot_1.1.0</h2>
+
+<h2 id="7-evd-2-3-2-statmod-1-4-27-evaluate-0-10">[7] evd_2.3-2            statmod_1.4.27       evaluate_0.10</h2>
+
+<h2 id="10-tibble-1-3-0-gtable-0-2-0-nlme-3-1-131">[10] tibble_1.3.0         gtable_0.2.0         nlme_3.1-131</h2>
+
+<h2 id="13-lattice-0-20-35-dbi-0-5-1-parallel-3-4-0">[13] lattice_0.20-35      DBI_0.5-1            parallel_3.4.0</h2>
+
+<h2 id="16-loo-1-0-0-gridextra-2-2-1-coda-0-19-1">[16] loo_1.0.0            gridExtra_2.2.1      coda_0.19-1</h2>
+
+<h2 id="19-stringr-1-2-0-dplyr-0-5-0-knitr-1-16">[19] stringr_1.2.0        dplyr_0.5.0          knitr_1.16</h2>
+
+<h2 id="22-stats4-3-4-0-grid-3-4-0-inline-0-3-14">[22] stats4_3.4.0         grid_3.4.0           inline_0.3.14</h2>
+
+<h2 id="25-r6-2-2-0-rstan-2-14-1-pacman-0-4-1">[25] R6_2.2.0             rstan_2.14.1         pacman_0.4.1</h2>
+
+<h2 id="28-reshape2-1-4-2-magrittr-1-5-scales-0-4-1">[28] reshape2_1.4.2       magrittr_1.5         scales_0.4.1</h2>
+
+<h2 id="31-codetools-0-2-15-stanheaders-2-14-0-1-matrixstats-0-51-0">[31] codetools_0.2-15     StanHeaders_2.14.0-1 matrixStats_0.51.0</h2>
+
+<h2 id="34-rstantools-1-1-0-abind-1-4-5-assertthat-0-1">[34] rstantools_1.1.0     abind_1.4-5          assertthat_0.1</h2>
+
+<h2 id="37-colorspace-1-3-2-labeling-0-3-stringi-1-1-5">[37] colorspace_1.3-2     labeling_0.3         stringi_1.1.5</h2>
+
+<h2 id="40-lazyeval-0-2-0-munsell-0-4-3">[40] lazyeval_0.2.0       munsell_0.4.3</h2>
+
+<p>{% endhighlight %}</p>
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

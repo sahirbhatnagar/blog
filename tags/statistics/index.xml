@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Statistics on Sahir&#39;s blog</title>
+    <link>https://sahirbhatnagar.github.io/blog/tags/statistics/</link>
+    <description>Recent content in Statistics on Sahir&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/statistics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Limma Moderated and Ordinary t-statistics</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/limma-moderated-and-ordinary-t-statistics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/limma-moderated-and-ordinary-t-statistics/</guid>
+      <description>&lt;p&gt;When analyzing large amounts of genetic and genomic data, the first line of analysis is usually some sort of univariate test. That is, conduct a statistical test for each SNP or CpG site or Gene and then correct for multiple testing. The &lt;a href=&#34;https://bioconductor.org/packages/release/bioc/html/limma.html&#34;&gt;limma&lt;/a&gt; package on Bioconductor is a popular method for computing &lt;em&gt;moderated&lt;/em&gt; t-statistics using a combination of the &lt;code&gt;limma::lmFit&lt;/code&gt; and &lt;code&gt;limma::eBayes&lt;/code&gt; functions. In this post, I show how to calculate the &lt;em&gt;ordinary&lt;/em&gt; t-statistics from &lt;code&gt;limma&lt;/code&gt; output.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Statistical Power in t tests with Unequal Group Sizes</title>
+      <link>https://sahirbhatnagar.github.io/blog/1/01/01/statistical-power-in-t-tests-with-unequal-group-sizes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
+      <description>&lt;p&gt;When performing &lt;a href=&#34;https://en.wikipedia.org/wiki/Student%27s_t-test&#34;&gt;Student&amp;rsquo;s t-test&lt;/a&gt; to compare difference in means between two group, it is a useful exercise to determine the effect of unequal sample sizes in the comparison groups on power. Large imbalances generally will not have adequate statistical power to detect even large effect sizes associated with a factor, leading to a high Type II error rate as shown in the figure below:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

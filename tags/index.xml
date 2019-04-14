@@ -12,11 +12,110 @@
     
     
     <item>
+      <title>Bayesian</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/bayesian/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/bayesian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Facet_wrap</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gene Expression</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Genomics</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/genomics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/genomics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ggplot2</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Heatmap</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/heatmap/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/heatmap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Labels</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/labels/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/labels/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Limma</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/limma/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/limma/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multilevel</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/multilevel/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/multilevel/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Plot</title>
       <link>https://sahirbhatnagar.github.io/blog/tags/plot/</link>
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/tags/plot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Power</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/power/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/power/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/r/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/r/</guid>
       <description></description>
     </item>
     
@@ -35,6 +134,33 @@
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/tags/regression/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sample Size</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/sample-size/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/sample-size/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Statistics</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/statistics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/statistics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>T Test</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/t-test/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/t-test/</guid>
       <description></description>
     </item>
     

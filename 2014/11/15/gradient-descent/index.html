@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<title>Gradient Descent - Sahir&#39;s blog</title>
+<meta property="og:title" content="Gradient Descent - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">Gradient Descent</h1>
+
+    
+    <span class="article-date">2014-11-15</span>
+    
+
+    <div class="article-content">
+      <p>I am taking the Machine Learning course on <a href="https://class.coursera.org/ml-007/lecture">Coursera</a> being taught by Andrew Ng. It is turning out to be useful so far, and he has presented the material clearly. It&rsquo;s a nice introduction to the Machine Learning/Computer Science language, since I come from a statistics background.</p>
+
+<p>I learned about gradient descent today for simple linear regression. The following is my code in R and I compare it to the <em>lm</em> function in base <em>R</em>.</p>
+
+<p>I am using the <strong>Prostate</strong> dataset from the <em>lasso2</em> package. The model I am fitting is:</p>
+
+<p>$$ lpsa = \beta_0 + \beta_1 \times lcavol  $$</p>
+
+<p>{% highlight r %}
+#prostate cancer data set
+library(lasso2)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="r-package-to-solve-regression-problems-while-imposing">R Package to solve regression problems while imposing</h2>
+
+<h2 id="an-l1-constraint-on-the-parameters-based-on-s-plus-release-2-1">an L1 constraint on the parameters. Based on S-plus Release 2.1</h2>
+
+<h2 id="copyright-c-1998-1999">Copyright &copy; 1998, 1999</h2>
+
+<h2 id="justin-lokhorst-jlokhors-stats-adelaide-edu-au">Justin Lokhorst   <a href="mailto:jlokhors@stats.adelaide.edu.au">jlokhors@stats.adelaide.edu.au</a></h2>
+
+<h2 id="berwin-a-turlach-bturlach-stats-adelaide-edu-au">Berwin A. Turlach <a href="mailto:bturlach@stats.adelaide.edu.au">bturlach@stats.adelaide.edu.au</a></h2>
+
+<h2 id="bill-venables-wvenable-stats-adelaide-edu-au">Bill Venables     <a href="mailto:wvenable@stats.adelaide.edu.au">wvenable@stats.adelaide.edu.au</a></h2>
+
+<h2 id="copyright-c-2002">Copyright &copy; 2002</h2>
+
+<h2 id="martin-maechler-maechler-stat-math-ethz-ch">Martin Maechler <a href="mailto:maechler@stat.math.ethz.ch">maechler@stat.math.ethz.ch</a></h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight r %}
+data(Prostate)</p>
+
+<h1 id="hypothesis">hypothesis</h1>
+
+<p>hypothesis &lt;- function(x, theta0,theta1){
+    h &lt;- theta0 + theta1*x
+    return(h)
+}</p>
+
+<h1 id="jacobian">Jacobian</h1>
+
+<p>deriv &lt;- function(x,y,theta0,theta1){
+    dt0 &lt;- (length(x))^(-1)* sum((hypothesis(x,theta0,theta1)-y))
+    dt1 &lt;- (length(x))^(-1)* t(x) %*% (hypothesis(x,theta0,theta1)-y)
+    return(c(dt0,dt1))
+}</p>
+
+<p>theta &lt;- c(0,0)
+alpha &lt;- 0.5
+X &lt;- Prostate$lcavol
+Y &lt;- Prostate$lpsa
+i=1
+#
+theta.star &lt;- deriv(Prostate$lcavol,Prostate$lpsa,theta[1],theta[2])</p>
+
+<h1 id="set-convergence-threshold">set convergence threshold</h1>
+
+<p>threshold &lt;- 1e-7</p>
+
+<h1 id="logical-to-check-if-threshold-has-been-achieved">logical to check if threshold has been achieved</h1>
+
+<p>continue=TRUE</p>
+
+<p>while (continue){
+    theta[1] &lt;- theta.star[1] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[1]
+    theta[2] &lt;- theta.star[2] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[2]
+    continue &lt;- (abs((theta.star-theta)[1])&gt;threshold &amp; abs((theta.star-theta)[2])&gt;threshold)
+    theta.star[1] &lt;- theta[1]
+    theta.star[2] &lt;- theta[2]
+    i=i+1
+}</p>
+
+<h1 id="number-of-iterations">number of iterations</h1>
+
+<p>i
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="1-214">[1] 214</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight r %}</p>
+
+<h1 id="beta0-and-beta1">beta0 and beta1</h1>
+
+<p>theta.star
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="1-1-5072975-0-7193205">[1] 1.5072975 0.7193205</h2>
+
+<p>{% endhighlight %}</p>
+
+<p>{% highlight r %}</p>
+
+<h1 id="compare-to-lm">compare to lm</h1>
+
+<p>fit &lt;- lm(lpsa~lcavol, data=Prostate)
+summary(fit)
+{% endhighlight %}</p>
+
+<p>{% highlight text %}</p>
+
+<h2 id="call">Call:</h2>
+
+<h2 id="lm-formula-lpsa-lcavol-data-prostate">lm(formula = lpsa ~ lcavol, data = Prostate)</h2>
+
+<h2 id="residuals">Residuals:</h2>
+
+<h2 id="min-1q-median-3q-max">Min       1Q   Median       3Q      Max</h2>
+
+<h2 id="1-67624-0-41648-0-09859-0-50709-1-89672">-1.67624 -0.41648  0.09859  0.50709  1.89672</h2>
+
+<h2 id="coefficients">Coefficients:</h2>
+
+<h2 id="estimate-std-error-t-value-pr-t">Estimate Std. Error t value Pr(&gt;|t|)</h2>
+
+<h2 id="intercept-1-50730-0-12194-12-36-2e-16">(Intercept)  1.50730    0.12194   12.36   &lt;2e-16 ***</h2>
+
+<h2 id="lcavol-0-71932-0-06819-10-55-2e-16">lcavol       0.71932    0.06819   10.55   &lt;2e-16 ***</h2>
+
+<h2 id="toc_26">&mdash;</h2>
+
+<h2 id="signif-codes-0-0-001-0-01-0-05-0-1-1">Signif. codes:  0 &lsquo;*<strong>&rsquo; 0.001 &lsquo;</strong>&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1</h2>
+
+<h2 id="residual-standard-error-0-7875-on-95-degrees-of-freedom">Residual standard error: 0.7875 on 95 degrees of freedom</h2>
+
+<h2 id="multiple-r-squared-0-5394-adjusted-r-squared-0-5346">Multiple R-squared:  0.5394, Adjusted R-squared:  0.5346</h2>
+
+<h2 id="f-statistic-111-3-on-1-and-95-df-p-value-2-2e-16">F-statistic: 111.3 on 1 and 95 DF,  p-value: &lt; 2.2e-16</h2>
+
+<p>{% endhighlight %}</p>
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

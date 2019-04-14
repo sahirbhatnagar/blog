@@ -8,6 +8,31 @@
   </url>
   
   <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2018/08/23/getting-travis-to-auto-push-to-github/</loc>
+    <lastmod>2018-08-23T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2018/04/03/documenting-r-packages/</loc>
+    <lastmod>2018-04-03T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2018/04/03/i-am-color-blind/</loc>
+    <lastmod>2018-04-03T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2017/10/12/mixed-models-with-kinship-in-r/</loc>
+    <lastmod>2017-10-12T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2017/08/11/polygenic-risks-scores-with-data.table-in-r/</loc>
+    <lastmod>2017-08-11T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://sahirbhatnagar.github.io/blog/2016/12/30/a-plain-markdown-post/</loc>
     <lastmod>2016-12-30T21:49:57-07:00</lastmod>
   </url>
@@ -23,12 +48,88 @@
   </url>
   
   <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2015/03/04/contrasts-in-r/</loc>
+    <lastmod>2015-03-04T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://sahirbhatnagar.github.io/blog/2015/01/01/lorem-ipsum/</loc>
     <lastmod>2015-01-01T13:09:13-06:00</lastmod>
   </url>
   
   <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2014/11/15/gradient-descent/</loc>
+    <lastmod>2014-11-15T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2014/07/04/cdpath-in-bash/</loc>
+    <lastmod>2014-07-04T11:03:16-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/bayesian/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/1/01/01/bayesian-non-linear-multilevel-models/</loc>
+  </url>
+  
+  <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/genomics/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/heatmap/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/1/01/01/heatmaps-in-r/</loc>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/labels/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/limma/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/1/01/01/limma-moderated-and-ordinary-t-statistics/</loc>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/1/01/01/math-expressions-with-facets-in-ggplot2/</loc>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/multilevel/</loc>
     <priority>0</priority>
   </url>
   
@@ -41,6 +142,16 @@
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/post/</loc>
     <lastmod>2019-04-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/power/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/r/</loc>
     <priority>0</priority>
   </url>
   
@@ -65,6 +176,25 @@
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/</loc>
     <lastmod>2019-04-12T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/sample-size/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/1/01/01/statistical-power-in-t-tests-with-unequal-group-sizes/</loc>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/statistics/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/t-test/</loc>
     <priority>0</priority>
   </url>
   
