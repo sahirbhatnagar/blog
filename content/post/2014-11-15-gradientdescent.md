@@ -13,15 +13,13 @@ I am using the **Prostate** dataset from the *lasso2* package. The model I am fi
 $$ lpsa = \beta_0 + \beta_1 \times lcavol  $$
 
 
-{% highlight r %}
-#prostate cancer data set
+<pre class="r"><code>#prostate cancer data set
 library(lasso2)
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
-## R Package to solve regression problems while imposing
+<pre class="r"><code>## R Package to solve regression problems while imposing
 ## 	 an L1 constraint on the parameters. Based on S-plus Release 2.1
 ## Copyright (C) 1998, 1999
 ## Justin Lokhorst   <jlokhors@stats.adelaide.edu.au>
@@ -30,12 +28,11 @@ library(lasso2)
 ## 
 ## Copyright (C) 2002
 ## Martin Maechler <maechler@stat.math.ethz.ch>
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight r %}
-data(Prostate)
+<pre class="r"><code>data(Prostate)
 
 # hypothesis
 hypothesis <- function(x, theta0,theta1){
@@ -55,7 +52,6 @@ alpha <- 0.5
 X <- Prostate$lcavol
 Y <- Prostate$lpsa
 i=1
-#
 theta.star <- deriv(Prostate$lcavol,Prostate$lpsa,theta[1],theta[2])
 # set convergence threshold
 threshold <- 1e-7
@@ -73,39 +69,34 @@ while (continue){
 
 # number of iterations
 i
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
-## [1] 214
-{% endhighlight %}
+<pre class="r"><code>## [1] 214
+</code></pre>
 
 
 
-{% highlight r %}
-# beta0 and beta1
+<pre class="r"><code># beta0 and beta1
 theta.star
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
-## [1] 1.5072975 0.7193205
-{% endhighlight %}
+<pre class="r"><code>## [1] 1.5072975 0.7193205
+</code></pre>
 
 
 
-{% highlight r %}
-# compare to lm
+<pre class="r"><code># compare to lm
 fit <- lm(lpsa~lcavol, data=Prostate)
 summary(fit)
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
-## 
+<pre class="r"><code>## 
 ## Call:
 ## lm(formula = lpsa ~ lcavol, data = Prostate)
 ## 
@@ -123,4 +114,4 @@ summary(fit)
 ## Residual standard error: 0.7875 on 95 degrees of freedom
 ## Multiple R-squared:  0.5394,	Adjusted R-squared:  0.5346 
 ## F-statistic: 111.3 on 1 and 95 DF,  p-value: < 2.2e-16
-{% endhighlight %}
+</code></pre>

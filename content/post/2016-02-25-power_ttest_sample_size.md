@@ -2,6 +2,7 @@
 title: "Statistical Power in t tests with Unequal Group Sizes"
 author: "sahir"
 date: "February 25, 2016"
+date: 2016-02-25 15:09:00
 output: html_document
 layout: post
 tags: [R, ggplot2, statistics, power, sample size, t test]
@@ -30,7 +31,7 @@ To jusity this reasoning I performed a power analysis for different group sizes.
 5. n1 = 574, n2 = 860: n1 represents 40% of the entire sample size of 1434
 6. n1 = 717, n2 = 717: equal size groups (this is optimal because it leads to the highest power for a given effect size)
 
-In the figure above we plotted the power curves for the $t$-test, as a function of the effect size, assuming a Type I error rate of 5%. 
+In the figure above we plotted the power curves for the `$t$`-test, as a function of the effect size, assuming a Type I error rate of 5%. 
 
 
 ## Code

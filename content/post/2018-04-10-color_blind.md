@@ -14,6 +14,5 @@ one of the audience members said they had no clue what I was referring to. It tu
 Here is a colorblind friendly pallette courtesy of [Cookbook for R](http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette)
 
 
-{% highlight r %}
-cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-{% endhighlight %}
+<pre class="r"><code>cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+</code></pre>

@@ -7,7 +7,7 @@ date: 2015-03-04 15:09:00
 In this post I discuss how to create custom contrasts for factor variables in `R`. First lets create some simulated data. Create the data, and factor Disease status:
 
 
-{% highlight r %}
+<pre class="r"><code>
 Disease <- c(rep("RA", 5), rep("SLE", 5), rep("Scleroderma", 5), 
              rep("Myositis", 5), rep("Control", 5))
 set.seed(1234)
@@ -16,17 +16,17 @@ age <-  rnorm(25, 40, 5)
 y <- rnorm(25, 0.5, 0.12)
 data <- data.frame(y,sex,age,Disease=factor(Disease))
 str(data)
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## 'data.frame':	25 obs. of  4 variables:
 ##  $ y      : num  0.506 0.323 0.552 0.492 0.513 ...
 ##  $ sex    : int  0 1 1 1 1 1 0 0 1 1 ...
 ##  $ age    : num  44.4 46.9 31.6 36.9 40.1 ...
 ##  $ Disease: Factor w/ 5 levels "Control","Myositis",..: 3 3 3 3 3 5 5 5 5 5 ...
-{% endhighlight %}
+</code></pre>
 
 We want the following contrasts:
 
@@ -37,18 +37,16 @@ We want the following contrasts:
 
 ## Default settings
 
-Let $$x_1,x_2,x_3,x_4$$ be the indicators for Myositis, RA, Scleroderma and SLE, respectively. The standard linear model `R` will fit is given by (for simplicity I am ignoring age and sex, but it won't make a difference when you add them in the model):
-
-$$ \mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4 $$
+Let `$x_1,x_2,x_3,x_4$` be the indicators for Myositis, RA, Scleroderma and SLE, respectively. The standard linear model `R` will fit is given by (for simplicity I am ignoring age and sex, but it won't make a difference when you add them in the model): `$$\mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$`
 
 
-{% highlight r %}
+<pre class="r"><code>
 summary(fit <- lm(y ~ Disease, data=data))
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## 
 ## Call:
 ## lm(formula = y ~ Disease, data = data)
@@ -70,13 +68,13 @@ summary(fit <- lm(y ~ Disease, data=data))
 ## Residual standard error: 0.1063 on 20 degrees of freedom
 ## Multiple R-squared:  0.4452,	Adjusted R-squared:  0.3342 
 ## F-statistic: 4.012 on 4 and 20 DF,  p-value: 0.01507
-{% endhighlight %}
+</code></pre>
 
 This is the default contrast matrix with unordered factor variables:
 
-{% highlight r %}
+<pre class="r"><code>
 contrasts(data$Disease)
-{% endhighlight %}
+</code></pre>
 
 
 |            | Myositis| RA| Scleroderma| SLE|
@@ -91,11 +89,9 @@ This compares the mean of the response for the Controls to the mean of the respo
 
 ## Custom Contrats
 
-Since we want only two contrasts, we want `R` to fit the following model:
+Since we want only two contrasts, we want `R` to fit the following model: `$$\mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2$$`
 
-$$ \mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 $$
-
-where $$\beta_1$$ represents the contrast estimate for the comparison between controls and all other diseases, and $$\beta_2$$ represents the contrast estimate of RA versus the combination of SLE, Scleroderma, Myositis.
+where `$\beta_1$` represents the contrast estimate for the comparison between controls and all other diseases, and `$\beta_2$` represents the contrast estimate of RA versus the combination of SLE, Scleroderma, Myositis.
 
 To create custom contrasts, we must specify the contrast matrix as follows:
 
@@ -111,83 +107,81 @@ To create custom contrasts, we must specify the contrast matrix as follows:
 
 Again we look at the above table, column by column. The variables we want to contrast should have opposite signs and the columns should sum to 0. This contrast matrix leads to the following mean response equations for each of the groups:
 
-$$
-\begin{align}
+`$$\begin{align}
 \mu_{control} & = \beta_0 + 0.8 \beta_1\\
 \mu_{myos} & = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta_2 \\
 \mu_{ra} & = \beta_0 - 0.2 \beta_1 + \beta_2 \\
 \mu_{scler} & = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta_2 \\
 \mu_{sle} & = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta_2 \\
-\end{align}
-$$
+\end{align}$$`
 
-To solve for $$\beta_0$$ we can add up all the equations to get
+To solve for `$\beta_0$` we can add up all the equations to get
 
-$$ 
+`$$ 
 \begin{align}
 \mu_{control}+\mu_{myos}+\mu_{ra}+\mu_{scler}+\mu_{sle} & = 5 \beta_0 \\
 \beta_0 & = \frac{\mu_{control}+\mu_{myos}+mu_{ra}+\mu_{scler}+\mu_{sle}}{5}
 \end{align}
-$$
+$$`
 
-To solve for $$\beta_1$$ we substract $$\mu_{control}$$ from the combined mean of $$\mu_{myos},\mu_{ra},\mu_{scler}$$ and $$\mu_{sle}$$ which gives:
+To solve for `$\beta_1$` we substract `$\mu_{control}$` from the combined mean of `$\mu_{myos},\mu_{ra},\mu_{scler}$` and `$\mu_{sle}$` which gives:
 
-$$
+`$$
 \begin{align}
 \mu_{control}-\frac{\mu_{myos}+\mu_{ra}+\mu_{scler}+\mu_{sle}}{4} & = \beta_0 + 0.8 \beta_1 - \frac{4\beta_0 -0.8\beta_1}{4}\\ 
   & = \beta_0 + 0.8 \beta_1 - \beta_0 + 0.2 \beta_1 \\
  & = \beta_1  
 \end{align}
-$$
+$$`
 
-To solve for $$\beta_2$$ we substract $$\mu_{ra}$$ from the combined mean of $$\mu_{myos},\mu_{scler}$$ and $$\mu_{sle}$$ which gives:
+To solve for `$\beta_2$` we substract `$\mu_{ra}$` from the combined mean of `$\mu_{myos},\mu_{scler}$` and `$\mu_{sle}$` which gives:
 
-$$
+`$$
 \begin{align}
 \mu_{ra}-\frac{\mu_{myos}+\mu_{scler}+\mu_{sle}}{3} & = \beta_0 - 0.2 \beta_1 + \beta_2 - \frac{3\beta_0 -0.6\beta_1 - \beta_2}{3}\\ 
   & = \beta_0 - 0.2 \beta_1 + \beta_2 - \beta_0 + 0.2 \beta_1 +\frac{1}{3}\beta_2 \\
  & = \frac{4}{3} \beta_2 \\
  \beta_2 & = \frac{3}{4} \left( \mu_{ra}-\frac{\mu_{myos}+\mu_{scler}+\mu_{sle}}{3}  \right)
 \end{align}
-$$
+$$`
 
 First we create the contrast matrix with appropriate row and column names for clarity:
 
-{% highlight r %}
+<pre class="r"><code>
 my.contr <- matrix(c( 4/5, -1/5, -1/5, -1/5, -1/5,
                  0,-1/3,1,-1/3,-1/3),
               ncol = 2, dimnames = list(c("Control", "Myositis", "RA","Scleroderma","SLE"),
     c("Control_vs_All","RA_vs_Myos_Scle_SLE")))
-{% endhighlight %}
+</code></pre>
 
 Then we store the contrasts attribute to the *Disease* variable. The `how.many` argument specifies how many contrasts we want, therefore this should correspond to the number of columns in the contrast matrix.
 
 
-{% highlight r %}
+<pre class="r"><code>
 contrasts(data$Disease,how.many=2) <- my.contr
 contrasts(data$Disease)
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ##             Control_vs_All RA_vs_Myos_Scle_SLE
 ## Control                0.8           0.0000000
 ## Myositis              -0.2          -0.3333333
 ## RA                    -0.2           1.0000000
 ## Scleroderma           -0.2          -0.3333333
 ## SLE                   -0.2          -0.3333333
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight r %}
+<pre class="r"><code>
 summary(fit <- lm(y ~ Disease, data=data))
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## 
 ## Call:
 ## lm(formula = y ~ Disease, data = data)
@@ -207,12 +201,12 @@ summary(fit <- lm(y ~ Disease, data=data))
 ## Residual standard error: 0.1203 on 22 degrees of freedom
 ## Multiple R-squared:  0.2194,	Adjusted R-squared:  0.1484 
 ## F-statistic: 3.092 on 2 and 22 DF,  p-value: 0.06557
-{% endhighlight %}
+</code></pre>
 
 
 Here we check to make sure that the `lm` fit is giving the same result as the formulas derived above:
 
-{% highlight r %}
+<pre class="r"><code>
 #' group level means
 mu.control <- mean(data[which(data$Disease=="Control"),"y"])
 mu.myos <- mean(data[which(data$Disease=="Myositis"),"y"])
@@ -222,39 +216,39 @@ mu.sle <- mean(data[which(data$Disease=="SLE"),"y"])
 
 #' beta0
 mean(c(mu.control,mu.myos,mu.ra,mu.scler,mu.sle))
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## [1] 0.4909311
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight r %}
+<pre class="r"><code>
 #' beta1
 mu.control - mean(c(mu.myos,mu.ra,mu.scler,mu.sle))
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## [1] 0.1481237
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight r %}
+<pre class="r"><code>
 #' beta2
 (mu.ra - mean(c(mu.myos,mu.scler,mu.sle)))*(3/4)
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## [1] 0.01587466
-{% endhighlight %}
+</code></pre>
 
 
 ## References

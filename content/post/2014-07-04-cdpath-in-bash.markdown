@@ -11,33 +11,29 @@ Instead of constantly typing the full path when using the `cd` command, `BASH` h
 
 The first time you do this, you need to create a hidden folder and add **CDPATH** to your bashrc (note this step only needs to be done once):
 
-{% highlight bash %}
-mkdir ~/.paths
+<pre class="bash"><code>mkdir ~/.paths
 cd ~/.paths
 echo 'CDPATH=~/.paths' >> ~/.bashrc
-{% endhighlight %}
+</code></pre>
 
 Then to add symbolic links use:
 
-{% highlight bash %}
-ln -s /my/very/long/path/name/to/my/project project
+<pre class="bash"><code>ln -s /my/very/long/path/name/to/my/project project
 ln -s /some/other/very/long/path/to/my/backups backups
 echo 'CDPATH=~/.paths' >> ~/.bashrc
-{% endhighlight %}
+</code></pre>
 
 
 To update your bashrc:
 
-{% highlight bash %}
-source ~/.bashrc
-{% endhighlight %}
+<pre class="bash"><code>source ~/.bashrc
+</code></pre>
 
 Now you can enter the folders from anywhere by simply typing
 
-{% highlight bash %}
-cd projects
+<pre class="bash"><code>cd projects
 cd backups
-{% endhighlight %}
+</code></pre>
 
 
 

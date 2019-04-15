@@ -2,6 +2,7 @@
 title: "Limma Moderated and Ordinary t-statistics"
 author: "sahir"
 date: "February 7, 2017"
+date: 2017-02-07 15:09:00
 output: html_document
 layout: post
 tags: [R, statistics, t test, genomics, limma]
@@ -19,7 +20,7 @@ When analyzing large amounts of genetic and genomic data, the first line of anal
 
 First we load the required packages
 
-{% highlight r %}
+<pre class="r"><code>
 # clear workspace
 rm(list=ls())
 
@@ -34,43 +35,43 @@ pacman::p_load("CpGassoc")
 
 # check the data that is available in the minfiData package
 pacman::p_data("minfiData")
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ##   Data        Description                                                                           
 ## 1 MsetEx      An example dataset for Illumina's Human Methylation 450k dataset, after preprocessing.
 ## 2 MsetEx.sub  An example dataset for Illumina's Human Methylation 450k dataset, after preprocessing.
 ## 3 RGsetEx     An example dataset for Illumina's Human Methylation 450k dataset.                     
 ## 4 RGsetEx.sub An example dataset for Illumina's Human Methylation 450k dataset.
-{% endhighlight %}
+</code></pre>
 
 Next, we extract some sample data and create a covariate of interest
 
-{% highlight r %}
+<pre class="r"><code>
 # get the M-values for the sample data
 DT <- minfi::getM(MsetEx.sub)
 
 dim(DT)
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## [1] 600   6
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight r %}
+<pre class="r"><code>
 # rows are CpGs and columns are samples
 head(DT)
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight text %}
+<pre class="r"><code>
 ##            5723646052_R02C02 5723646052_R04C01 5723646052_R05C02
 ## cg00050873          3.502348         0.4414491          4.340695
 ## cg00212031         -3.273751         0.9234662         -2.614777
@@ -85,19 +86,19 @@ head(DT)
 ## cg00214611        0.29029649        -0.2103599        -0.6138630
 ## cg00455876       -0.09504721        -0.2854655         0.6361273
 ## cg01707559       -0.74835377        -0.4678048        -1.1345421
-{% endhighlight %}
+</code></pre>
 
 
 
-{% highlight r %}
+<pre class="r"><code>
 # create a fake covariate. 3 intact and 3 degraded samples
 tissue <- factor(c(rep("Intact",3), rep("Degraded",3)))
 design <- model.matrix(~ tissue)
-{% endhighlight %}
+</code></pre>
 
 Then we calculate the moderated and ordinary t-statistics and compare them:
 
-{% highlight r %}
+<pre class="r"><code>
 # limma fit
 fit <- lmFit(DT, design)
 fit_ebayes <- eBayes(fit)
@@ -112,25 +113,25 @@ plot(x = ordinary.t,
      xlab = "ordinary t-statistic", 
      ylab = "moderated t-statistic")
 abline(a = 0, b = 1, col = "red")
-{% endhighlight %}
+</code></pre>
 
 ![plot of chunk unnamed-chunk-2](/figure/posts/2017-02-07-ttest_limma/unnamed-chunk-2-1.png)
 
 
 We can calculate the corresponding p-values from the ordinary t-statistics. This is given by 
 
-{% highlight r %}
+<pre class="r"><code>
 # t-distribution with n-p-1 degrees of freedom 
 # (n: number of samples, p:number of covariates excluding intercept)
 ordinary.pvalue <- pt(q = abs(ordinary.t), 
                       df = dim(DT)[2]-(ncol(design)-1)-1, 
                       lower.tail = F) * 2
-{% endhighlight %}
+</code></pre>
 
 We can also use the [`CpGassoc`](https://cran.r-project.org/package=CpGassoc) package to calculate ordinary t-statistics and compare the result to our manual calculations:
 
 
-{% highlight r %}
+<pre class="r"><code>
 # compare result with CpGassoc package (regular t-test)
 t_test_mvalues <- CpGassoc::cpg.assoc(
   beta.val = minfi::getBeta(MsetEx.sub),
@@ -141,15 +142,15 @@ t_test_mvalues <- CpGassoc::cpg.assoc(
 # these should be equal
 plot(t_test_mvalues$results$P.value, ordinary.pvalue)
 abline(a = 0, b = 1, col = "red")
-{% endhighlight %}
+</code></pre>
 
 ![plot of chunk unnamed-chunk-4](/figure/posts/2017-02-07-ttest_limma/unnamed-chunk-4-1.png)
 
-{% highlight r %}
+<pre class="r"><code>
 # t-statistic is the squared F.statistic (in certain cases) 
 plot(t_test_mvalues$results$F.statistic, ordinary.t^2)
 abline(a = 0, b = 1, col = "red")
-{% endhighlight %}
+</code></pre>
 
 ![plot of chunk unnamed-chunk-4](/figure/posts/2017-02-07-ttest_limma/unnamed-chunk-4-2.png)
 
@@ -157,7 +158,7 @@ abline(a = 0, b = 1, col = "red")
 ## Session Info
 
 
-{% highlight text %}
+<pre class="r"><code>
 ## R version 3.3.2 (2016-10-31)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 16.04.1 LTS
@@ -218,7 +219,7 @@ abline(a = 0, b = 1, col = "red")
 ## [51] rngtools_1.2.4           survival_2.40-1         
 ## [53] AnnotationDbi_1.36.2     beanplot_1.2            
 ## [55] memoise_1.0.0
-{% endhighlight %}
+</code></pre>
 
 
 

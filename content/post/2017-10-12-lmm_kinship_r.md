@@ -192,7 +192,7 @@ abline(a=0,b=1, col = "red")
 
 ![](/figure/posts/lmm_example_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
-If the Hardy-Weinberg equilibrium holds, `sigma` should be close to $$ \sqrt{2*p(1-p)} $$. This is illustrated on the figure below
+If the Hardy-Weinberg equilibrium holds, `sigma` should be close to `$\sqrt{2*p(1-p)}$`. This is illustrated on the figure below
 
 
 
@@ -247,13 +247,11 @@ The object `X` is what will be used as the data matrix in the LMM analysis. We a
 
 ## Calculate Kinship Matrix
 
-If $$ X_s $$ is a standardized $$ n \times p $$ matrix of genotypes, a Genetic Relationship Matrix of individuals can be computed as 
+If `$X_s$` is a standardized `$n \times p$` matrix of genotypes, a Genetic Relationship Matrix of individuals can be computed as 
 
-$$
-GRM = \frac{1}{p-1} X_s X_s^\top
-$$
+`$$GRM = \frac{1}{p-1} X_s X_s^\top$$`
 
-where $$ p $$ is the number of SNPs and $$ n $$ is the number of individuals. This computation is done by the `gaston::GRM` function. Note that we could also use 
+where `$p$` is the number of SNPs and `$n$` is the number of individuals. This computation is done by the `gaston::GRM` function. Note that we could also use 
 
 
 ```r

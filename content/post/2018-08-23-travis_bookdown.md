@@ -11,9 +11,9 @@ Following the advice given on the bookdown [site](https://bookdown.org/yihui/boo
 2. Copy the generated PAT to your clipboard  
 3. From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:  
 
-{% highlight bash %}
-travis encrypt GITHUB_PAT="paste_your_PAT_here" --add
-{% endhighlight %}
+<pre class="bash">travis encrypt GITHUB_PAT="paste_your_PAT_here" --add
+</code></pre>
+
 
 Note 1: I'm not entirely sure that I need to generate a new PAT for each bookdown repository that I create, but so far this strategy has worked for me. Comments are welcome.    
 
@@ -21,9 +21,8 @@ Note 2: that the PAT must be within double quotes. the `--add` flag will automat
 
 Note 3: if you get some error about a bad interpretor, trying re-installing travis:
 
-{% highlight bash %}
-gem install travis
-{% endhighlight %}
+<pre class="bash">gem install travis
+</code></pre>
 
 <br><br>  
 
