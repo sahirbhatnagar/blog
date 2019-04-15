@@ -46,7 +46,7 @@
 
   <ul class="nav-links">
     
-    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    <li><a href="https://sahirbhatnagar.github.io/">Home</a></li>
     
   </ul>
 </nav>
@@ -227,7 +227,7 @@ abline(a=0,b=1, col = &quot;red&quot;)
 
 <p><img src="/figure/posts/lmm_example_files/figure-html/unnamed-chunk-4-1.png" alt="" /><!-- --></p>
 
-<p>If the Hardy-Weinberg equilibrium holds, <code>sigma</code> should be close to $$ \sqrt{2*p(1-p)} $$. This is illustrated on the figure below</p>
+<p>If the Hardy-Weinberg equilibrium holds, <code>sigma</code> should be close to <code>$\sqrt{2*p(1-p)}$</code>. This is illustrated on the figure below</p>
 
 <pre><code class="language-r">plot(DT@p, DT@sigma, xlim=c(0,1))
 t &lt;- seq(0,1,length=101);
@@ -272,13 +272,11 @@ X[1:5,1:5]
 
 <h2 id="calculate-kinship-matrix">Calculate Kinship Matrix</h2>
 
-<p>If $$ X_s $$ is a standardized $$ n \times p $$ matrix of genotypes, a Genetic Relationship Matrix of individuals can be computed as</p>
+<p>If <code>$X_s$</code> is a standardized <code>$n \times p$</code> matrix of genotypes, a Genetic Relationship Matrix of individuals can be computed as</p>
 
-<p>$$
-GRM = \frac{1}{p-1} X_s X_s^\top
-$$</p>
+<p><code>$$GRM = \frac{1}{p-1} X_s X_s^\top$$</code></p>
 
-<p>where $$ p $$ is the number of SNPs and $$ n $$ is the number of individuals. This computation is done by the <code>gaston::GRM</code> function. Note that we could also use</p>
+<p>where <code>$p$</code> is the number of SNPs and <code>$n$</code> is the number of individuals. This computation is done by the <code>gaston::GRM</code> function. Note that we could also use</p>
 
 <pre><code class="language-r">(1 / (p - 1)) * tcrossprod(X)
 </code></pre>

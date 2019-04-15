@@ -6,16 +6,17 @@
     <description>Recent content in Sample Size on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <lastBuildDate>Thu, 25 Feb 2016 15:09:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/sample-size/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Statistical Power in t tests with Unequal Group Sizes</title>
-      <link>https://sahirbhatnagar.github.io/blog/1/01/01/statistical-power-in-t-tests-with-unequal-group-sizes/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <link>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</link>
+      <pubDate>Thu, 25 Feb 2016 15:09:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
       <description>&lt;p&gt;When performing &lt;a href=&#34;https://en.wikipedia.org/wiki/Student%27s_t-test&#34;&gt;Student&amp;rsquo;s t-test&lt;/a&gt; to compare difference in means between two group, it is a useful exercise to determine the effect of unequal sample sizes in the comparison groups on power. Large imbalances generally will not have adequate statistical power to detect even large effect sizes associated with a factor, leading to a high Type II error rate as shown in the figure below:&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34; /&gt;&lt;/p&gt;</description>

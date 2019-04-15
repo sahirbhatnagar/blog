@@ -22,6 +22,11 @@
 
 
 
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
 <link rel="stylesheet" href="/blog/css/fonts.css" media="all">
 <link rel="stylesheet" href="/blog/css/main.css" media="all">
 
@@ -41,7 +46,7 @@
 
   <ul class="nav-links">
     
-    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    <li><a href="https://sahirbhatnagar.github.io/">Home</a></li>
     
   </ul>
 </nav>
@@ -71,9 +76,8 @@
 
 <p>Here is a colorblind friendly pallette courtesy of <a href="http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette">Cookbook for R</a></p>
 
-<p>{% highlight r %}
-cbbPalette &lt;- c(&ldquo;#000000&rdquo;, &ldquo;#E69F00&rdquo;, &ldquo;#56B4E9&rdquo;, &ldquo;#009E73&rdquo;, &ldquo;#F0E442&rdquo;, &ldquo;#0072B2&rdquo;, &ldquo;#D55E00&rdquo;, &ldquo;#CC79A7&rdquo;)
-{% endhighlight %}</p>
+<pre class="r"><code>cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+</code></pre>
 
     </div>
   </article>
@@ -118,6 +122,18 @@ cbbPalette &lt;- c(&ldquo;#000000&rdquo;, &ldquo;#E69F00&rdquo;, &ldquo;#56B4E9&
 
     </div>
     
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
 
     
 

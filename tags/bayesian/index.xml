@@ -6,21 +6,22 @@
     <description>Recent content in Bayesian on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <lastBuildDate>Thu, 23 Feb 2017 15:09:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/bayesian/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Bayesian Non-Linear Multilevel Models</title>
-      <link>https://sahirbhatnagar.github.io/blog/1/01/01/bayesian-non-linear-multilevel-models/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <link>https://sahirbhatnagar.github.io/blog/2017/02/23/bayesian-non-linear-multilevel-models/</link>
+      <pubDate>Thu, 23 Feb 2017 15:09:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/1/01/01/bayesian-non-linear-multilevel-models/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/2017/02/23/bayesian-non-linear-multilevel-models/</guid>
       <description>&lt;p&gt;Consider the following repeated measures model:&lt;/p&gt;
 
-&lt;p&gt;$$ y_{ij} =\beta_0 + \beta&lt;em&gt;1 a&lt;/em&gt;{ij}  + \beta&lt;em&gt;1^2 b&lt;/em&gt;{ij} + \mu&lt;em&gt;i + \varepsilon&lt;/em&gt;{ij}$$&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$$y_{ij} =\beta_0 + \beta_1 a_{ij}  + \beta_1^2 b_{ij} + \mu_i + \varepsilon_{ij}$$&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;for $$i = 1, \ldots, n$$, $$j = 1, 2$$ where $$n$$ is the sample size, $$j$$ represents the index of the repeated measure, i.e., each subject has two measurements, $$\mu&lt;em&gt;i$$ is a normally distributed random effect, $$\varepsilon&lt;/em&gt;{ij}$$ is a normally distributed error term, $$y&lt;em&gt;{ij}$$ is the continuous response, and $$a&lt;/em&gt;{ij}, b_{ij}$$ are covariates. This is a multilevel model because of the nested structure of the data, and also non-linear in the $$\beta_1$$ parameter. In this post I simulate some data under this model, and try to leverage Bayesian computation techniques to estimate the parameters using the &lt;a href=&#34;https://github.com/paul-buerkner/brms&#34;&gt;brms&lt;/a&gt; which is an interface to fit Bayesian generalized (non-)linear multilevel models using &lt;a href=&#34;http://mc-stan.org/&#34;&gt;Stan&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;for &lt;code&gt;$i = 1, \ldots, n$&lt;/code&gt;, &lt;code&gt;$j = 1, 2$&lt;/code&gt; where &lt;code&gt;$n$&lt;/code&gt; is the sample size, &lt;code&gt;$j$&lt;/code&gt; represents the index of the repeated measure, i.e., each subject has two measurements, &lt;code&gt;$\mu_i$&lt;/code&gt; is a normally distributed random effect, &lt;code&gt;$\varepsilon_{ij}$&lt;/code&gt; is a normally distributed error term, &lt;code&gt;$y_{ij}$&lt;/code&gt; is the continuous response, and &lt;code&gt;$a_{ij}, b_{ij}$&lt;/code&gt; are covariates. This is a multilevel model because of the nested structure of the data, and also non-linear in the &lt;code&gt;$\beta_1$&lt;/code&gt; parameter. In this post I simulate some data under this model, and try to leverage Bayesian computation techniques to estimate the parameters using the &lt;a href=&#34;https://github.com/paul-buerkner/brms&#34;&gt;brms&lt;/a&gt; which is an interface to fit Bayesian generalized (non-)linear multilevel models using &lt;a href=&#34;http://mc-stan.org/&#34;&gt;Stan&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
     </item>

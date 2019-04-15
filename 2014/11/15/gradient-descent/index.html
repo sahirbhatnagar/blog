@@ -22,6 +22,11 @@
 
 
 
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
 <link rel="stylesheet" href="/blog/css/fonts.css" media="all">
 <link rel="stylesheet" href="/blog/css/main.css" media="all">
 
@@ -41,7 +46,7 @@
 
   <ul class="nav-links">
     
-    <li><a href="https://sahirbhatnagar.github.io/blog/">Home</a></li>
+    <li><a href="https://sahirbhatnagar.github.io/">Home</a></li>
     
   </ul>
 </nav>
@@ -71,137 +76,94 @@
 
 <p>$$ lpsa = \beta_0 + \beta_1 \times lcavol  $$</p>
 
-<p>{% highlight r %}
-#prostate cancer data set
+<pre class="r"><code>#prostate cancer data set
 library(lasso2)
-{% endhighlight %}</p>
+</code></pre>
 
-<p>{% highlight text %}</p>
+<pre class="r"><code>## R Package to solve regression problems while imposing
+##   an L1 constraint on the parameters. Based on S-plus Release 2.1
+## Copyright (C) 1998, 1999
+## Justin Lokhorst   <jlokhors@stats.adelaide.edu.au>
+## Berwin A. Turlach <bturlach@stats.adelaide.edu.au>
+## Bill Venables     <wvenable@stats.adelaide.edu.au>
+## 
+## Copyright (C) 2002
+## Martin Maechler <maechler@stat.math.ethz.ch>
+</code></pre>
 
-<h2 id="r-package-to-solve-regression-problems-while-imposing">R Package to solve regression problems while imposing</h2>
+<pre class="r"><code>data(Prostate)
 
-<h2 id="an-l1-constraint-on-the-parameters-based-on-s-plus-release-2-1">an L1 constraint on the parameters. Based on S-plus Release 2.1</h2>
-
-<h2 id="copyright-c-1998-1999">Copyright &copy; 1998, 1999</h2>
-
-<h2 id="justin-lokhorst-jlokhors-stats-adelaide-edu-au">Justin Lokhorst   <a href="mailto:jlokhors@stats.adelaide.edu.au">jlokhors@stats.adelaide.edu.au</a></h2>
-
-<h2 id="berwin-a-turlach-bturlach-stats-adelaide-edu-au">Berwin A. Turlach <a href="mailto:bturlach@stats.adelaide.edu.au">bturlach@stats.adelaide.edu.au</a></h2>
-
-<h2 id="bill-venables-wvenable-stats-adelaide-edu-au">Bill Venables     <a href="mailto:wvenable@stats.adelaide.edu.au">wvenable@stats.adelaide.edu.au</a></h2>
-
-<h2 id="copyright-c-2002">Copyright &copy; 2002</h2>
-
-<h2 id="martin-maechler-maechler-stat-math-ethz-ch">Martin Maechler <a href="mailto:maechler@stat.math.ethz.ch">maechler@stat.math.ethz.ch</a></h2>
-
-<p>{% endhighlight %}</p>
-
-<p>{% highlight r %}
-data(Prostate)</p>
-
-<h1 id="hypothesis">hypothesis</h1>
-
-<p>hypothesis &lt;- function(x, theta0,theta1){
-    h &lt;- theta0 + theta1*x
+# hypothesis
+hypothesis <- function(x, theta0,theta1){
+    h <- theta0 + theta1*x
     return(h)
-}</p>
+}
 
-<h1 id="jacobian">Jacobian</h1>
-
-<p>deriv &lt;- function(x,y,theta0,theta1){
-    dt0 &lt;- (length(x))^(-1)* sum((hypothesis(x,theta0,theta1)-y))
-    dt1 &lt;- (length(x))^(-1)* t(x) %*% (hypothesis(x,theta0,theta1)-y)
+# Jacobian
+deriv <- function(x,y,theta0,theta1){
+    dt0 <- (length(x))^(-1)* sum((hypothesis(x,theta0,theta1)-y))
+    dt1 <- (length(x))^(-1)* t(x) %*% (hypothesis(x,theta0,theta1)-y)
     return(c(dt0,dt1))
-}</p>
+}
 
-<p>theta &lt;- c(0,0)
-alpha &lt;- 0.5
-X &lt;- Prostate$lcavol
-Y &lt;- Prostate$lpsa
+theta <- c(0,0)
+alpha <- 0.5
+X <- Prostate$lcavol
+Y <- Prostate$lpsa
 i=1
-#
-theta.star &lt;- deriv(Prostate$lcavol,Prostate$lpsa,theta[1],theta[2])</p>
+theta.star <- deriv(Prostate$lcavol,Prostate$lpsa,theta[1],theta[2])
+# set convergence threshold
+threshold <- 1e-7
+# logical to check if threshold has been achieved
+continue=TRUE
 
-<h1 id="set-convergence-threshold">set convergence threshold</h1>
-
-<p>threshold &lt;- 1e-7</p>
-
-<h1 id="logical-to-check-if-threshold-has-been-achieved">logical to check if threshold has been achieved</h1>
-
-<p>continue=TRUE</p>
-
-<p>while (continue){
-    theta[1] &lt;- theta.star[1] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[1]
-    theta[2] &lt;- theta.star[2] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[2]
-    continue &lt;- (abs((theta.star-theta)[1])&gt;threshold &amp; abs((theta.star-theta)[2])&gt;threshold)
-    theta.star[1] &lt;- theta[1]
-    theta.star[2] &lt;- theta[2]
+while (continue){
+    theta[1] <- theta.star[1] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[1]
+    theta[2] <- theta.star[2] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[2]
+    continue <- (abs((theta.star-theta)[1])>threshold & abs((theta.star-theta)[2])>threshold)
+    theta.star[1] <- theta[1]
+    theta.star[2] <- theta[2]
     i=i+1
-}</p>
+}
 
-<h1 id="number-of-iterations">number of iterations</h1>
+# number of iterations
+i
+</code></pre>
 
-<p>i
-{% endhighlight %}</p>
+<pre class="r"><code>## [1] 214
+</code></pre>
 
-<p>{% highlight text %}</p>
+<pre class="r"><code># beta0 and beta1
+theta.star
+</code></pre>
 
-<h2 id="1-214">[1] 214</h2>
+<pre class="r"><code>## [1] 1.5072975 0.7193205
+</code></pre>
 
-<p>{% endhighlight %}</p>
-
-<p>{% highlight r %}</p>
-
-<h1 id="beta0-and-beta1">beta0 and beta1</h1>
-
-<p>theta.star
-{% endhighlight %}</p>
-
-<p>{% highlight text %}</p>
-
-<h2 id="1-1-5072975-0-7193205">[1] 1.5072975 0.7193205</h2>
-
-<p>{% endhighlight %}</p>
-
-<p>{% highlight r %}</p>
-
-<h1 id="compare-to-lm">compare to lm</h1>
-
-<p>fit &lt;- lm(lpsa~lcavol, data=Prostate)
+<pre class="r"><code># compare to lm
+fit <- lm(lpsa~lcavol, data=Prostate)
 summary(fit)
-{% endhighlight %}</p>
+</code></pre>
 
-<p>{% highlight text %}</p>
-
-<h2 id="call">Call:</h2>
-
-<h2 id="lm-formula-lpsa-lcavol-data-prostate">lm(formula = lpsa ~ lcavol, data = Prostate)</h2>
-
-<h2 id="residuals">Residuals:</h2>
-
-<h2 id="min-1q-median-3q-max">Min       1Q   Median       3Q      Max</h2>
-
-<h2 id="1-67624-0-41648-0-09859-0-50709-1-89672">-1.67624 -0.41648  0.09859  0.50709  1.89672</h2>
-
-<h2 id="coefficients">Coefficients:</h2>
-
-<h2 id="estimate-std-error-t-value-pr-t">Estimate Std. Error t value Pr(&gt;|t|)</h2>
-
-<h2 id="intercept-1-50730-0-12194-12-36-2e-16">(Intercept)  1.50730    0.12194   12.36   &lt;2e-16 ***</h2>
-
-<h2 id="lcavol-0-71932-0-06819-10-55-2e-16">lcavol       0.71932    0.06819   10.55   &lt;2e-16 ***</h2>
-
-<h2 id="toc_26">&mdash;</h2>
-
-<h2 id="signif-codes-0-0-001-0-01-0-05-0-1-1">Signif. codes:  0 &lsquo;*<strong>&rsquo; 0.001 &lsquo;</strong>&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1</h2>
-
-<h2 id="residual-standard-error-0-7875-on-95-degrees-of-freedom">Residual standard error: 0.7875 on 95 degrees of freedom</h2>
-
-<h2 id="multiple-r-squared-0-5394-adjusted-r-squared-0-5346">Multiple R-squared:  0.5394, Adjusted R-squared:  0.5346</h2>
-
-<h2 id="f-statistic-111-3-on-1-and-95-df-p-value-2-2e-16">F-statistic: 111.3 on 1 and 95 DF,  p-value: &lt; 2.2e-16</h2>
-
-<p>{% endhighlight %}</p>
+<pre class="r"><code>## 
+## Call:
+## lm(formula = lpsa ~ lcavol, data = Prostate)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.67624 -0.41648  0.09859  0.50709  1.89672 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  1.50730    0.12194   12.36   <2e-16 ***
+## lcavol       0.71932    0.06819   10.55   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7875 on 95 degrees of freedom
+## Multiple R-squared:  0.5394, Adjusted R-squared:  0.5346 
+## F-statistic: 111.3 on 1 and 95 DF,  p-value: < 2.2e-16
+</code></pre>
     </div>
   </article>
 
@@ -245,6 +207,18 @@ summary(fit)
 
     </div>
     
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
 
     
 <script src="/blog/js/math-code.js"></script>
