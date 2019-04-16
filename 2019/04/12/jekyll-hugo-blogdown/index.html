@@ -112,17 +112,13 @@
 </li>
 <li>The static files for the website are in the <code>public</code> folder, while the source files are in the top level directory (in this case, the <code>blog</code> folder).<br />
 </li>
-<li>Follow the instructions laid out in the <a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#deployment-of-project-pages-from-your-gh-pages-branch">hugo docs section: Deployment of Project Pages From Your gh-pages branch</a>. These steps show how you can push the static files of the blog to the <code>gh-pages</code> branch of your <code>blog</code> repository. Use the <code>master</code> branch to keep the source files of your blog.<br />
-</li>
 <li>To create a new blog post run this command from the root of the blog directory (and on the <code>master</code> branch):</li>
 </ol>
 <pre class="r"><code>blogdown::new_post(title = &quot;Name of new post&quot;, ext = &quot;.Rmd&quot;)</code></pre>
-<ol start="9" style="list-style-type: decimal">
-<li>Create a <code>deploy.sh</code> script in the root of your <code>blog</code> folder so that you can automate this process everytime you add to your blog. The script I use will automatically build the blogdown blog and push to the <code>gh-pages</code> branch. Note that you first need to push the source code to the <code>master</code> branch (the script first checks for any uncommitted changes). This is what my <code>deploy.sh</code> script looks like:</li>
+<ol start="8" style="list-style-type: decimal">
+<li>Create a <code>deploy.sh</code> script in the root of your <code>blog</code> folder so that you can automate the publication process everytime you add to your blog. The script I use will automatically build the blogdown blog and push to the <code>gh-pages</code> branch. Note that you first need to push the source code to the <code>master</code> branch (the script first checks for any uncommitted changes). This is what my <code>deploy.sh</code> script looks like (it makes use of <a href="https://gist.github.com/cobyism/4730490#gistcomment-2375522"><code>git worktrees</code></a>):</li>
 </ol>
 <pre class="bash"><code>#!/bin/sh
-
-SRC_BRANCH="master"
 
 # Check if there are any uncommitted changes
 if ! git diff-index --quiet HEAD --; then
@@ -133,23 +129,22 @@ if ! git diff-index --quiet HEAD --; then
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
-#echo "Deleting old public folder"
-#rm -rf public
-#mkdir public
-#git worktree prune
-rm -rf .git/worktrees/public/
+echo "Make Worktree"
+git worktree add public gh-pages
 
-echo "Checking out gh-pages branch into public"
-git worktree add -B gh-pages public origin/gh-pages
-
-echo "Removing existing files"
-rm -rf public
-
-echo "Generating site"
+echo "Generating site with blogdown"
 Rscript -e "blogdown::build_site()"
 
-echo "Updating gh-pages branch"
-cd public && git add --all && git commit -m "Publishing to gh-pages (publish_to_ghpages.sh)" && git push origin gh-pages
+echo "Adding and committing to gh-pages branch"
+cd public && git add --all && git commit -m "Publishing to gh-pages"
+
+echo "Pushing to gh-pages branch"
+git push origin gh-pages
+
+echo "Cleaning up files"
+cd ..
+rm -rf public/*
+
 </code></pre>
 </div>
 <div id="discussion" class="section level2">
