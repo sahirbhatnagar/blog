@@ -47,7 +47,10 @@ It goes something like this:
 blogdown::new_site(dir = "blog/")
 ```
   5. If all worked well, you should see a preview of the [hugo lithium theme (modified by Yihui Xie)](https://github.com/yihui/hugo-lithium) in the RStudio viewer pane.  
-  6. The static files for the website are in the `public` folder, while the source files are in the top level directory (in this case, the `blog` folder).  
+  6. The static files for the website are in the `public` folder, while the source files are in the top level directory (in this case, the `blog` folder). Initialize a git repository from the root of your blog folder and create a link with the remote repo created in Step 1 using:
+  <pre class="bash"><code>git init
+  git remote add origin https://github.com/username/blog.git
+  </code></pre>
   7. To create a new blog post run this command from the root of the blog directory (and on the `master` branch):
 ```{r, eval=FALSE}
 blogdown::new_post(title = "Name of new post", ext = ".Rmd")
