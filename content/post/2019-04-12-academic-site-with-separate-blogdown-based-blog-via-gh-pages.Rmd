@@ -81,6 +81,7 @@ echo "Cleaning up files"
 cd ..
 rm -rf public/*
 
+# more code here
 </code></pre>
   
 
