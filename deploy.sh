@@ -46,8 +46,9 @@ echo "Cleaning up files"
 cd ..
 git worktree prune
 
-rm -rf public/*
+rm -rf public
 
+# fdfsd
 # echo "Adding and committing to gh-pages branch"
 # git subtree push --prefix public origin gh-pages
 
