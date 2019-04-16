@@ -37,5 +37,8 @@ rm -rf public
 echo "Generating site"
 Rscript -e "blogdown::build_site()"
 
-echo "Updating gh-pages branch"
-cd public && git add --all && git commit -m "Publishing to gh-pages (publish_to_ghpages.sh)" && git push origin gh-pages
+echo "Adding and committing to gh-pages branch"
+cd public && git add --all && git commit -m "Publishing to gh-pages (publish_to_ghpages.sh)" 
+
+echo "Pushing to gh-pages branch"
+git push origin gh-pages
