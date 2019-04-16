@@ -43,8 +43,8 @@ echo "Pushing to gh-pages branch"
 git push origin gh-pages
 
 echo "Cleaning up files"
-git worktree prune
 cd ..
+git worktree prune
 
 rm -rf public/*
 
