@@ -32,7 +32,7 @@ My main issue with the Jekyll based site, is that there isn't an efficient way o
 
 ## The Solution
 
-I decided to do a hybrid Jekyll-based website with a Hugo-based blog. My main academic site at [sahirbhatnagar.com](sahirbhatnagar.com) remains within the Jekyll framework and hosted on [GitHub](https://github.com/sahirbhatnagar/sahirbhatnagar.github.io) with [GitHub User Pages](https://help.github.com/en/articles/user-organization-and-project-pages), and my blogdown blog is also [hosted on GitHub](https://github.com/sahirbhatnagar/blog) on the `gh-pages` branch with [GitHub Project Pages](https://help.github.com/en/articles/user-organization-and-project-pages).  
+I decided to do a hybrid Jekyll-based website with a Hugo-based blog. My main academic site at [sahirbhatnagar.com](https://sahirbhatnagar.com) remains within the Jekyll framework and hosted on [GitHub](https://github.com/sahirbhatnagar/sahirbhatnagar.github.io) with [GitHub User Pages](https://help.github.com/en/articles/user-organization-and-project-pages), and my blogdown blog is also [hosted on GitHub](https://github.com/sahirbhatnagar/blog) on the `gh-pages` branch with [GitHub Project Pages](https://help.github.com/en/articles/user-organization-and-project-pages).  
 
 In this post I try to outline the steps I took to achieve this. This post assumes some familiarity with the `git` command line and that you already have a [User Pages site on Github](https://help.github.com/en/articles/user-organization-and-project-pages#user-and-organization-pages-sites) at `http(s)://<username>.github.io`.  
 
