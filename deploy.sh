@@ -38,7 +38,7 @@ echo "Generating site"
 Rscript -e "blogdown::build_site()"
 
 echo "Adding and committing to gh-pages branch"
-cd public && git add --all && git commit -m "$1"
+cd public && git add --all && git commit -m $1
 
 echo "Pushing to gh-pages branch"
 git push origin gh-pages
