@@ -19,10 +19,10 @@ fi
 
 #DEPLOY_BRANCH="master"
 
-# echo "Deleting old publication"
+echo "Deleting old publication"
 # rm -rf public
 # mkdir public
-# git worktree prune
+git worktree prune
 # rm -rf .git/worktrees/public/
 # 
 # echo "Checking out gh-pages branch into public"
@@ -38,7 +38,7 @@ echo "Generating site"
 Rscript -e "blogdown::build_site()"
 
 echo "Adding and committing to gh-pages branch"
-cd public && git add --all && git commit -m $1
+cd public && git add --all && git commit -m "$1"
 
 echo "Pushing to gh-pages branch"
 git push origin gh-pages
