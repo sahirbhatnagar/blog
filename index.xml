@@ -12,12 +12,15 @@
     
     
     <item>
-      <title>Academic site with separate blogdown based blog via gh-pages</title>
-      <link>https://sahirbhatnagar.github.io/blog/2019/04/12/academic-site-with-separate-blogdown-based-blog-via-gh-pages/</link>
+      <title>Jekyll website with Hugo blog with blogdown</title>
+      <link>https://sahirbhatnagar.github.io/blog/2019/04/12/jekyll-hugo-blogdown/</link>
       <pubDate>Fri, 12 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/2019/04/12/academic-site-with-separate-blogdown-based-blog-via-gh-pages/</guid>
-      <description> pacman::p_load(mosaic) pacman::p_load(hrbrthemes) ggformula::gf_boxplot(age ~ substance, data = mosaicData::HELPrct) + hrbrthemes::theme_ipsum() </description>
+      <guid>https://sahirbhatnagar.github.io/blog/2019/04/12/jekyll-hugo-blogdown/</guid>
+      <description>I currently have a Jekyll based website for my academic website hosted on GitHub using the al-folio theme.
+What I like about having a Jekyll based site Jekyll has been around for a long time now and thus has extensive documentation and support online. I also like the Jekyll-based al-folio theme because:
+It automatically generates publications from a BibTeX file using jekyll-scholar.
+ Information can be spread across multiple pages (e.</description>
     </item>
     
     <item>
