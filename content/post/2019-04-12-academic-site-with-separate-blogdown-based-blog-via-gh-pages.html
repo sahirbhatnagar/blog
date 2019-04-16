@@ -1,8 +1,8 @@
 ---
-title: Academic site with separate blogdown based blog via gh-pages
+title: Jekyll website with Hugo blog with blogdown
 author: null
 date: '2019-04-12'
-slug: academic-site-with-separate-blogdown-based-blog-via-gh-pages
+slug: jekyll-hugo-blogdown
 categories: []
 tags: []
 editor_options: 
@@ -11,7 +11,89 @@ editor_options:
 
 
 
-<pre class="r"><code>pacman::p_load(mosaic)
-pacman::p_load(hrbrthemes)
-ggformula::gf_boxplot(age ~ substance, data = mosaicData::HELPrct) + hrbrthemes::theme_ipsum()</code></pre>
-<p><img src="/blog/post/2019-04-12-academic-site-with-separate-blogdown-based-blog-via-gh-pages_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>I currently have a <a href="https://jekyllrb.com/">Jekyll</a> based website for my <a href="https://sahirbhatnagar.com/">academic website</a> hosted on <a href="https://github.com/sahirbhatnagar/sahirbhatnagar.github.io">GitHub</a> using the <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.</p>
+<div id="what-i-like-about-having-a-jekyll-based-site" class="section level2">
+<h2>What I like about having a Jekyll based site</h2>
+<p>Jekyll has been around for a long time now and thus has extensive documentation and support online. I also like the Jekyll-based <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme because:</p>
+<ol style="list-style-type: decimal">
+<li>It automatically generates publications from a BibTeX file using <a href="https://github.com/inukshuk/jekyll-scholar">jekyll-scholar</a>.<br />
+</li>
+<li>Information can be spread across multiple pages (e.g. papers, software, talks), which makes for a short landing page.</li>
+<li>Support for news announcements.</li>
+</ol>
+</div>
+<div id="the-problem" class="section level2">
+<h2>The problem</h2>
+<p>My main issue with the Jekyll based site, is that there isn’t an efficient way of writing blog posts using <code>R Markdown</code>. I want this functionality so that I can:</p>
+<ol style="list-style-type: decimal">
+<li>Blog about my experiences with certain <code>R</code> packages.<br />
+</li>
+<li>Remind myself of certain tips and tricks, i.e., a help page for my future self.</li>
+</ol>
+<p><a href="https://bookdown.org/yihui/blogdown/">blogdown</a> is a popular <code>R</code> package that makes it easy to integrate <code>R Markdown</code> posts in Hugo based websites. This framework came out after I had already spent lots of time on my Jekyll based website. There also wasn’t a Hugo theme I liked enough to make the switch.</p>
+</div>
+<div id="the-solution" class="section level2">
+<h2>The Solution</h2>
+<p>I decided to do a hybrid Jekyll-based website with a Hugo-based blog. My main academic site at <a href="sahirbhatnagar.com" class="uri">sahirbhatnagar.com</a> remains within the Jekyll framework and hosted on <a href="https://github.com/sahirbhatnagar/sahirbhatnagar.github.io">GitHub</a> with <a href="https://help.github.com/en/articles/user-organization-and-project-pages">GitHub User Pages</a>, and my blogdown blog is also <a href="https://github.com/sahirbhatnagar/blog">hosted on GitHub</a> on the <code>gh-pages</code> branch with <a href="https://help.github.com/en/articles/user-organization-and-project-pages">GitHub Project Pages</a>.</p>
+<p>In this post I try to outline the steps I took to achieve this. This post assumes some familiarity with the <code>git</code> command line and that you already have a <a href="https://help.github.com/en/articles/user-organization-and-project-pages#user-and-organization-pages-sites">User Pages site on Github</a> at <code>http(s)://&lt;username&gt;.github.io</code>.</p>
+<p>It goes something like this:</p>
+<ol style="list-style-type: decimal">
+<li>Go to your online Github account and create a new repository called <code>blog</code>. Do not initiate with a <code>README.md</code>. Do not initiate with a license.<br />
+</li>
+<li>On your local machine, install the <a href="https://cran.r-project.org/package=blogdown"><code>blogdown R</code> package</a>.<br />
+</li>
+<li>On your local machine, create a new folder called <code>blog</code>. This will contain the source files of your blog. Make sure its empty (if its not empty, the command in Step 4 will return an error).<br />
+</li>
+<li>In <code>R</code> enter the following command to create a skeleton of the blogdown site</li>
+</ol>
+<pre class="r"><code>blogdown::new_site(dir = &quot;blog/&quot;)</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>If all worked well, you should see a preview of the <a href="https://github.com/yihui/hugo-lithium">hugo lithium theme (modified by Yihui Xie)</a> in the RStudio viewer pane.<br />
+</li>
+<li>The static files for the website are in the <code>public</code> folder, while the source files are in the top level directory (in this case, the <code>blog</code> folder).<br />
+</li>
+<li>Follow the instructions laid out in the <a href="https://gohugo.io/hosting-and-deployment/hosting-on-github/#deployment-of-project-pages-from-your-gh-pages-branch">hugo docs section: Deployment of Project Pages From Your gh-pages branch</a>. These steps show how you can push the static files of the blog to the <code>gh-pages</code> branch of your <code>blog</code> repository. Use the <code>master</code> branch to keep the source files of your blog.<br />
+</li>
+<li>To create a new blog post run this command from the root of the blog directory (and on the <code>master</code> branch):</li>
+</ol>
+<pre class="r"><code>blogdown::new_post(title = &quot;Name of new post&quot;, ext = &quot;.Rmd&quot;)</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>Create a <code>deploy.sh</code> script in the root of your <code>blog</code> folder so that you can automate this process everytime you add to your blog. The script I use will automatically build the blogdown blog and push to the <code>gh-pages</code> branch. Note that you first need to push the source code to the <code>master</code> branch (the script first checks for any uncommitted changes). This is what my <code>deploy.sh</code> script looks like:</li>
+</ol>
+<pre class="bash"><code>#!/bin/sh
+
+SRC_BRANCH="master"
+
+# Check if there are any uncommitted changes
+if ! git diff-index --quiet HEAD --; then
+    echo "Changes to the following files are uncommitted:"
+    git diff-index --name-only HEAD --
+    echo "Please commit the changes to master branch (which contains the source files of this blog) before proceeding."
+    echo "Aborting."
+    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
+fi
+
+echo "Deleting old public folder"
+rm -rf public
+mkdir public
+git worktree prune
+rm -rf .git/worktrees/public/
+
+echo "Checking out gh-pages branch into public"
+git worktree add -B gh-pages public origin/gh-pages
+
+echo "Removing existing files"
+rm -rf public
+
+echo "Generating site"
+Rscript -e "blogdown::build_site()"
+
+echo "Updating gh-pages branch"
+cd public && git add --all && git commit -m "Publishing to gh-pages (publish_to_ghpages.sh)" && git push origin gh-pages
+</code></pre>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
+<p>That’s all I have for now. I hope this framework will work for me and meet my needs to maintain my academic website, as well as a blogdown blog.</p>
+<p><br><br><br></p>
+</div>

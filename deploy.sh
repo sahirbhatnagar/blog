@@ -11,7 +11,7 @@ SRC_BRANCH="master"
 if ! git diff-index --quiet HEAD --; then
     echo "Changes to the following files are uncommitted:"
     git diff-index --name-only HEAD --
-    echo "Please commit the changes before proceeding."
+    echo "Please commit the changes to master branch (which contains the source files of this blog) before proceeding."
     # Push to SRC_BRANCH
     #git add -fA
     #git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci skip]"
