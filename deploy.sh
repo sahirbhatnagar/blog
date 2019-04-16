@@ -1,12 +1,8 @@
 #!/bin/sh
 
-#DIR=$(dirname "$0")
-
-#cd $DIR/..
-
 SRC_BRANCH="master"
 
-git add --all && git commit -m "Publishing to master branch" && git push origin master 
+git add --all && git commit -m "Publishing source of blog to master branch" && git push origin master 
 
 # Check if there are any uncommitted changes
 if ! git diff-index --quiet HEAD --; then
@@ -40,14 +36,14 @@ git worktree add public gh-pages
 
 echo "Generating site"
 Rscript -e "blogdown::build_site()"
-# Rscript -e "blogdown::hugo_build()"
 
 echo "Adding and committing to gh-pages branch"
-cd public && git add --all && git commit -m "Publishing to gh-pages"
+cd public && git add --all && git commit -m "$1"
 
 echo "Pushing to gh-pages branch"
 git push origin gh-pages
 
+echo "Cleaning up files"
 cd ..
 
 rm -rf public/*
