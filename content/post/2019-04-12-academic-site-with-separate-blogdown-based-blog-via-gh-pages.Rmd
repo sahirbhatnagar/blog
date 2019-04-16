@@ -52,7 +52,7 @@ blogdown::new_site(dir = "blog/")
 ```{r, eval=FALSE}
 blogdown::new_post(title = "Name of new post", ext = ".Rmd")
 ```
-  8. Create a `deploy.sh` script in the root of your `blog` folder so that you can automate the publication process everytime you add to your blog. The script I use will automatically build the blogdown blog and push to the `gh-pages` branch. Note that you first need to push the source code to the `master` branch (the script first checks for any uncommitted changes). This is what my `deploy.sh` script looks like (it makes use of [`git worktrees`](https://gist.github.com/cobyism/4730490#gistcomment-2375522)):
+  8. Create a `deploy.sh` script in the root of your `blog` folder so that you can automate the publication process everytime you add to your blog. The script I use will automatically build the blogdown blog and push to the `gh-pages` branch. Note that you first need to push the source code to the `master` branch (the script first checks for any uncommitted changes). This script assumes that `blogdown::build_site()` will create the static files in a folder called `public`. This is what my `deploy.sh` script looks like (it makes use of [`git worktrees`](https://gist.github.com/cobyism/4730490#gistcomment-2375522)):
 
   <pre class="bash"><code>#!/bin/sh
 

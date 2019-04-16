@@ -69,23 +69,32 @@ if ! git diff-index --quiet HEAD --; then
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
-echo "Make Worktree"
+echo "Deleting old publication"
+rm -rf .git/worktrees/public/
+
+echo "Make worktree"
 git worktree add public gh-pages
 
-echo "Generating site with blogdown"
+echo "Generating site"
 Rscript -e "blogdown::build_site()"
 
 echo "Adding and committing to gh-pages branch"
-cd public && git add --all && git commit -m "Publishing to gh-pages"
+cd public && git add --all && git commit -m "$1"
 
 echo "Pushing to gh-pages branch"
 git push origin gh-pages
 
 echo "Cleaning up files"
 cd ..
-rm -rf public/*
-gsgsdg
-# more code herefsafs
+git worktree prune
+
+rm -rf public
+
+</code></pre>
+<ol start="9" style="list-style-type: decimal">
+<li>After running <code>chmod +x deploy.sh</code>, you can then call the script using</li>
+</ol>
+<pre class="bash"><code>./deploy.sh "commit message of your choice"
 </code></pre>
 </div>
 <div id="discussion" class="section level2">
