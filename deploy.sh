@@ -35,13 +35,25 @@ fi
 # echo "Removing existing files"
 # rm -rf public
 
+echo "worktree"
+git worktree add public gh-pages
 
 echo "Generating site"
 Rscript -e "blogdown::build_site()"
 # Rscript -e "blogdown::hugo_build()"
 
 echo "Adding and committing to gh-pages branch"
-git subtree push --prefix public origin gh-pages
+cd public && git add --all && git commit -m "Publishing to gh-pages"
+
+echo "Pushing to gh-pages branch"
+git push origin gh-pages
+
+cd ..
+
+rm -rf public/*
+
+# echo "Adding and committing to gh-pages branch"
+# git subtree push --prefix public origin gh-pages
 
 # echo "Adding and committing to gh-pages branch"
 # cd public && git add --all && git commit -m "Publishing to gh-pages (publish_to_ghpages.sh)" 
