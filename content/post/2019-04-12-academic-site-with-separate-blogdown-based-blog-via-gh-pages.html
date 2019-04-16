@@ -73,9 +73,9 @@ if ! git diff-index --quiet HEAD --; then
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1
 fi
 
-echo "Deleting old public folder"
-rm -rf public
-mkdir public
+#echo "Deleting old public folder"
+#rm -rf public
+#mkdir public
 #git worktree prune
 rm -rf .git/worktrees/public/
 
