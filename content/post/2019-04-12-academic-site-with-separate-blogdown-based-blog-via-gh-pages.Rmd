@@ -71,7 +71,7 @@ fi
 echo "Deleting old public folder"
 rm -rf public
 mkdir public
-git worktree prune
+#git worktree prune
 rm -rf .git/worktrees/public/
 
 echo "Checking out gh-pages branch into public"

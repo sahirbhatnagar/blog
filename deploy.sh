@@ -6,6 +6,7 @@
 
 SRC_BRANCH="master"
 
+git add --all && git commit -m "Publishing to master branch" && git push origin master 
 
 # Check if there are any uncommitted changes
 if ! git diff-index --quiet HEAD --; then
