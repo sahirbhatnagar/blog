@@ -20,7 +20,7 @@
       <description>Objective The main goal of this post is to:
 Show one way of performing variable selection in a competing risks regression model
  Evaluate the predictive performance for a list of models using resampling methods   What the data looks like We will use the bmtcrr dataset from the casebase package available on CRAN. Here is what the data looks like:
-## Sex D Phase Age Status Source ftime ## 1 M ALL Relapse 48 2 BM+PB 0.</description>
+pacman::p_load(casebase) head(bmtcrr) ## Sex D Phase Age Status Source ftime ## 1 M ALL Relapse 48 2 BM+PB 0.</description>
     </item>
     
     <item>

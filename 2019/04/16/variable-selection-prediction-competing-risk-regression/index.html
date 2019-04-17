@@ -58,7 +58,7 @@
 
   <article class="article">
     
-    <span class="article-duration">7 min read</span>
+    <span class="article-duration">8 min read</span>
     
 
     <h1 class="article-title">Variable Selection and Prediction in Competing Risk Regression</h1>
@@ -83,6 +83,8 @@
 <div id="what-the-data-looks-like" class="section level2">
 <h2>What the data looks like</h2>
 <p>We will use the <code>bmtcrr</code> dataset from the <a href="https://cran.r-project.org/package=casebase"><code>casebase</code></a> package available on CRAN. Here is what the data looks like:</p>
+<pre class="r"><code>pacman::p_load(casebase)
+head(bmtcrr)</code></pre>
 <pre><code>##   Sex   D   Phase Age Status Source  ftime
 ## 1   M ALL Relapse  48      2  BM+PB   0.67
 ## 2   F AML     CR2  23      1  BM+PB   9.50
@@ -220,10 +222,22 @@ For categorical variables, we are given the counts for each category.
 </ol>
 <div id="load-the-necessary-packages" class="section level3">
 <h3>Load the necessary packages</h3>
+<pre class="r"><code>pacman::p_load(riskRegression) # for Fine-Gray Regression (FGR)
+pacman::p_load(prodlim) # for Hist function
+pacman::p_load(lava) # not sure, but its needed
+pacman::p_load(cmprsk) # competing risks
+pacman::p_load(crrstep) # for variable selection in FGR
+pacman::p_load(pec) # for resampling metrics</code></pre>
 </div>
 <div id="prepare-the-data" class="section level3">
 <h3>Prepare the data</h3>
 <p>This step is required if you have categorical data. You must convert the factors into indicator variables using <code>model.matrix</code>:</p>
+<pre class="r"><code>fmla &lt;- as.formula( ~ ftime + Status + Sex + Phase + Source + Age + D)
+
+# remove intercept
+bmtcrr.expanded &lt;- as.data.frame(model.matrix(fmla, 
+                                              data = bmtcrr)[,-1])
+head(bmtcrr.expanded)</code></pre>
 <pre><code>##    ftime Status SexM PhaseCR2 PhaseCR3 PhaseRelapse SourcePB Age DAML
 ## 1   0.67      2    1        0        0            1        0  48    0
 ## 2   9.50      1    0        1        0            0        0  23    1
@@ -231,11 +245,25 @@ For categorical variables, we are given the counts for each category.
 ## 4  24.03      2    0        1        0            0        0  26    0
 ## 5   1.47      2    0        1        0            0        0  36    0
 ## 6   2.23      2    1        0        0            1        0  17    0</code></pre>
+<pre class="r"><code># get the names of the covariates only
+covariates &lt;- setdiff(colnames(bmtcrr.expanded), c(&quot;ftime&quot;,&quot;Status&quot;))</code></pre>
 </div>
 <div id="run-the-variable-selection" class="section level3">
 <h3>Run the variable selection</h3>
+<pre class="r"><code># formula for the Full model
+(ff &lt;- as.formula(paste0(&quot;Hist(ftime, Status) ~ &quot;,
+                 paste(covariates, collapse = &quot;+&quot;))))</code></pre>
 <pre><code>## Hist(ftime, Status) ~ SexM + PhaseCR2 + PhaseCR3 + PhaseRelapse + 
 ##     SourcePB + Age + DAML</code></pre>
+<pre class="r"><code># Fit full model with Fine-Grey regression model
+fg &lt;- riskRegression::FGR(ff, cause = 1, data = bmtcrr.expanded)
+
+# Backward selection based on the AIC
+sfgAIC &lt;- pec::selectFGR(ff, cause = 1, data = bmtcrr.expanded, 
+                         rule = &quot;AIC&quot;, direction = &quot;backward&quot;)
+
+# Final FGR-model with selected variables
+sfgAIC$fit </code></pre>
 <pre><code>## 
 ## Right-censored response of a competing.risks model
 ## 
@@ -274,6 +302,12 @@ For categorical variables, we are given the counts for each category.
 ## Pseudo likelihood ratio test = 24.1  on 4 df,
 ## 
 ## Convergence: TRUE</code></pre>
+<pre class="r"><code># Backward selection based on the BIC
+sfgBIC &lt;- pec::selectFGR(ff, cause = 1, data = bmtcrr.expanded, 
+                    rule = &quot;BIC&quot;, direction = &quot;backward&quot;)
+
+# Final FGR-model with selected variables
+sfgBIC$fit</code></pre>
 <pre><code>## 
 ## Right-censored response of a competing.risks model
 ## 
@@ -312,9 +346,20 @@ For categorical variables, we are given the counts for each category.
 ## Pseudo likelihood ratio test = 24.1  on 4 df,
 ## 
 ## Convergence: TRUE</code></pre>
+<pre class="r"><code># create list of models
+models_list &lt;- list(full.model = fg, selectedAIC = sfgAIC, selectedBIC = sfgBIC)</code></pre>
 </div>
 <div id="bootstrap-cross-validation-performance" class="section level3">
 <h3>Bootstrap cross-validation performance</h3>
+<pre class="r"><code>## Lower Brier Score is better
+## The reference model is without any covariates
+set.seed(7)
+p2 &lt;- pec::pec(models_list,
+               formula = ff,
+               data = bmtcrr.expanded,
+               B = 5,
+               splitMethod = &quot;Boot632&quot;)</code></pre>
+<pre class="r"><code>p2</code></pre>
 <pre><code>## 
 ## Prediction error curves
 ## 
@@ -358,14 +403,23 @@ For categorical variables, we are given the counts for each category.
 ## full.model              0.193
 ## selectedAIC             0.197
 ## selectedBIC             0.197</code></pre>
-<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-5-1.png" width="1056" /></p>
+<pre class="r"><code>plot(p2)</code></pre>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-5-1.png" width="864" /></p>
 </div>
 <div id="calibration-plot" class="section level3">
 <h3>Calibration Plot</h3>
-<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-6-1.png" width="1056" /></p>
+<pre class="r"><code>calPlot(models_list,
+        formula=ff, splitMethod = &quot;BootCv&quot;, B=5)</code></pre>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-6-1.png" width="864" /></p>
 </div>
 <div id="observed-vs.predicted-for-each-method" class="section level3">
 <h3>Observed vs. Predicted for each Method</h3>
+<pre class="r"><code># Full Model
+b1 &lt;- pec::calPlot(models_list[[1]],
+              formula = ff,
+              bars = TRUE, 
+              hanging = FALSE)
+print(b1)</code></pre>
 <pre><code>## 
 ## Calibration of risk predictions for 177 subjects.
 ## 
@@ -391,7 +445,15 @@ For categorical variables, we are given the counts for each category.
 ## 
 ## 
 ## Outcome frequencies (Obs) were obtained with the Aalen-Johansen method.</code></pre>
-<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-1.png" width="1056" /><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-2.png" width="1056" /></p>
+<pre class="r"><code>plot(b1)</code></pre>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-1.png" width="864" /></p>
+<pre class="r"><code># Selected AIC Model
+b2 &lt;- pec::calPlot(models_list[[2]],
+                   formula = ff,
+                   bars = TRUE, 
+                   hanging = FALSE)</code></pre>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-2.png" width="864" /></p>
+<pre class="r"><code>print(b2)</code></pre>
 <pre><code>## 
 ## Calibration of risk predictions for 177 subjects.
 ## 
@@ -417,6 +479,15 @@ For categorical variables, we are given the counts for each category.
 ## 
 ## 
 ## Outcome frequencies (Obs) were obtained with the Aalen-Johansen method.</code></pre>
+<pre class="r"><code>plot(b2)
+
+
+# Selected BIC Model
+b3 &lt;- pec::calPlot(models_list[[3]],
+                   formula = ff,
+                   bars = TRUE, 
+                   hanging = FALSE)
+print(b3)</code></pre>
 <pre><code>## 
 ## Calibration of risk predictions for 177 subjects.
 ## 
@@ -442,6 +513,7 @@ For categorical variables, we are given the counts for each category.
 ## 
 ## 
 ## Outcome frequencies (Obs) were obtained with the Aalen-Johansen method.</code></pre>
+<pre class="r"><code>plot(b3)</code></pre>
 </div>
 </div>
 
