@@ -6,10 +6,22 @@
     <description>Recent content on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 16 Apr 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Variable Selection and Prediction in Competing Risk Regression</title>
+      <link>https://sahirbhatnagar.github.io/blog/2019/04/16/variable-selection-prediction-competing-risk-regression/</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2019/04/16/variable-selection-prediction-competing-risk-regression/</guid>
+      <description>Objective The main goal of this post is to:
+Show one way of performing variable selection in a competing risks regression model
+ Evaluate the predictive performance for a list of models using resampling methods   What the data looks like We will use the bmtcrr dataset from the casebase package available on CRAN. Here is what the data looks like:
+## Sex D Phase Age Status Source ftime ## 1 M ALL Relapse 48 2 BM+PB 0.</description>
+    </item>
     
     <item>
       <title>Jekyll website with Hugo blog with blogdown</title>
