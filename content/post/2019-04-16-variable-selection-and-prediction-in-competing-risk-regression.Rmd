@@ -11,7 +11,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.width=9, fig.height=7)
+                      fig.width=7, fig.height=5)
 #fig.width = 11, fig.height = 10, 
 ```
 
@@ -123,15 +123,17 @@ pacman::p_load(pec) # for resampling metrics
 This step is required if you have categorical data. You must convert the factors into indicator variables using `model.matrix`:
 
 ```{r}
-fmla <- as.formula( ~ ftime + Status + Sex + Phase + Source + Age + D)
+fmla <- as.formula( ~ ftime + Status + Sex + 
+                      Phase + Source + Age + D)
 
 # remove intercept
 bmtcrr.expanded <- as.data.frame(model.matrix(fmla, 
-                                              data = bmtcrr)[,-1])
+                              data = bmtcrr)[,-1])
 head(bmtcrr.expanded)
 
 # get the names of the covariates only
-covariates <- setdiff(colnames(bmtcrr.expanded), c("ftime","Status"))
+covariates <- setdiff(colnames(bmtcrr.expanded), 
+                      c("ftime","Status"))
 ```
 
 
