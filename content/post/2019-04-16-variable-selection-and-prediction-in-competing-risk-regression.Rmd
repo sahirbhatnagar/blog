@@ -11,7 +11,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.width=7, fig.height=5)
+                      fig.width=7, fig.height=7)
 #fig.width = 11, fig.height = 10, 
 ```
 
