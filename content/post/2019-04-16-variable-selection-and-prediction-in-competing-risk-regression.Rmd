@@ -1,0 +1,223 @@
+---
+title: Variable Selection and Prediction in Competing Risk Regression
+author: null
+date: '2019-04-16'
+slug: variable-selection-prediction-competing-risk-regression
+categories: [variable selection, prediction, R, competing risks]
+tags: [R, competing risks, variable selection]
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE,
+                      fig.width=11, fig.height=13)
+#fig.width = 11, fig.height = 10, 
+```
+
+
+## Objective
+
+The main goal of this post is to: 
+
+  1. Show one way of performing variable selection in a competing risks regression model  
+  2. Evaluate the predictive performance for a list of models using resampling methods  
+  
+
+## What the data looks like
+
+We will use the `bmtcrr` dataset from the [`casebase`](https://cran.r-project.org/package=casebase) package available on CRAN. Here is what the data looks like:
+
+```{r}
+pacman::p_load(casebase)
+head(bmtcrr)
+```
+
+
+<p>We will perform a competing risk analysis on data from 177 patients who received a stem cell transplant for acute leukemia. The event of interest in relapse, but other competing causes (e.g. transplant-related death) need to be taken into account. We also want to take into account the effect of several covariates such as Sex, Disease (lymphoblastic or myeloblastic leukemia, abbreviated as ALL and AML, respectively), Phase at transplant (Relapse, CR1, CR2, CR3), Source of stem cells (bone marrow and peripheral blood, coded as BM+PB, or peripheral blood, coded as PB), and Age. Below, is the Table 1:</p>
+<table style="width:76%;">
+<colgroup>
+<col width="12%" />
+<col width="31%" />
+<col width="31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+<th>Statistical summary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sex</td>
+<td>Sex</td>
+<td>M=Male (100) <br> F=Female (77)</td>
+</tr>
+<tr class="even">
+<td>D</td>
+<td>Disease</td>
+<td>ALL (73) <br> AML (104)</td>
+</tr>
+<tr class="odd">
+<td>Phase</td>
+<td>Phase</td>
+<td>CR1 (47) <br> CR2 (45) <br> CR3 (12) <br> Relapse (73)</td>
+</tr>
+<tr class="even">
+<td>Source</td>
+<td>Type of transplant</td>
+<td>BM+PB (21) <br> PB (156)</td>
+</tr>
+<tr class="odd">
+<td>Age</td>
+<td>Age of patient (years)</td>
+<td>4–62 <br> 30.47 (13.04)</td>
+</tr>
+<tr class="even">
+<td>Ftime</td>
+<td>Failure time (months)</td>
+<td>0.13–131.77 <br> 20.28 (30.78)</td>
+</tr>
+<tr class="odd">
+<td>Status</td>
+<td>Status indicator</td>
+<td>0=censored (46) <br> 1=relapse (56) <br> 2=competing event (75)</td>
+</tr>
+</tbody>
+</table>
+
+<p>The statistical summary is generated differently for continuous and categorical variables:</p>
+<ul>
+<li>
+<p>For continuous variables, we are given the range, followed by the mean and standard deviation.</p>
+</li>
+<li>
+<p>For categorical variables, we are given the counts for each category.</p>
+</li>
+</ul>
+
+
+## Variable Selection
+
+Here we compare the variables selected using three methods:
+
+  1. Full model: contains all of the predictors and no variable selection is being done.  
+  2. Backward selection based on the AIC.  
+  3. Backward selection based on the BIC.  
+
+### Load the necessary packages
+
+```{r}
+pacman::p_load(riskRegression) # for Fine-Gray Regression (FGR)
+pacman::p_load(prodlim) # for Hist function
+pacman::p_load(lava) # not sure, but its needed
+pacman::p_load(cmprsk) # competing risks
+pacman::p_load(crrstep) # for variable selection in FGR
+pacman::p_load(pec) # for resampling metrics
+```
+
+
+### Prepare the data
+
+This step is required if you have categorical data. You must convert the factors into indicator variables using `model.matrix`:
+
+```{r}
+fmla <- as.formula( ~ ftime + Status + Sex + Phase + Source + Age + D)
+
+# remove intercept
+bmtcrr.expanded <- as.data.frame(model.matrix(fmla, 
+                                              data = bmtcrr)[,-1])
+head(bmtcrr.expanded)
+
+# get the names of the covariates only
+covariates <- setdiff(colnames(bmtcrr.expanded), c("ftime","Status"))
+```
+
+
+### Run the variable selection 
+
+```{r}
+# formula for the Full model
+(ff <- as.formula(paste0("Hist(ftime, Status) ~ ",
+                 paste(covariates, collapse = "+"))))
+
+# Fit full model with Fine-Grey regression model
+fg <- riskRegression::FGR(ff, cause = 1, data = bmtcrr.expanded)
+
+# Backward selection based on the AIC
+sfgAIC <- pec::selectFGR(ff, cause = 1, data = bmtcrr.expanded, 
+                         rule = "AIC", direction = "backward")
+
+# Final FGR-model with selected variables
+sfgAIC$fit 
+
+# Backward selection based on the BIC
+sfgBIC <- pec::selectFGR(ff, cause = 1, data = bmtcrr.expanded, 
+                    rule = "BIC", direction = "backward")
+
+# Final FGR-model with selected variables
+sfgBIC$fit
+
+# create list of models
+models_list <- list(full.model = fg, selectedAIC = sfgAIC, selectedBIC = sfgBIC)
+```
+
+
+### Bootstrap cross-validation performance
+
+
+
+```{r}
+## Lower Brier Score is better
+## The reference model is without any covariates
+set.seed(7)
+p2 <- pec::pec(models_list,
+               formula = ff,
+               data = bmtcrr.expanded,
+               B = 5,
+               splitMethod = "Boot632")
+
+p2
+plot(p2)
+```
+
+
+### Calibration Plot
+
+```{r}
+calPlot(models_list,
+        formula=ff, splitMethod = "BootCv", B=5)
+```
+
+
+### Observed vs. Predicted for each Method
+
+```{r}
+
+# Full Model
+b1 <- pec::calPlot(models_list[[1]],
+              formula = ff,
+              bars = TRUE, 
+              hanging = FALSE)
+print(b1)
+plot(b1)
+
+# Selected AIC Model
+b2 <- pec::calPlot(models_list[[2]],
+                   formula = ff,
+                   bars = TRUE, 
+                   hanging = FALSE)
+print(b2)
+plot(b2)
+
+
+# Selected BIC Model
+b3 <- pec::calPlot(models_list[[3]],
+                   formula = ff,
+                   bars = TRUE, 
+                   hanging = FALSE)
+print(b3)
+plot(b3)
+```
+
