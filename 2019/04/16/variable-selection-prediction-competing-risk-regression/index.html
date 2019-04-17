@@ -232,11 +232,12 @@ pacman::p_load(pec) # for resampling metrics</code></pre>
 <div id="prepare-the-data" class="section level3">
 <h3>Prepare the data</h3>
 <p>This step is required if you have categorical data. You must convert the factors into indicator variables using <code>model.matrix</code>:</p>
-<pre class="r"><code>fmla &lt;- as.formula( ~ ftime + Status + Sex + Phase + Source + Age + D)
+<pre class="r"><code>fmla &lt;- as.formula( ~ ftime + Status + Sex + 
+                      Phase + Source + Age + D)
 
 # remove intercept
 bmtcrr.expanded &lt;- as.data.frame(model.matrix(fmla, 
-                                              data = bmtcrr)[,-1])
+                              data = bmtcrr)[,-1])
 head(bmtcrr.expanded)</code></pre>
 <pre><code>##    ftime Status SexM PhaseCR2 PhaseCR3 PhaseRelapse SourcePB Age DAML
 ## 1   0.67      2    1        0        0            1        0  48    0
@@ -246,7 +247,8 @@ head(bmtcrr.expanded)</code></pre>
 ## 5   1.47      2    0        1        0            0        0  36    0
 ## 6   2.23      2    1        0        0            1        0  17    0</code></pre>
 <pre class="r"><code># get the names of the covariates only
-covariates &lt;- setdiff(colnames(bmtcrr.expanded), c(&quot;ftime&quot;,&quot;Status&quot;))</code></pre>
+covariates &lt;- setdiff(colnames(bmtcrr.expanded), 
+                      c(&quot;ftime&quot;,&quot;Status&quot;))</code></pre>
 </div>
 <div id="run-the-variable-selection" class="section level3">
 <h3>Run the variable selection</h3>
@@ -404,13 +406,13 @@ p2 &lt;- pec::pec(models_list,
 ## selectedAIC             0.197
 ## selectedBIC             0.197</code></pre>
 <pre class="r"><code>plot(p2)</code></pre>
-<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-5-1.png" width="864" /></p>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="calibration-plot" class="section level3">
 <h3>Calibration Plot</h3>
 <pre class="r"><code>calPlot(models_list,
         formula=ff, splitMethod = &quot;BootCv&quot;, B=5)</code></pre>
-<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-6-1.png" width="864" /></p>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="observed-vs.predicted-for-each-method" class="section level3">
 <h3>Observed vs. Predicted for each Method</h3>
@@ -446,13 +448,13 @@ print(b1)</code></pre>
 ## 
 ## Outcome frequencies (Obs) were obtained with the Aalen-Johansen method.</code></pre>
 <pre class="r"><code>plot(b1)</code></pre>
-<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-1.png" width="864" /></p>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code># Selected AIC Model
 b2 &lt;- pec::calPlot(models_list[[2]],
                    formula = ff,
                    bars = TRUE, 
                    hanging = FALSE)</code></pre>
-<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-2.png" width="864" /></p>
+<p><img src="/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
 <pre class="r"><code>print(b2)</code></pre>
 <pre><code>## 
 ## Calibration of risk predictions for 177 subjects.
