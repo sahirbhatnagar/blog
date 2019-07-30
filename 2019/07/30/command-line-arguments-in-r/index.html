@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<title>Command Line Arguments in R - Sahir&#39;s blog</title>
+<meta property="og:title" content="Command Line Arguments in R - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">Command Line Arguments in R</h1>
+
+    
+    <span class="article-date">2019-07-30</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>In this post, I explain how I sometimes conduct simulation studies on a compute cluster. In this example, I simulate a toy dataset, fit a linear mixed model, and collect the resulting regression coefficients.</p>
+<p>There are three main objectives which motivated this example:</p>
+<ol style="list-style-type: decimal">
+<li>I want to run many replications for a given simulation scenario while leveraging the many CPUs available on a compute cluster<br />
+</li>
+<li>I want to alter the simulation parameters with minimal effort</li>
+<li>I want to collect the results from each simulation scenario into a single <code>data.frame</code></li>
+</ol>
+<p>In this example, I alter both the sample size and the noise variance. Each take 3 different values for a total combination of 9 simulation scenarios. We want to be able to run each of these 9 scenarios as a different job (i.e. not in the same R session) so that they may run in parallel. The different combinations of simulation parameters will be stored in a <code>data.frame</code>. They are referenced by a command line argument (outside of <code>R</code>, at the job submission command), e.g.:</p>
+<pre class="bash"><code>for i in {1..9..1} ; do qsub -v index=$i mclapplyExample.sh ; done</code></pre>
+<p>This is a simple loop which passes the value of <code>i</code> to the bash script <code>mclapplyExample.sh</code> which subsequently passes it to the <code>R</code> script <code>mclapplyExample2.R</code>. Below I provide the three scripts required for this example.</p>
+<div id="the-main-simulation-script" class="section level2">
+<h2>The main simulation script</h2>
+<p>The following script generates a <code>data.frame</code> of all the simulation parameters. It then reads the command line argument which corresponds to the simulation scenario. The rest of the script runs the jobs using <code>mcmapply</code>. i saved the following script to an <code>R</code> file called <code>mclappyExample2.R</code>. Carefully read the notes at the top of the script.</p>
+<pre class="r"><code>##################################
+# R source code file for conducting simulations using the parallel package with 
+# command line arguments. The main idea is to define a data.frame of simulation 
+# parameters, and then use command line arguments to reference a particular 
+# combination of simulation parameters
+# Created: July 27, 2019
+# Updated: July 29, 2019
+# Notes: 
+# qsub command to cycle through all 9 combinations of simulation parameters:
+# for i in {1..9..1} ; do qsub -v index=$i mclapplyExample2.sh ; done
+# use mclapplyExample2.sh to submit to compute cluster
+# use collectResults.R to combine results in one data.frame
+##################################
+
+
+# load libraries ----------------------------------------------------------
+
+library(parallel)
+library(lme4)
+#detectCores()
+
+
+# Define a data.frame of simulation parameters ----------------------------
+
+parametersDf &lt;- base::expand.grid(sampleSize = c(200, 500, 1000),
+                                  noiseSD = c(1,2,3),
+                                  replications = 10,
+                                  stringsAsFactors = FALSE)
+
+
+# get simulation scenario index from command line args --------------------
+
+parameterIndex &lt;- base::as.numeric(base::as.character(base::commandArgs(trailingOnly = T)[1]))
+
+# select simulation parameters based on command line argument
+simulationParameters &lt;- parametersDf[parameterIndex,, drop = F]
+replications &lt;- 1:simulationParameters[[&quot;replications&quot;]]
+sampleSize &lt;- simulationParameters[[&quot;sampleSize&quot;]]
+noiseSD &lt;- simulationParameters[[&quot;noiseSD&quot;]]
+
+# Simulation function definition ------------------------------------------
+
+f &lt;- function(i, n, sd, scenario = parameterIndex) {
+
+  # simulate data
+  x &lt;- stats::runif(n*5)
+  z &lt;- stats::rbinom(n*5,1,x)
+  ai &lt;- base::rep(stats::rnorm(n), each = 5)
+  
+  # generate response with noise
+  y &lt;- ai + 1 + x + z + stats::rnorm(n*5, sd = sd)
+  
+  # generate cluster ID
+  id &lt;- base::rep(1:n, each = 5)
+
+  # fit linear mixed model and get summary
+  fit &lt;- lme4::lmer(y ~ x + z + (1 | id))
+  sfit &lt;- summary(fit)
+  
+  
+  # return list of simulation parameters and lmm coefficients
+  return(list(scenario = scenario,
+              replicate = i, 
+              sampleSize = n, 
+              noiseSD = sd, 
+              b0 = sfit$coefficients[1,1], 
+              bx = sfit$coefficients[2,1],
+              bz = sfit$coefficients[3,1]))
+}
+
+
+
+# Execute simulation ------------------------------------------------------
+
+MyOutput &lt;- parallel::mcmapply(FUN = f, 
+                               i = replications,
+                               MoreArgs = list(n = sampleSize,
+                                               sd = noiseSD),
+                               SIMPLIFY = FALSE)
+
+
+# Collect results in a matrix ---------------------------------------------
+
+results &lt;- base::do.call(base::rbind, MyOutput)
+
+
+# Write results to file ---------------------------------------------------
+
+# create filename with random pattern extension. assumes you have a directory called results
+# change tmpdir to the directory where you want to store results
+# depending on system, the PBS_O_WORKDIR might be set and can be used via
+# paste(Sys.getenv(&quot;PBS_O_WORKDIR&quot;),&quot;results&quot;, sep=&quot;/&quot;)
+filename &lt;- base::tempfile(pattern = base::sprintf(&quot;scenario_%1.0f_sampleSize_%1.0f_noiseSD_%1.0f_&quot;,
+                                                   parameterIndex, 
+                                                   sampleSize, 
+                                                   noiseSD),
+                           tmpdir = &quot;results&quot;,
+                           fileext = &quot;.txt&quot;)
+
+utils::write.table(results,
+                   file = filename,
+                   quote = FALSE,
+                   row.names = FALSE,
+                   col.names = FALSE)</code></pre>
+</div>
+<div id="the-bash-script" class="section level2">
+<h2>The bash script</h2>
+<p>This is the <code>bash</code> script which I saved as <code>mclappyExample2.sh</code>.</p>
+<pre class="bash"><code>#!/bin/bash
+#PBS -l walltime=1:30:00
+#PBS -o log/
+#PBS -e log/
+#PBS -N sim1
+#PBS -m ea
+#PBS -l mem=12G
+#PBS -l vmem=12G
+
+cd $PBS_O_WORKDIR
+
+SRC=$PBS_O_WORKDIR
+
+Rscript ${SRC}/mclappyExample2.R ${index}</code></pre>
+</div>
+<div id="collect-results" class="section level2">
+<h2>Collect Results</h2>
+<p>The following is simply to collect all results and merge into a single <code>data.frame</code>. Carefully read the notes at the top of the script.</p>
+<pre class="r"><code>##################################
+# R source code file for gathering simulation results into one dataset
+# Created: July 27, 2019
+# Updated: July 29, 2019
+# Notes: 
+# This script is to be used only once mclapplyExample2.sh has been executed
+# Assumes results are stored in a directory called results. 
+# Change the path argument in list.files function accordingly
+##################################
+
+# To read in all the results and combine into 1 data.frame ----------------
+
+# list all files starting with the word scenario in the results directory
+# include the full path 
+files &lt;- base::list.files(path = &quot;results&quot;, 
+                          pattern = &quot;scenario&quot;,
+                          full.names = TRUE)
+
+# read in all the results into a list
+resultsList &lt;- base::lapply(files, utils::read.table)
+
+
+# combine results into a single data.frame
+resultsDF &lt;- base::do.call(base::rbind, resultsList)
+colnames(resultsDF) &lt;- c(&quot;scenario&quot;,&quot;replicate&quot;, &quot;sampleSize&quot;, &quot;noiseSD&quot;, &quot;b0&quot;, &quot;bx&quot;, &quot;bz&quot;)</code></pre>
+</div>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

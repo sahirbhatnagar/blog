@@ -6,22 +6,31 @@
     <description>Recent content in Tags on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Feb 2017 15:09:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 30 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Bayesian</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/bayesian/</link>
-      <pubDate>Thu, 23 Feb 2017 15:09:00 +0000</pubDate>
+      <title>R</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/r/</link>
+      <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/bayesian/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/r/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Competing Risks</title>
+      <title>computing</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/computing/</link>
+      <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/computing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>competing risks</title>
       <link>https://sahirbhatnagar.github.io/blog/tags/competing-risks/</link>
       <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
@@ -30,65 +39,20 @@
     </item>
     
     <item>
-      <title>Facet_wrap</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</link>
-      <pubDate>Mon, 08 Feb 2016 15:09:00 +0000</pubDate>
+      <title>variable selection</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/variable-selection/</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/variable-selection/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Gene Expression</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</link>
-      <pubDate>Wed, 10 Jun 2015 15:09:00 +0000</pubDate>
+      <title>Bayesian</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/bayesian/</link>
+      <pubDate>Thu, 23 Feb 2017 15:09:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Genomics</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/genomics/</link>
-      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/genomics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ggplot2</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</link>
-      <pubDate>Thu, 25 Feb 2016 15:09:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Heatmap</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/heatmap/</link>
-      <pubDate>Wed, 10 Jun 2015 15:09:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/heatmap/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Labels</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/labels/</link>
-      <pubDate>Mon, 08 Feb 2016 15:09:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/labels/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Limma</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/limma/</link>
-      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/limma/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/bayesian/</guid>
       <description></description>
     </item>
     
@@ -102,16 +66,61 @@
     </item>
     
     <item>
-      <title>Plot</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/plot/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      <title>regression</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/regression/</link>
+      <pubDate>Thu, 23 Feb 2017 15:09:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/plot/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/regression/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Power</title>
+      <title>genomics</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/genomics/</link>
+      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/genomics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>limma</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/limma/</link>
+      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/limma/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>statistics</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/statistics/</link>
+      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/statistics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>t test</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/t-test/</link>
+      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/t-test/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ggplot2</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</link>
+      <pubDate>Thu, 25 Feb 2016 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>power</title>
       <link>https://sahirbhatnagar.github.io/blog/tags/power/</link>
       <pubDate>Thu, 25 Feb 2016 15:09:00 +0000</pubDate>
       
@@ -120,11 +129,29 @@
     </item>
     
     <item>
-      <title>R</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/r/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      <title>sample size</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/sample-size/</link>
+      <pubDate>Thu, 25 Feb 2016 15:09:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/r/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/sample-size/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>facet_wrap</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</link>
+      <pubDate>Mon, 08 Feb 2016 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>labels</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/labels/</link>
+      <pubDate>Mon, 08 Feb 2016 15:09:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/labels/</guid>
       <description></description>
     </item>
     
@@ -138,47 +165,29 @@
     </item>
     
     <item>
-      <title>Regression</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/regression/</link>
-      <pubDate>Thu, 23 Feb 2017 15:09:00 +0000</pubDate>
+      <title>plot</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/plot/</link>
+      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/regression/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/plot/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Sample Size</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/sample-size/</link>
-      <pubDate>Thu, 25 Feb 2016 15:09:00 +0000</pubDate>
+      <title>gene expression</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</link>
+      <pubDate>Wed, 10 Jun 2015 15:09:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/sample-size/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Statistics</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/statistics/</link>
-      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
+      <title>heatmap</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/heatmap/</link>
+      <pubDate>Wed, 10 Jun 2015 15:09:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/tags/statistics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>T Test</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/t-test/</link>
-      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/t-test/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Variable Selection</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/variable-selection/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/variable-selection/</guid>
+      <guid>https://sahirbhatnagar.github.io/blog/tags/heatmap/</guid>
       <description></description>
     </item>
     

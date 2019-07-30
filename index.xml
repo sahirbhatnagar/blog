@@ -6,10 +6,22 @@
     <description>Recent content on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 16 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 30 Jul 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Command Line Arguments in R</title>
+      <link>https://sahirbhatnagar.github.io/blog/2019/07/30/command-line-arguments-in-r/</link>
+      <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2019/07/30/command-line-arguments-in-r/</guid>
+      <description>In this post, I explain how I sometimes conduct simulation studies on a compute cluster. In this example, I simulate a toy dataset, fit a linear mixed model, and collect the resulting regression coefficients.
+There are three main objectives which motivated this example:
+I want to run many replications for a given simulation scenario while leveraging the many CPUs available on a compute cluster
+ I want to alter the simulation parameters with minimal effort I want to collect the results from each simulation scenario into a single data.</description>
+    </item>
     
     <item>
       <title>Variable Selection and Prediction in Competing Risk Regression</title>
