@@ -1,0 +1,193 @@
+---
+title: Command Line Arguments in R
+author: null
+date: '2019-07-30'
+slug: command-line-arguments-in-r
+categories: [R, parallel computing]
+tags: [R, computing]
+editor_options: 
+  chunk_output_type: console
+---
+
+In this post, I explain how I sometimes conduct simulation studies on a compute cluster. In this example, I simulate a toy dataset, fit a linear mixed model, and collect the resulting regression coefficients. 
+
+There are three main objectives which motivated this example:
+
+1) I want to run many replications for a given simulation scenario while leveraging the many CPUs available on a compute cluster  
+2) I want to alter the simulation parameters with minimal effort 
+3) I want to collect the results from each simulation scenario into a single `data.frame`
+
+In this example, I alter both the sample size and the noise variance. Each take 3 different values for a total combination of 9 simulation scenarios. We want to be able to run each of these 9 scenarios as a different job (i.e. not in the same R session) so that they may run in parallel. The different combinations of simulation parameters will be stored in a `data.frame`. They are referenced by a command line argument (outside of `R`, at the job submission command), e.g.:
+
+```{bash, eval = FALSE}
+for i in {1..9..1} ; do qsub -v index=$i mclapplyExample.sh ; done
+```
+
+This is a simple loop which passes the value of `i` to the bash script `mclapplyExample.sh` which subsequently passes it to the `R` script `mclapplyExample2.R`. Below I provide the three scripts required for this example. 
+
+## The main simulation script
+
+The following script generates a `data.frame` of all the simulation parameters. It then reads the command line argument which corresponds to the simulation scenario. The rest of the script runs the jobs using `mcmapply`. i saved the following script to an `R` file called `mclappyExample2.R`. Carefully read the notes at the top of the script.
+
+```{r, eval=FALSE, echo=TRUE}
+##################################
+# R source code file for conducting simulations using the parallel package with 
+# command line arguments. The main idea is to define a data.frame of simulation 
+# parameters, and then use command line arguments to reference a particular 
+# combination of simulation parameters
+# Created: July 27, 2019
+# Updated: July 29, 2019
+# Notes: 
+# qsub command to cycle through all 9 combinations of simulation parameters:
+# for i in {1..9..1} ; do qsub -v index=$i mclapplyExample2.sh ; done
+# use mclapplyExample2.sh to submit to compute cluster
+# use collectResults.R to combine results in one data.frame
+##################################
+
+
+# load libraries ----------------------------------------------------------
+
+library(parallel)
+library(lme4)
+#detectCores()
+
+
+# Define a data.frame of simulation parameters ----------------------------
+
+parametersDf <- base::expand.grid(sampleSize = c(200, 500, 1000),
+                                  noiseSD = c(1,2,3),
+                                  replications = 10,
+                                  stringsAsFactors = FALSE)
+
+
+# get simulation scenario index from command line args --------------------
+
+parameterIndex <- base::as.numeric(base::as.character(base::commandArgs(trailingOnly = T)[1]))
+
+# select simulation parameters based on command line argument
+simulationParameters <- parametersDf[parameterIndex,, drop = F]
+replications <- 1:simulationParameters[["replications"]]
+sampleSize <- simulationParameters[["sampleSize"]]
+noiseSD <- simulationParameters[["noiseSD"]]
+
+# Simulation function definition ------------------------------------------
+
+f <- function(i, n, sd, scenario = parameterIndex) {
+
+  # simulate data
+  x <- stats::runif(n*5)
+  z <- stats::rbinom(n*5,1,x)
+  ai <- base::rep(stats::rnorm(n), each = 5)
+  
+  # generate response with noise
+  y <- ai + 1 + x + z + stats::rnorm(n*5, sd = sd)
+  
+  # generate cluster ID
+  id <- base::rep(1:n, each = 5)
+
+  # fit linear mixed model and get summary
+  fit <- lme4::lmer(y ~ x + z + (1 | id))
+  sfit <- summary(fit)
+  
+  
+  # return list of simulation parameters and lmm coefficients
+  return(list(scenario = scenario,
+              replicate = i, 
+              sampleSize = n, 
+              noiseSD = sd, 
+              b0 = sfit$coefficients[1,1], 
+              bx = sfit$coefficients[2,1],
+              bz = sfit$coefficients[3,1]))
+}
+
+
+
+# Execute simulation ------------------------------------------------------
+
+MyOutput <- parallel::mcmapply(FUN = f, 
+                               i = replications,
+                               MoreArgs = list(n = sampleSize,
+                                               sd = noiseSD),
+                               SIMPLIFY = FALSE)
+
+
+# Collect results in a matrix ---------------------------------------------
+
+results <- base::do.call(base::rbind, MyOutput)
+
+
+# Write results to file ---------------------------------------------------
+
+# create filename with random pattern extension. assumes you have a directory called results
+# change tmpdir to the directory where you want to store results
+# depending on system, the PBS_O_WORKDIR might be set and can be used via
+# paste(Sys.getenv("PBS_O_WORKDIR"),"results", sep="/")
+filename <- base::tempfile(pattern = base::sprintf("scenario_%1.0f_sampleSize_%1.0f_noiseSD_%1.0f_",
+                                                   parameterIndex, 
+                                                   sampleSize, 
+                                                   noiseSD),
+                           tmpdir = "results",
+                           fileext = ".txt")
+
+utils::write.table(results,
+                   file = filename,
+                   quote = FALSE,
+                   row.names = FALSE,
+                   col.names = FALSE)
+```
+
+
+## The bash script
+
+This is the `bash` script which I saved as `mclappyExample2.sh`.
+
+```{bash, eval = FALSE, echo = TRUE}
+#!/bin/bash
+#PBS -l walltime=1:30:00
+#PBS -o log/
+#PBS -e log/
+#PBS -N sim1
+#PBS -m ea
+#PBS -l mem=12G
+#PBS -l vmem=12G
+
+cd $PBS_O_WORKDIR
+
+SRC=$PBS_O_WORKDIR
+
+Rscript ${SRC}/mclappyExample2.R ${index}
+```
+
+
+## Collect Results
+
+The following is simply to collect all results and merge into a single `data.frame`. Carefully read the notes at the top of the script. 
+
+```{r, eval=FALSE}
+##################################
+# R source code file for gathering simulation results into one dataset
+# Created: July 27, 2019
+# Updated: July 29, 2019
+# Notes: 
+# This script is to be used only once mclapplyExample2.sh has been executed
+# Assumes results are stored in a directory called results. 
+# Change the path argument in list.files function accordingly
+##################################
+
+# To read in all the results and combine into 1 data.frame ----------------
+
+# list all files starting with the word scenario in the results directory
+# include the full path 
+files <- base::list.files(path = "results", 
+                          pattern = "scenario",
+                          full.names = TRUE)
+
+# read in all the results into a list
+resultsList <- base::lapply(files, utils::read.table)
+
+
+# combine results into a single data.frame
+resultsDF <- base::do.call(base::rbind, resultsList)
+colnames(resultsDF) <- c("scenario","replicate", "sampleSize", "noiseSD", "b0", "bx", "bz")
+```
+
