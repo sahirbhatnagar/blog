@@ -1,0 +1,145 @@
+---
+title: Calibration, Net Re-Classification Index and Goodness-of-Fit Test for Logistic Regression
+author: ~
+date: '2019-09-05'
+slug: calibration-NRI-goodness-of-fit-test-for-logistic-regression
+categories: [R, regression, prediction]
+tags: [goodness-of-fit, calibration]
+---
+
+This post shows how to calculate the Net Re-Classification Index and Goodness-of-Fit Test (Hosmer-Lemeshow Test) for logistic regression models. In addition, we show how to plot the calibration curves. 
+
+```{r}
+
+
+#  load packages ----------------------------------------------------------
+
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
+pacman::p_load(PredictABEL)
+pacman::p_load(aod)
+pacman::p_load(ggplot2)
+
+# packages for ggplot2 themes
+pacman::p_load_gh("hrbrmstr/hrbrthemes")
+pacman::p_load(ggrepel)
+pacman::p_load(Cairo)
+pacman::p_load(extrafont)
+extrafont::loadfonts()
+
+
+
+
+# colors and themes -------------------------------------------------------
+
+# color blind palette
+cbbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+# my theme defaults
+gg_sy <- theme(legend.position = "bottom", 
+               axis.text = element_text(size = 20),
+               axis.title = element_text(size = 20), 
+               legend.text = element_text(size = 20), 
+               legend.title = element_text(size = 20))
+
+
+
+
+#  load data --------------------------------------------------------------
+
+
+mydata <- read.csv("https://stats.idre.ucla.edu/stat/data/binary.csv")
+## view the first few rows of the data
+head(mydata)
+mydata$rank <- factor(mydata$rank)
+mydata$admitf <- factor(mydata$admit, levels = c(0,1), labels = c("no admit", "admit"))
+
+# without rank
+m1 <- glm(admit ~ gre + gpa, data = mydata, family = "binomial")
+preds_m1 <- predict(m1, type = "response") # predicted probs from model 1
+
+# with rank
+m2 <- glm(admit ~ gre + gpa + rank, data = mydata, family = "binomial")
+preds_m2 <- predict(m2, type = "response") # predicted probs from model 2
+
+
+
+# Calibration plots and Hosmer Lemeshow test ------------------------------
+
+
+# In this example, we see that the $Chi_square value is smaller for m2, compared to m1
+# The null hypothesis is that we have a good fit. So the larger the p-value, the smaller the 
+# Chi_square statistic, the better the fit. So we can say that rank has added value to the model
+
+# Calibration plot for m1
+PredictABEL::plotCalibration(data = as.matrix(mydata$admit), # observed response
+                             cOutcome = 1, # the category corresponding to outcome of interest
+                             predRisk = preds_m1, # predicted probs
+                             groups = 10 # number of groups to bin the predicted probabilities into, usually 10 is default
+                             )
+
+
+# Calibration plot for m2
+PredictABEL::plotCalibration(data = as.matrix(mydata$admit), # observed response
+                             cOutcome = 1, # the category corresponding to outcome of interest
+                             predRisk = preds_m1, # predicted probs
+                             groups = 10 # number of groups to bin the predicted probabilities into, usually 10 is default, so you will see 10 categories and 10 points on the calibration plot
+)
+
+
+
+
+# Boxplots for discrimination ---------------------------------------------
+
+df1 <- data.frame(admit = mydata$admitf, 
+                  model = "w/o rank", 
+                  predicted = preds_m1,
+                  stringsAsFactors = FALSE)
+
+df2 <- data.frame(admit = mydata$admitf, 
+                  model = "with rank", 
+                  predicted = preds_m2,
+                  stringsAsFactors = FALSE)
+dfplot <- rbind(df1, df2) 
+dfplot$model <- factor(dfplot$model)
+
+ggplot(dfplot, aes(x = admit, y = predicted, fill = model)) +
+  geom_boxplot() +
+  scale_fill_manual(values=cbbPalette[c(3,7)], guide=guide_legend(ncol = 2)) +
+  labs(x="", y="Predicted probability",
+       title="Predicted probability by observed outcome for each model",
+       subtitle="Based on logistic regression model adjusted for GRE and GPA",
+       caption="") +
+  theme_ipsum_rc() + 
+  theme(legend.position = "bottom", 
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 20), 
+        legend.text = element_text(size = 20), 
+        legend.title = element_text(size = 20))
+
+
+
+
+# Net reclassification index ----------------------------------------------
+
+#' Re-classfication tables quantify the model improvement of one model over
+#' another by counting the number of individuals who move to another risk
+#' category or remain in the same risk category as a result of updating the risk
+#' model. Any _upward_ movement in categories for event subjects (i.e. those
+#' with admit=1) implies improved classification, and any _downward_ movement
+#' indicates worse reclassification. The interpretation is opposite for people
+#' who do not develop events (admit = 0). Smaller p-values indicate better
+#' reclassification accuracy.
+#' 
+
+PredictABEL::reclassification(data = as.matrix(mydata$admit), 
+                              cOutcome = 1, 
+                              predrisk1 = preds_m1, # original model
+                              predrisk2 = preds_m2, # updated model
+                              cutoff = seq(0, 1, by = 0.20))
+
+
+
+```
+
