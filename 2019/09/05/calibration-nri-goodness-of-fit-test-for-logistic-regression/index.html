@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.55.5" />
+
+
+<title>Calibration, Net Re-Classification Index and Goodness-of-Fit Test for Logistic Regression - Sahir&#39;s blog</title>
+<meta property="og:title" content="Calibration, Net Re-Classification Index and Goodness-of-Fit Test for Logistic Regression - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">6 min read</span>
+    
+
+    <h1 class="article-title">Calibration, Net Re-Classification Index and Goodness-of-Fit Test for Logistic Regression</h1>
+
+    
+    <span class="article-date">2019-09-05</span>
+    
+
+    <div class="article-content">
+      
+
+
+<p>This post shows how to calculate the Net Re-Classification Index and Goodness-of-Fit Test (Hosmer-Lemeshow Test) for logistic regression models. In addition, we show how to plot the calibration curves.</p>
+<pre class="r"><code>#  load packages ----------------------------------------------------------
+
+if (!requireNamespace(&quot;pacman&quot;, quietly = TRUE)) {
+  install.packages(&quot;pacman&quot;)
+}
+pacman::p_load(PredictABEL)
+pacman::p_load(aod)
+pacman::p_load(ggplot2)
+
+# packages for ggplot2 themes
+pacman::p_load_gh(&quot;hrbrmstr/hrbrthemes&quot;)
+pacman::p_load(ggrepel)
+pacman::p_load(Cairo)
+pacman::p_load(extrafont)
+extrafont::loadfonts()
+
+
+
+
+# colors and themes -------------------------------------------------------
+
+# color blind palette
+cbbPalette &lt;- c(&quot;#999999&quot;, &quot;#E69F00&quot;, &quot;#56B4E9&quot;, &quot;#009E73&quot;, &quot;#F0E442&quot;, &quot;#0072B2&quot;, &quot;#D55E00&quot;, &quot;#CC79A7&quot;)
+
+# my theme defaults
+gg_sy &lt;- theme(legend.position = &quot;bottom&quot;, 
+               axis.text = element_text(size = 20),
+               axis.title = element_text(size = 20), 
+               legend.text = element_text(size = 20), 
+               legend.title = element_text(size = 20))
+
+
+
+
+#  load data --------------------------------------------------------------
+
+
+mydata &lt;- read.csv(&quot;https://stats.idre.ucla.edu/stat/data/binary.csv&quot;)
+## view the first few rows of the data
+head(mydata)</code></pre>
+<pre><code>##   admit gre  gpa rank
+## 1     0 380 3.61    3
+## 2     1 660 3.67    3
+## 3     1 800 4.00    1
+## 4     1 640 3.19    4
+## 5     0 520 2.93    4
+## 6     1 760 3.00    2</code></pre>
+<pre class="r"><code>mydata$rank &lt;- factor(mydata$rank)
+mydata$admitf &lt;- factor(mydata$admit, levels = c(0,1), labels = c(&quot;no admit&quot;, &quot;admit&quot;))
+
+# without rank
+m1 &lt;- glm(admit ~ gre + gpa, data = mydata, family = &quot;binomial&quot;)
+preds_m1 &lt;- predict(m1, type = &quot;response&quot;) # predicted probs from model 1
+
+# with rank
+m2 &lt;- glm(admit ~ gre + gpa + rank, data = mydata, family = &quot;binomial&quot;)
+preds_m2 &lt;- predict(m2, type = &quot;response&quot;) # predicted probs from model 2
+
+
+
+# Calibration plots and Hosmer Lemeshow test ------------------------------
+
+
+# In this example, we see that the $Chi_square value is smaller for m2, compared to m1
+# The null hypothesis is that we have a good fit. So the larger the p-value, the smaller the 
+# Chi_square statistic, the better the fit. So we can say that rank has added value to the model
+
+# Calibration plot for m1
+PredictABEL::plotCalibration(data = as.matrix(mydata$admit), # observed response
+                             cOutcome = 1, # the category corresponding to outcome of interest
+                             predRisk = preds_m1, # predicted probs
+                             groups = 10 # number of groups to bin the predicted probabilities into, usually 10 is default
+                             )</code></pre>
+<pre><code>## $Table_HLtest
+##                total meanpred meanobs predicted observed
+## [0.0978,0.184)    40    0.156   0.150      6.25        6
+## [0.1839,0.224)    40    0.202   0.125      8.09        5
+## [0.2241,0.254)    40    0.239   0.225      9.56        9
+## [0.2536,0.289)    40    0.272   0.275     10.89       11
+## [0.2894,0.311)    40    0.299   0.375     11.97       15
+## [0.3110,0.341)    40    0.326   0.375     13.04       15
+## [0.3406,0.370)    40    0.354   0.375     14.16       15
+## [0.3702,0.408)    40    0.391   0.450     15.64       18
+## [0.4079,0.461)    40    0.431   0.375     17.26       15
+## [0.4614,0.555]    40    0.503   0.450     20.13       18
+## 
+## $Chi_square
+## [1] 4.706
+## 
+## $df
+## [1] 8
+## 
+## $p_value
+## [1] 0.7885</code></pre>
+<pre class="r"><code># Calibration plot for m2
+PredictABEL::plotCalibration(data = as.matrix(mydata$admit), # observed response
+                             cOutcome = 1, # the category corresponding to outcome of interest
+                             predRisk = preds_m1, # predicted probs
+                             groups = 10 # number of groups to bin the predicted probabilities into, usually 10 is default, so you will see 10 categories and 10 points on the calibration plot
+)</code></pre>
+<p><img src="/blog/post/2019-09-05-calibration-net-re-classification-and-goodness-of-fit-test-for-logistic-regression_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre><code>## $Table_HLtest
+##                total meanpred meanobs predicted observed
+## [0.0978,0.184)    40    0.156   0.150      6.25        6
+## [0.1839,0.224)    40    0.202   0.125      8.09        5
+## [0.2241,0.254)    40    0.239   0.225      9.56        9
+## [0.2536,0.289)    40    0.272   0.275     10.89       11
+## [0.2894,0.311)    40    0.299   0.375     11.97       15
+## [0.3110,0.341)    40    0.326   0.375     13.04       15
+## [0.3406,0.370)    40    0.354   0.375     14.16       15
+## [0.3702,0.408)    40    0.391   0.450     15.64       18
+## [0.4079,0.461)    40    0.431   0.375     17.26       15
+## [0.4614,0.555]    40    0.503   0.450     20.13       18
+## 
+## $Chi_square
+## [1] 4.706
+## 
+## $df
+## [1] 8
+## 
+## $p_value
+## [1] 0.7885</code></pre>
+<pre class="r"><code># Boxplots for discrimination ---------------------------------------------
+
+df1 &lt;- data.frame(admit = mydata$admitf, 
+                  model = &quot;w/o rank&quot;, 
+                  predicted = preds_m1,
+                  stringsAsFactors = FALSE)
+
+df2 &lt;- data.frame(admit = mydata$admitf, 
+                  model = &quot;with rank&quot;, 
+                  predicted = preds_m2,
+                  stringsAsFactors = FALSE)
+dfplot &lt;- rbind(df1, df2) 
+dfplot$model &lt;- factor(dfplot$model)
+
+ggplot(dfplot, aes(x = admit, y = predicted, fill = model)) +
+  geom_boxplot() +
+  scale_fill_manual(values=cbbPalette[c(3,7)], guide=guide_legend(ncol = 2)) +
+  labs(x=&quot;&quot;, y=&quot;Predicted probability&quot;,
+       title=&quot;Predicted probability by observed outcome for each model&quot;,
+       subtitle=&quot;Based on logistic regression model adjusted for GRE and GPA&quot;,
+       caption=&quot;&quot;) +
+  theme_ipsum_rc() + 
+  theme(legend.position = &quot;bottom&quot;, 
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 20), 
+        legend.text = element_text(size = 20), 
+        legend.title = element_text(size = 20))</code></pre>
+<p><img src="/blog/post/2019-09-05-calibration-net-re-classification-and-goodness-of-fit-test-for-logistic-regression_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<pre class="r"><code># Net reclassification index ----------------------------------------------
+
+#&#39; Re-classfication tables quantify the model improvement of one model over
+#&#39; another by counting the number of individuals who move to another risk
+#&#39; category or remain in the same risk category as a result of updating the risk
+#&#39; model. Any _upward_ movement in categories for event subjects (i.e. those
+#&#39; with admit=1) implies improved classification, and any _downward_ movement
+#&#39; indicates worse reclassification. The interpretation is opposite for people
+#&#39; who do not develop events (admit = 0). Smaller p-values indicate better
+#&#39; reclassification accuracy.
+#&#39; 
+
+PredictABEL::reclassification(data = as.matrix(mydata$admit), 
+                              cOutcome = 1, 
+                              predrisk1 = preds_m1, # original model
+                              predrisk2 = preds_m2, # updated model
+                              cutoff = seq(0, 1, by = 0.20))</code></pre>
+<pre><code>##  _________________________________________
+##  
+##      Reclassification table    
+##  _________________________________________
+## 
+##  Outcome: absent 
+##   
+##              Updated Model
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]
+##     [0,0.2)        31        16         0         0       0
+##     [0.2,0.4)      52        99        24         0       0
+##     [0.4,0.6)       0        26        18         7       0
+##     [0.6,0.8)       0         0         0         0       0
+##     [0.8,1]         0         0         0         0       0
+##              Updated Model
+## Initial Model  % reclassified
+##     [0,0.2)                34
+##     [0.2,0.4)              43
+##     [0.4,0.6)              65
+##     [0.6,0.8)             NaN
+##     [0.8,1]               NaN
+## 
+##  
+##  Outcome: present 
+##   
+##              Updated Model
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]
+##     [0,0.2)         7         2         0         0       0
+##     [0.2,0.4)      11        40        28         0       0
+##     [0.4,0.6)       0        11        15        13       0
+##     [0.6,0.8)       0         0         0         0       0
+##     [0.8,1]         0         0         0         0       0
+##              Updated Model
+## Initial Model  % reclassified
+##     [0,0.2)                22
+##     [0.2,0.4)              49
+##     [0.4,0.6)              62
+##     [0.6,0.8)             NaN
+##     [0.8,1]               NaN
+## 
+##  
+##  Combined Data 
+##   
+##              Updated Model
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]
+##     [0,0.2)        38        18         0         0       0
+##     [0.2,0.4)      63       139        52         0       0
+##     [0.4,0.6)       0        37        33        20       0
+##     [0.6,0.8)       0         0         0         0       0
+##     [0.8,1]         0         0         0         0       0
+##              Updated Model
+## Initial Model  % reclassified
+##     [0,0.2)                32
+##     [0.2,0.4)              45
+##     [0.4,0.6)              63
+##     [0.6,0.8)             NaN
+##     [0.8,1]               NaN
+##  _________________________________________
+## 
+##  NRI(Categorical) [95% CI]: 0.2789 [ 0.1343 - 0.4235 ] ; p-value: 0.00016 
+##  NRI(Continuous) [95% CI]: 0.4543 [ 0.2541 - 0.6545 ] ; p-value: 1e-05 
+##  IDI [95% CI]: 0.0546 [ 0.0309 - 0.0783 ] ; p-value: 1e-05</code></pre>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

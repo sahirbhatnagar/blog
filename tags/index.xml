@@ -6,10 +6,28 @@
     <description>Recent content in Tags on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 30 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 05 Sep 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>calibration</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/calibration/</link>
+      <pubDate>Thu, 05 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/calibration/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>goodness-of-fit</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/goodness-of-fit/</link>
+      <pubDate>Thu, 05 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/goodness-of-fit/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>R</title>

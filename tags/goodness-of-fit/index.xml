@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>prediction on Sahir&#39;s blog</title>
-    <link>https://sahirbhatnagar.github.io/blog/categories/prediction/</link>
-    <description>Recent content in prediction on Sahir&#39;s blog</description>
+    <title>goodness-of-fit on Sahir&#39;s blog</title>
+    <link>https://sahirbhatnagar.github.io/blog/tags/goodness-of-fit/</link>
+    <description>Recent content in goodness-of-fit on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 05 Sep 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://sahirbhatnagar.github.io/blog/categories/prediction/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/goodness-of-fit/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -19,18 +19,6 @@
       <guid>https://sahirbhatnagar.github.io/blog/2019/09/05/calibration-nri-goodness-of-fit-test-for-logistic-regression/</guid>
       <description>This post shows how to calculate the Net Re-Classification Index and Goodness-of-Fit Test (Hosmer-Lemeshow Test) for logistic regression models. In addition, we show how to plot the calibration curves.
 # load packages ---------------------------------------------------------- if (!requireNamespace(&amp;quot;pacman&amp;quot;, quietly = TRUE)) { install.packages(&amp;quot;pacman&amp;quot;) } pacman::p_load(PredictABEL) pacman::p_load(aod) pacman::p_load(ggplot2) # packages for ggplot2 themes pacman::p_load_gh(&amp;quot;hrbrmstr/hrbrthemes&amp;quot;) pacman::p_load(ggrepel) pacman::p_load(Cairo) pacman::p_load(extrafont) extrafont::loadfonts() # colors and themes ------------------------------------------------------- # color blind palette cbbPalette &amp;lt;- c(&amp;quot;#999999&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;) # my theme defaults gg_sy &amp;lt;- theme(legend.</description>
-    </item>
-    
-    <item>
-      <title>Variable Selection and Prediction in Competing Risk Regression</title>
-      <link>https://sahirbhatnagar.github.io/blog/2019/04/16/variable-selection-prediction-competing-risk-regression/</link>
-      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/2019/04/16/variable-selection-prediction-competing-risk-regression/</guid>
-      <description>Objective The main goal of this post is to:
-Show one way of performing variable selection in a competing risks regression model
- Evaluate the predictive performance for a list of models using resampling methods   What the data looks like We will use the bmtcrr dataset from the casebase package available on CRAN. Here is what the data looks like:
-pacman::p_load(casebase) head(bmtcrr) ## Sex D Phase Age Status Source ftime ## 1 M ALL Relapse 48 2 BM+PB 0.</description>
     </item>
     
   </channel>
