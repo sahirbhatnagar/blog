@@ -1,0 +1,48 @@
+---
+title: Intraclass correlation coefficient in Linear Mixed Effects Models
+author: null
+date: '2020-01-10'
+slug: intraclass-correlation-coefficient-in-linear-mixed-effects-models
+categories: [LMM, ICC, correlation]
+tags: [R, stats]
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, echo=TRUE}
+if (!requireNamespace("pacman")){
+  install.packages("pacman")
+}
+
+pacman::p_load(sjstats)
+pacman::p_load(lme4)
+```
+
+
+# Simulate Data
+
+500 participants will be ranking 90 items based on importance from 1-9. 
+
+```{r}
+n.participants <- 500
+n.items <- 90
+
+# Subject needs to be a factor for lmer
+DT <- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)),
+                 Item = rep(1:n.items, n.participants),
+                 Importance = rpois(n.participants * n.items, lambda = 5))
+
+head(DT)
+str(DT)
+```
+
+
+
+
+# Calculate ICC
+
+```{r}
+fit0 <- lme4::lmer(Importance ~ 1 + (1 | Subject_ID), data = DT)
+sjstats::icc(fit0)
+```
+
