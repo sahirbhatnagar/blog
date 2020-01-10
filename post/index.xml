@@ -6,10 +6,20 @@
     <description>Recent content in Posts on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 05 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 10 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Intraclass correlation coefficient in Linear Mixed Effects Models</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</link>
+      <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</guid>
+      <description>if (!requireNamespace(&amp;quot;pacman&amp;quot;)){ install.packages(&amp;quot;pacman&amp;quot;) } ## Loading required namespace: pacman pacman::p_load(sjstats) pacman::p_load(lme4) Simulate Data 500 participants will be ranking 90 items based on importance from 1-9.
+n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 3 ## 2 1 2 6 ## 3 1 3 7 ## 4 1 4 3 ## 5 1 5 9 ## 6 1 6 8 str(DT) ## &amp;#39;data.</description>
+    </item>
     
     <item>
       <title>Calibration, Net Re-Classification Index and Goodness-of-Fit Test for Logistic Regression</title>

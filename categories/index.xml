@@ -6,10 +6,37 @@
     <description>Recent content in Categories on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 05 Sep 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 10 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ICC</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/icc/</link>
+      <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/icc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>LMM</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/lmm/</link>
+      <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/lmm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>correlation</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/correlation/</link>
+      <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/correlation/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>R</title>
