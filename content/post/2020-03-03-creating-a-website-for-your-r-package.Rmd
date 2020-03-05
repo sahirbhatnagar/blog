@@ -129,6 +129,11 @@ To start using Travis:
 
 <img src="/images/travis1.png" alt="drawing" width="800"/>
 
+```{r}
+knitr::include_graphics("/images/travis1.png")
+```
+
+
 <br>
 
 Scroll to the `pkgdowntravis` repository:
