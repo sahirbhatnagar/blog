@@ -1,6 +1,6 @@
 ---
 title: Creating a website for your R package
-author: Sahir
+author: Sahir Bhatnagar
 date: '2020-03-03'
 slug: creating-a-website-for-your-r-package
 categories: [R package, website]
