@@ -139,7 +139,7 @@ git push origin master</code></pre>
 </div>
 <div id="the-hard-way-using-travis" class="section level2">
 <h2>The hard way using Travis</h2>
-<p>We first need to create a <code>YAML</code> file for <code>pkgdown</code> in the root of your package directory called <code>_pkgdown.yml</code>. This file basically has a set of instructions for <code>pkgdown</code> to follow and can be used to <a href="https://pkgdown.r-lib.org/articles/pkgdown.html">further customize the site</a>. Below is a very basic example. A more complicated example can be found in our <a href="https://github.com/sahirbhatnagar/casebase/blob/master/_pkgdown.yml"><code>casebase</code> package</a>. Copy the following into your <code>_pkgdown.yml</code> file:</p>
+<p>We first need to create a <code>YAML</code> file for <code>pkgdown</code> in the root of your package directory called <code>_pkgdown.yml</code>. This file basically has a set of instructions for <code>pkgdown</code> to follow and can be used to <a href="https://pkgdown.r-lib.org/articles/pkgdown.html">further customize the site</a>. Below is a very basic example. A more complicated example can be found in our <a href="https://github.com/sahirbhatnagar/casebase/blob/master/_pkgdown.yml"><code>casebase</code> package</a>. Copy the following into your <code>_pkgdown.yml</code> file (adjust the url to your user site, e.g. username.github.io/pkgdowntravis, and change the author):</p>
 <pre class="yml"><code>url: http://sahirbhatnagar.com/pkgdowntravis
 
 template:
@@ -163,7 +163,7 @@ development:
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis8.png" alt="final image" width="800"/></p>
 <p>Then click on the <em>Generate Token</em> button:</p>
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis9.png" alt="final image" width="800"/></p>
-<p>COPY the GitHub PAT to your <code>_.Renviron</code> file. If you don’t have one, create a file called <code>.Renviron</code> and save it in your home directory. The variables in the <code>.Renviron</code> file are available to your R session upon startup. Store your GitHub PAT with a line like:</p>
+<p>COPY the GitHub PAT to your <code>.Renviron</code> file. If you don’t have one, create a file called <code>.Renviron</code> and save it in your home directory. The variables in the <code>.Renviron</code> file are available to your R session upon startup. Store your GitHub PAT with a line like:</p>
 <pre class="bash"><code>GITHUB_PAT=paste your PAT here
 
 # if you want to see if this worked, restart your R session
@@ -174,7 +174,7 @@ system(&#39;echo $GITHUB_PAT&#39;)</code></pre>
 <h3>2. Create a Travis API Key</h3>
 <p>Generate a Travis API key with</p>
 <pre class="r"><code>travis::browse_travis_token()</code></pre>
-<p>You will likely be prompted to logon to Travis:</p>
+<p>You will likely be prompted to login to Travis:</p>
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis7.png" alt="final image" width="800"/></p>
 <p>Then you should be in the <em>Settings</em> page of your Travis account. Under <em>API Authentication</em>, click on <em>Copy Token</em>:</p>
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis10.png" alt="final image" width="800"/></p>
@@ -183,7 +183,9 @@ system(&#39;echo $GITHUB_PAT&#39;)</code></pre>
 <p>If you’re using the <code>.com</code> endpoint, you should enter the following in your <code>.Renviron</code> file:</p>
 <pre class="bash"><code># if you&#39;re using .com endpoint
 R_TRAVIS_COM = paste your travis token here</code></pre>
-<p>Restart your R session before moving on to the next step so that the new R session has access to these environment variables.</p>
+<p>Restart your R session before moving on to the next step so that the new R session has access to these environment variables. My <code>.Renviron</code> file looks like this:</p>
+<pre class="bash"><code>GITHUB_PAT=myPATtoken
+R_TRAVIS_ORG = myTravisToken</code></pre>
 </div>
 <div id="create-the-deploy-key" class="section level3">
 <h3>3. Create the Deploy key</h3>
@@ -198,7 +200,7 @@ travis::use_travis_deploy(endpoint = &#39;.org&#39;)</code></pre>
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis12.png" alt="final image" width="800"/></p>
 <p>You should also see that there’s an environment variable called <code>TRAVIS_DEPLOY_KEY</code>:</p>
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis13.png" alt="final image" width="800"/></p>
-<p>Add the following to your <code>.travis.yml</code> file which is found in the root of your package directory:</p>
+<p>Add the following to your <code>.travis.yml</code> file which is found in the root of your package directory. These commands tell travis what to do, i.e., install the <code>pkgdown</code> package, and then run the <code>pkgdown::deploy_site_github</code> function:</p>
 <pre class="yml"><code>before_cache: Rscript -e &#39;remotes::install_cran(&quot;pkgdown&quot;)&#39;
 deploy:
   provider: script
@@ -220,6 +222,7 @@ git commit --allow-empty -m &quot;Initializing gh-pages branch&quot;</code></pre
 <h3>4. Change the source of your website</h3>
 <p>Head over to the settings of your GitHub repository, and scroll to the GitHub Pages section. Change the source to <code>gh-pages</code> branch:</p>
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis17.png" alt="final image" width="800"/></p>
+<p><br><br></p>
 </div>
 </div>
 </div>
