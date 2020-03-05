@@ -31,6 +31,7 @@ rm -rf .git/worktrees/public/
 # rm -rf public
 
 echo "worktree"
+git worktree prune
 git worktree add public gh-pages
 
 echo "Generating site"
