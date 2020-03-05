@@ -22,23 +22,13 @@ This tutorial assumes you have basic knowledge of Git commands pull, push, commi
     </item>
     
     <item>
-      <title>Creating a website for your R package</title>
-      <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
-      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
-      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
-This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
-    </item>
-    
-    <item>
       <title>Intraclass correlation coefficient in Linear Mixed Effects Models</title>
       <link>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</link>
       <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</guid>
       <description>if (!requireNamespace(&amp;quot;pacman&amp;quot;)){ install.packages(&amp;quot;pacman&amp;quot;) } ## Loading required namespace: pacman pacman::p_load(sjstats) pacman::p_load(lme4) Simulate Data 500 participants will be ranking 90 items based on importance from 1-9.
-n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 6 ## 2 1 2 4 ## 3 1 3 6 ## 4 1 4 6 ## 5 1 5 4 ## 6 1 6 5 str(DT) ## &amp;#39;data.</description>
+n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 6 ## 2 1 2 4 ## 3 1 3 2 ## 4 1 4 8 ## 5 1 5 7 ## 6 1 6 4 str(DT) ## &amp;#39;data.</description>
     </item>
     
     <item>
