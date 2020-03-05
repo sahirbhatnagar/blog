@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.55.5" />
+<meta name="generator" content="Hugo 0.66.0" />
 
 
 <title>Documenting R Packages - Sahir&#39;s blog</title>
@@ -68,38 +68,22 @@
     
 
     <div class="article-content">
-      
-
-<p>Some brief notes on my <code>R</code> package documentation workflow.</p>
-
+      <p>Some brief notes on my <code>R</code> package documentation workflow.</p>
 <h2 id="styler"><code>styler</code></h2>
-
 <p>I first use the <a href="http://styler.r-lib.org/index.html"><code>styler</code></a> package for pretty-printing of <code>R</code> source code</p>
-
-<pre><code class="language-r">pacman::p_load_gh(&quot;r-lib/styler&quot;)
-# run style_dir on R directory
-styler::style_dir(&quot;./R&quot;)
-</code></pre>
-
-<h2 id="prefixer"><code>prefixer</code></h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">pacman<span style="color:#f92672">::</span><span style="color:#a6e22e">p_load_gh</span>(<span style="color:#e6db74">&#34;r-lib/styler&#34;</span>)
+<span style="color:#75715e"># run style_dir on R directory</span>
+styler<span style="color:#f92672">::</span><span style="color:#a6e22e">style_dir</span>(<span style="color:#e6db74">&#34;./R&#34;</span>)
+</code></pre></div><h2 id="prefixer"><code>prefixer</code></h2>
 <p>Next I use the <a href="https://github.com/dreamRs/prefixer"><code>prefixer</code></a> package to prefix all my functions with their NAMESPACE</p>
-
-<pre><code class="language-r">pacman::p_load_gh(&quot;dreamRs/prefixer&quot;)
-#  launch the addin via RStudio's Addins menu
-</code></pre>
-
-<h2 id="sinew"><code>sinew</code></h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">pacman<span style="color:#f92672">::</span><span style="color:#a6e22e">p_load_gh</span>(<span style="color:#e6db74">&#34;dreamRs/prefixer&#34;</span>)
+<span style="color:#75715e">#  launch the addin via RStudio&#39;s Addins menu</span>
+</code></pre></div><h2 id="sinew"><code>sinew</code></h2>
 <p>In a third step, I use the <a href="https://github.com/metrumresearchgroup/sinew"><code>sinew</code></a> package to generate a roxygen2 skeleton on all my <code>R</code> source code files</p>
-
-<pre><code class="language-r">pacman::p_load_gh(&quot;metrumresearchgroup/sinew&quot;)
-# the main function I use is sinew::makeOxyFile()
-sinew::makeOxyFile(&quot;./R/methods.R&quot;)
-</code></pre>
-
-<h2 id="devtools"><code>devtools</code></h2>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">pacman<span style="color:#f92672">::</span><span style="color:#a6e22e">p_load_gh</span>(<span style="color:#e6db74">&#34;metrumresearchgroup/sinew&#34;</span>)
+<span style="color:#75715e"># the main function I use is sinew::makeOxyFile()</span>
+sinew<span style="color:#f92672">::</span><span style="color:#a6e22e">makeOxyFile</span>(<span style="color:#e6db74">&#34;./R/methods.R&#34;</span>)
+</code></pre></div><h2 id="devtools"><code>devtools</code></h2>
 <p>Finish with <code>devtools::document()</code>.</p>
 
     </div>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>sample size on Sahir&#39;s blog</title>
@@ -18,8 +18,7 @@
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
       <description>&lt;p&gt;When performing &lt;a href=&#34;https://en.wikipedia.org/wiki/Student%27s_t-test&#34;&gt;Student&amp;rsquo;s t-test&lt;/a&gt; to compare difference in means between two group, it is a useful exercise to determine the effect of unequal sample sizes in the comparison groups on power. Large imbalances generally will not have adequate statistical power to detect even large effect sizes associated with a factor, leading to a high Type II error rate as shown in the figure below:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

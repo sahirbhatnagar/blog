@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>travis on Sahir&#39;s blog</title>
+    <link>https://sahirbhatnagar.github.io/blog/tags/travis/</link>
+    <description>Recent content in travis on Sahir&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 03 Mar 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/travis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Creating a website for your R package</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
+      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
+This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
+    </item>
+    
+    <item>
+      <title>Creating a website for your R package</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
+      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
+This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>R on Sahir&#39;s blog</title>
@@ -6,10 +6,30 @@
     <description>Recent content in R on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 03 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Creating a website for your R package</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
+      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
+This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
+    </item>
+    
+    <item>
+      <title>Creating a website for your R package</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
+      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
+This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
+    </item>
     
     <item>
       <title>Intraclass correlation coefficient in Linear Mixed Effects Models</title>
@@ -18,7 +38,7 @@
       
       <guid>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</guid>
       <description>if (!requireNamespace(&amp;quot;pacman&amp;quot;)){ install.packages(&amp;quot;pacman&amp;quot;) } ## Loading required namespace: pacman pacman::p_load(sjstats) pacman::p_load(lme4) Simulate Data 500 participants will be ranking 90 items based on importance from 1-9.
-n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 3 ## 2 1 2 6 ## 3 1 3 7 ## 4 1 4 3 ## 5 1 5 9 ## 6 1 6 8 str(DT) ## &amp;#39;data.</description>
+n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 6 ## 2 1 2 4 ## 3 1 3 6 ## 4 1 4 6 ## 5 1 5 4 ## 6 1 6 5 str(DT) ## &amp;#39;data.</description>
     </item>
     
     <item>
@@ -52,12 +72,9 @@ pacman::p_load(casebase) head(bmtcrr) ## Sex D Phase Age Status Source ftime ## 
       
       <guid>https://sahirbhatnagar.github.io/blog/2017/02/23/bayesian-non-linear-multilevel-models/</guid>
       <description>&lt;p&gt;Consider the following repeated measures model:&lt;/p&gt;
-
 &lt;p&gt;&lt;code&gt;$$y_{ij} =\beta_0 + \beta_1 a_{ij}  + \beta_1^2 b_{ij} + \mu_i + \varepsilon_{ij}$$&lt;/code&gt;&lt;/p&gt;
-
 &lt;p&gt;for &lt;code&gt;$i = 1, \ldots, n$&lt;/code&gt;, &lt;code&gt;$j = 1, 2$&lt;/code&gt; where &lt;code&gt;$n$&lt;/code&gt; is the sample size, &lt;code&gt;$j$&lt;/code&gt; represents the index of the repeated measure, i.e., each subject has two measurements, &lt;code&gt;$\mu_i$&lt;/code&gt; is a normally distributed random effect, &lt;code&gt;$\varepsilon_{ij}$&lt;/code&gt; is a normally distributed error term, &lt;code&gt;$y_{ij}$&lt;/code&gt; is the continuous response, and &lt;code&gt;$a_{ij}, b_{ij}$&lt;/code&gt; are covariates. This is a multilevel model because of the nested structure of the data, and also non-linear in the &lt;code&gt;$\beta_1$&lt;/code&gt; parameter. In this post I simulate some data under this model, and try to leverage Bayesian computation techniques to estimate the parameters using the &lt;a href=&#34;https://github.com/paul-buerkner/brms&#34;&gt;brms&lt;/a&gt; which is an interface to fit Bayesian generalized (non-)linear multilevel models using &lt;a href=&#34;http://mc-stan.org/&#34;&gt;Stan&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -76,8 +93,7 @@ pacman::p_load(casebase) head(bmtcrr) ## Sex D Phase Age Status Source ftime ## 
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
       <description>&lt;p&gt;When performing &lt;a href=&#34;https://en.wikipedia.org/wiki/Student%27s_t-test&#34;&gt;Student&amp;rsquo;s t-test&lt;/a&gt; to compare difference in means between two group, it is a useful exercise to determine the effect of unequal sample sizes in the comparison groups on power. Large imbalances generally will not have adequate statistical power to detect even large effect sizes associated with a factor, leading to a high Type II error rate as shown in the figure below:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -87,8 +103,7 @@ pacman::p_load(casebase) head(bmtcrr) ## Sex D Phase Age Status Source ftime ## 
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/08/math-expressions-with-facets-in-ggplot2/</guid>
       <description>&lt;p&gt;In this post I show how we can use &lt;code&gt;$\LaTeX$&lt;/code&gt; math expressions to label the panels in facets to produce the following plot:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-08-facet_wrap_labels/unnamed-chunk-1-1.png&#34; title=&#34;plot of chunk unnamed-chunk-1&#34; alt=&#34;plot of chunk unnamed-chunk-1&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;</description>
     </item>
     
     <item>

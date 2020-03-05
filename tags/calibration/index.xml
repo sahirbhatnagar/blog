@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>calibration on Sahir&#39;s blog</title>
@@ -18,7 +18,7 @@
       
       <guid>https://sahirbhatnagar.github.io/blog/2019/09/05/calibration-nri-goodness-of-fit-test-for-logistic-regression/</guid>
       <description>This post shows how to calculate the Net Re-Classification Index and Goodness-of-Fit Test (Hosmer-Lemeshow Test) for logistic regression models. In addition, we show how to plot the calibration curves.
-# load packages ---------------------------------------------------------- if (!requireNamespace(&amp;quot;pacman&amp;quot;, quietly = TRUE)) { install.packages(&amp;quot;pacman&amp;quot;) } pacman::p_load(PredictABEL) pacman::p_load(aod) pacman::p_load(ggplot2) # packages for ggplot2 themes pacman::p_load_gh(&amp;quot;hrbrmstr/hrbrthemes&amp;quot;) pacman::p_load(ggrepel) pacman::p_load(Cairo) pacman::p_load(extrafont) extrafont::loadfonts() # colors and themes ------------------------------------------------------- # color blind palette cbbPalette &amp;lt;- c(&amp;quot;#999999&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;) # my theme defaults gg_sy &amp;lt;- theme(legend.</description>
+# load packages ---------------------------------------------------------- if (!requireNamespace(&amp;quot;pacman&amp;quot;, quietly = TRUE)) { install.packages(&amp;quot;pacman&amp;quot;) } pacman::p_load(PredictABEL) pacman::p_load(aod) pacman::p_load(ggplot2) # packages for ggplot2 themes pacman::p_load(ggrepel) # colors and themes ------------------------------------------------------- # color blind palette cbbPalette &amp;lt;- c(&amp;quot;#999999&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;) # my theme defaults gg_sy &amp;lt;- theme(legend.</description>
     </item>
     
   </channel>

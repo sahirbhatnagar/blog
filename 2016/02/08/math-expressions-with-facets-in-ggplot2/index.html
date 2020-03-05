@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.55.5" />
+<meta name="generator" content="Hugo 0.66.0" />
 
 
 <title>Math Expressions with Facets in ggplot2 - Sahir&#39;s blog</title>
@@ -19,11 +19,6 @@
 
 
 
-
-
-
-
-<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
 
 
 
@@ -58,7 +53,7 @@
 
   <article class="article">
     
-    <span class="article-duration">2 min read</span>
+    <span class="article-duration">1 min read</span>
     
 
     <h1 class="article-title">Math Expressions with Facets in ggplot2</h1>
@@ -69,48 +64,23 @@
 
     <div class="article-content">
       <p>In this post I show how we can use <code>$\LaTeX$</code> math expressions to label the panels in facets to produce the following plot:</p>
-
-<p><img src="/figure/posts/2016-02-08-facet_wrap_labels/unnamed-chunk-1-1.png" title="plot of chunk unnamed-chunk-1" alt="plot of chunk unnamed-chunk-1" style="display: block; margin: auto;" /></p>
-
+<p><!-- raw HTML omitted --></p>
 <p>The updated version of <a href="http://docs.ggplot2.org/dev/index.html">ggplot2 V 2.0</a> has improved the way we can label panels in <a href="http://docs.ggplot2.org/dev/facet_wrap.html">facet plots</a> with the use of a <a href="http://docs.ggplot2.org/dev/labeller.html">generic labeller</a> function. The <a href="https://cran.r-project.org/web/packages/latex2exp/index.html">latex2exp</a> package has made it much easier to write <code>$\LaTeX$</code> expressions in <code>R</code>.</p>
-
 <p>You will need to load the following packages for the code below to work:</p>
-
 <ol>
 <li><a href="https://cran.r-project.org/web/packages/devtools/index.html">devtools</a></li>
 <li><a href="https://cran.r-project.org/web/packages/ggplot2/">ggplot2</a></li>
 <li><a href="https://cran.r-project.org/web/packages/latex2exp/index.html">latex2exp</a></li>
 </ol>
-
 <p>I have posted some sample data in a <a href="https://gist.github.com/sahirbhatnagar/ed3caf50247cae8e3e1c">GitHub Gist</a> which you can import into your <code>R</code> session using the <code>source_gist</code> function from the devtools package:</p>
-
-<pre class="r"><code>
-data <- devtools::source_gist(id = "ed3caf50247cae8e3e1c", filename = "facet_data.R")$value
-</code></pre>
-
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <p>Then we create a labelling function which takes as input a string and prepends <code>$\log(\lambda_{\gamma})$</code> to it. Note that <code>latex2exp::TeX</code> is the workhorse function that parses <code>$\LaTeX$</code> syntax so that <code>R</code> understands it. Otherwise it becomes very messy to try and write more complex math expressions in <code>R</code>.</p>
-
-<pre class="r"><code>
-appender <- function(string) 
-    TeX(paste("$\\log(\\lambda_{\\gamma}) = $", string))  
-</code></pre>
-
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <p>The code to produce the plot above is given by:</p>
-
-<pre class="r"><code>
-ggplot(data, aes(log(lambda.beta), ymin = lower, ymax = upper)) + 
-    geom_errorbar(color = "grey") + 
-    geom_point(aes(x = log(lambda.beta), y = mse), 
-               colour = "red") +
-    theme_bw() + 
-    facet_wrap(~lg, scales = "fixed", 
-               labeller = as_labeller(appender, 
-                            default = label_parsed)) + 
-    theme(strip.background = element_blank(), 
-          strip.text.x = element_text(size = 14)) + 
-    xlab(TeX("$\\log(\\lambda_{\\beta})$"))
-</code></pre>
-
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
 <p>Note that we need to provide the <code>default = label_parsed</code> argument to the <code>facet_wrap</code> function so that it interprets the result from the <code>appender</code> function as math expressions.</p>
     </div>
   </article>
@@ -155,18 +125,6 @@ ggplot(data, aes(log(lambda.beta), ymin = lower, ymax = upper)) +
 
     </div>
     
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
-<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
-
-
 
     
 <script src="/blog/js/math-code.js"></script>

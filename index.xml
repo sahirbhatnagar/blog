@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Sahir&#39;s blog</title>
@@ -6,10 +6,30 @@
     <description>Recent content on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 05 May 2016 21:48:51 -0700</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Creating a website for your R package</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
+      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
+This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
+    </item>
+    
+    <item>
+      <title>Creating a website for your R package</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
+      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
+This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
+    </item>
     
     <item>
       <title>Intraclass correlation coefficient in Linear Mixed Effects Models</title>
@@ -18,7 +38,7 @@
       
       <guid>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</guid>
       <description>if (!requireNamespace(&amp;quot;pacman&amp;quot;)){ install.packages(&amp;quot;pacman&amp;quot;) } ## Loading required namespace: pacman pacman::p_load(sjstats) pacman::p_load(lme4) Simulate Data 500 participants will be ranking 90 items based on importance from 1-9.
-n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 3 ## 2 1 2 6 ## 3 1 3 7 ## 4 1 4 3 ## 5 1 5 9 ## 6 1 6 8 str(DT) ## &amp;#39;data.</description>
+n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 6 ## 2 1 2 4 ## 3 1 3 6 ## 4 1 4 6 ## 5 1 5 4 ## 6 1 6 5 str(DT) ## &amp;#39;data.</description>
     </item>
     
     <item>
@@ -28,7 +48,7 @@ n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor
       
       <guid>https://sahirbhatnagar.github.io/blog/2019/09/05/calibration-nri-goodness-of-fit-test-for-logistic-regression/</guid>
       <description>This post shows how to calculate the Net Re-Classification Index and Goodness-of-Fit Test (Hosmer-Lemeshow Test) for logistic regression models. In addition, we show how to plot the calibration curves.
-# load packages ---------------------------------------------------------- if (!requireNamespace(&amp;quot;pacman&amp;quot;, quietly = TRUE)) { install.packages(&amp;quot;pacman&amp;quot;) } pacman::p_load(PredictABEL) pacman::p_load(aod) pacman::p_load(ggplot2) # packages for ggplot2 themes pacman::p_load_gh(&amp;quot;hrbrmstr/hrbrthemes&amp;quot;) pacman::p_load(ggrepel) pacman::p_load(Cairo) pacman::p_load(extrafont) extrafont::loadfonts() # colors and themes ------------------------------------------------------- # color blind palette cbbPalette &amp;lt;- c(&amp;quot;#999999&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;) # my theme defaults gg_sy &amp;lt;- theme(legend.</description>
+# load packages ---------------------------------------------------------- if (!requireNamespace(&amp;quot;pacman&amp;quot;, quietly = TRUE)) { install.packages(&amp;quot;pacman&amp;quot;) } pacman::p_load(PredictABEL) pacman::p_load(aod) pacman::p_load(ggplot2) # packages for ggplot2 themes pacman::p_load(ggrepel) # colors and themes ------------------------------------------------------- # color blind palette cbbPalette &amp;lt;- c(&amp;quot;#999999&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;) # my theme defaults gg_sy &amp;lt;- theme(legend.</description>
     </item>
     
     <item>
@@ -74,8 +94,7 @@ It automatically generates publications from a BibTeX file using jekyll-scholar.
       
       <guid>https://sahirbhatnagar.github.io/blog/2018/08/23/getting-travis-to-auto-push-to-github/</guid>
       <description>Following the advice given on the bookdown site, I use Travis-CI to automatically build my bookdown book and push it to gh-pages. I always forget how to do this, so I&amp;rsquo;m writing these notes to supplement what is already written there.
- Follow these instructions on GitHub to create a personal access token (PAT) Copy the generated PAT to your clipboard
- From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:</description>
+ Follow these instructions on GitHub to create a personal access token (PAT) Copy the generated PAT to your clipboard From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:  Note 1: I&amp;rsquo;m not entirely sure that I need to generate a new PAT for each bookdown repository that I create, but so far this strategy has worked for me.</description>
     </item>
     
     <item>
@@ -86,8 +105,8 @@ It automatically generates publications from a BibTeX file using jekyll-scholar.
       <guid>https://sahirbhatnagar.github.io/blog/2018/04/03/documenting-r-packages/</guid>
       <description>Some brief notes on my R package documentation workflow.
 styler I first use the styler package for pretty-printing of R source code
-pacman::p_load_gh(&amp;quot;r-lib/styler&amp;quot;) # run style_dir on R directory styler::style_dir(&amp;quot;./R&amp;quot;)  prefixer Next I use the prefixer package to prefix all my functions with their NAMESPACE
-pacman::p_load_gh(&amp;quot;dreamRs/prefixer&amp;quot;) # launch the addin via RStudio&#39;s Addins menu  sinew In a third step, I use the sinew package to generate a roxygen2 skeleton on all my R source code files</description>
+pacman::p_load_gh(&amp;#34;r-lib/styler&amp;#34;) # run style_dir on R directory styler::style_dir(&amp;#34;./R&amp;#34;) prefixer Next I use the prefixer package to prefix all my functions with their NAMESPACE
+pacman::p_load_gh(&amp;#34;dreamRs/prefixer&amp;#34;) # launch the addin via RStudio&amp;#39;s Addins menu sinew In a third step, I use the sinew package to generate a roxygen2 skeleton on all my R source code files</description>
     </item>
     
     <item>
@@ -98,8 +117,7 @@ pacman::p_load_gh(&amp;quot;dreamRs/prefixer&amp;quot;) # launch the addin via R
       <guid>https://sahirbhatnagar.github.io/blog/2018/04/03/i-am-color-blind/</guid>
       <description>I recently gave a mini-course on regression trees. As I talked about the red region in the following figure:
 one of the audience members said they had no clue what I was referring to. It turns out they were color blind and could not identify the red region. Yikes!
-Here is a colorblind friendly pallette courtesy of Cookbook for R
-cbbPalette  </description>
+Here is a colorblind friendly pallette courtesy of Cookbook for R</description>
     </item>
     
     <item>
@@ -109,7 +127,7 @@ cbbPalette  </description>
       
       <guid>https://sahirbhatnagar.github.io/blog/2017/10/12/mixed-models-with-kinship-in-r/</guid>
       <description>In this post, I describe how to estimate a kinship matrix and subsequently fit a mixed model using that estimated kinship. In particular, I show how this can be done on an arbitrary matrix of genotype data, which is not stored in plink format. I also show how to deal with missing genotypes.
-Load Packages # install.packages(&amp;quot;gaston&amp;quot;) library(gaston)  Set Simulation Parameters # number of subjects n &amp;lt;- 1000 # number of genotypes p &amp;lt;- 1e4 # number of causal genotypes p_causal &amp;lt;- 50 # Signal to noise ratio signal_to_noise_ratio &amp;lt;- 2 # vector of allele frequencies from which to sample probs &amp;lt;- c(0.</description>
+Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set Simulation Parameters # number of subjects n &amp;lt;- 1000 # number of genotypes p &amp;lt;- 1e4 # number of causal genotypes p_causal &amp;lt;- 50 # Signal to noise ratio signal_to_noise_ratio &amp;lt;- 2 # vector of allele frequencies from which to sample probs &amp;lt;- c(0.</description>
     </item>
     
     <item>
@@ -119,11 +137,7 @@ Load Packages # install.packages(&amp;quot;gaston&amp;quot;) library(gaston)  Se
       
       <guid>https://sahirbhatnagar.github.io/blog/2017/08/11/polygenic-risks-scores-with-data.table-in-r/</guid>
       <description>&lt;p&gt;In this short post, I show how to calculate &lt;a href=&#34;https://en.wikipedia.org/wiki/Polygenic_score&#34;&gt;polygenic risk scores&lt;/a&gt; (PRS) using the &lt;a href=&#34;https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html&#34;&gt;&lt;code&gt;data.table&lt;/code&gt;&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. I will show an example on a small dataset, but can be easily extended to much larger datasets. The PRS based on &lt;code&gt;$p$&lt;/code&gt; SNPs is given by:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;$$
-PRS_i = \sum_{j=1}^{p}\beta_j \times SNP_{ij}
-$$&lt;/code&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;code&gt;$$ PRS_i = \sum_{j=1}^{p}\beta_j \times SNP_{ij} $$&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;where &lt;code&gt;$\beta_j$&lt;/code&gt; is the beta coefficient for the &lt;code&gt;$j^{th}$&lt;/code&gt; SNP, and &lt;code&gt;$SNP_{ij}$&lt;/code&gt; is the value of &lt;code&gt;$j^{th}$&lt;/code&gt; SNP for the &lt;code&gt;$i^{th}$&lt;/code&gt; individual.&lt;/p&gt;</description>
     </item>
     
@@ -134,12 +148,9 @@ $$&lt;/code&gt;&lt;/p&gt;
       
       <guid>https://sahirbhatnagar.github.io/blog/2017/02/23/bayesian-non-linear-multilevel-models/</guid>
       <description>&lt;p&gt;Consider the following repeated measures model:&lt;/p&gt;
-
 &lt;p&gt;&lt;code&gt;$$y_{ij} =\beta_0 + \beta_1 a_{ij}  + \beta_1^2 b_{ij} + \mu_i + \varepsilon_{ij}$$&lt;/code&gt;&lt;/p&gt;
-
 &lt;p&gt;for &lt;code&gt;$i = 1, \ldots, n$&lt;/code&gt;, &lt;code&gt;$j = 1, 2$&lt;/code&gt; where &lt;code&gt;$n$&lt;/code&gt; is the sample size, &lt;code&gt;$j$&lt;/code&gt; represents the index of the repeated measure, i.e., each subject has two measurements, &lt;code&gt;$\mu_i$&lt;/code&gt; is a normally distributed random effect, &lt;code&gt;$\varepsilon_{ij}$&lt;/code&gt; is a normally distributed error term, &lt;code&gt;$y_{ij}$&lt;/code&gt; is the continuous response, and &lt;code&gt;$a_{ij}, b_{ij}$&lt;/code&gt; are covariates. This is a multilevel model because of the nested structure of the data, and also non-linear in the &lt;code&gt;$\beta_1$&lt;/code&gt; parameter. In this post I simulate some data under this model, and try to leverage Bayesian computation techniques to estimate the parameters using the &lt;a href=&#34;https://github.com/paul-buerkner/brms&#34;&gt;brms&lt;/a&gt; which is an interface to fit Bayesian generalized (non-)linear multilevel models using &lt;a href=&#34;http://mc-stan.org/&#34;&gt;Stan&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -177,8 +188,7 @@ $$&lt;/code&gt;&lt;/p&gt;
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
       <description>&lt;p&gt;When performing &lt;a href=&#34;https://en.wikipedia.org/wiki/Student%27s_t-test&#34;&gt;Student&amp;rsquo;s t-test&lt;/a&gt; to compare difference in means between two group, it is a useful exercise to determine the effect of unequal sample sizes in the comparison groups on power. Large imbalances generally will not have adequate statistical power to detect even large effect sizes associated with a factor, leading to a high Type II error rate as shown in the figure below:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -188,8 +198,7 @@ $$&lt;/code&gt;&lt;/p&gt;
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/08/math-expressions-with-facets-in-ggplot2/</guid>
       <description>&lt;p&gt;In this post I show how we can use &lt;code&gt;$\LaTeX$&lt;/code&gt; math expressions to label the panels in facets to produce the following plot:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-08-facet_wrap_labels/unnamed-chunk-1-1.png&#34; title=&#34;plot of chunk unnamed-chunk-1&#34; alt=&#34;plot of chunk unnamed-chunk-1&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -219,28 +228,11 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
       
       <guid>https://sahirbhatnagar.github.io/blog/2015/03/04/contrasts-in-r/</guid>
       <description>&lt;p&gt;In this post I discuss how to create custom contrasts for factor variables in &lt;code&gt;R&lt;/code&gt;. First lets create some simulated data. Create the data, and factor Disease status:&lt;/p&gt;
-
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;
-Disease &lt;- c(rep(&#34;RA&#34;, 5), rep(&#34;SLE&#34;, 5), rep(&#34;Scleroderma&#34;, 5), 
-             rep(&#34;Myositis&#34;, 5), rep(&#34;Control&#34;, 5))
-set.seed(1234)
-sex &lt;-  rbinom(25,1, 0.5)
-age &lt;-  rnorm(25, 40, 5)
-y &lt;- rnorm(25, 0.5, 0.12)
-data &lt;- data.frame(y,sex,age,Disease=factor(Disease))
-str(data)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;
-## &#39;data.frame&#39;:    25 obs. of  4 variables:
-##  $ y      : num  0.506 0.323 0.552 0.492 0.513 ...
-##  $ sex    : int  0 1 1 1 1 1 0 0 1 1 ...
-##  $ age    : num  44.4 46.9 31.6 36.9 40.1 ...
-##  $ Disease: Factor w/ 5 levels &#34;Control&#34;,&#34;Myositis&#34;,..: 3 3 3 3 3 5 5 5 5 5 ...
-&lt;/code&gt;&lt;/pre&gt;
-
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
 &lt;p&gt;We want the following contrasts:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Control versus all 4 diseases combined&lt;/li&gt;
 &lt;li&gt;RA versus the combination of (SLE, Scleroderma, Myositis), leaving out the Controls&lt;/li&gt;
@@ -254,7 +246,6 @@ str(data)
       
       <guid>https://sahirbhatnagar.github.io/blog/2014/11/15/gradient-descent/</guid>
       <description>&lt;p&gt;I am taking the Machine Learning course on &lt;a href=&#34;https://class.coursera.org/ml-007/lecture&#34;&gt;Coursera&lt;/a&gt; being taught by Andrew Ng. It is turning out to be useful so far, and he has presented the material clearly. It&amp;rsquo;s a nice introduction to the Machine Learning/Computer Science language, since I come from a statistics background.&lt;/p&gt;
-
 &lt;p&gt;I learned about gradient descent today for simple linear regression. The following is my code in R and I compare it to the &lt;em&gt;lm&lt;/em&gt; function in base &lt;em&gt;R&lt;/em&gt;.&lt;/p&gt;</description>
     </item>
     

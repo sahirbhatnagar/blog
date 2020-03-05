@@ -1,17 +1,75 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/package/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/pkgdown/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/post/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/r/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/categories/r/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/categories/r-package/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/travis/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/categories/website/</loc>
+    <lastmod>2020-03-03T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/categories/correlation/</loc>
     <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/icc/</loc>
     <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -22,43 +80,16 @@
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/lmm/</loc>
     <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/post/</loc>
-    <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/r/</loc>
-    <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/</loc>
-    <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/</loc>
-    <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/categories/correlation/</loc>
-    <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/stats/</loc>
     <lastmod>2020-01-10T00:00:00+00:00</lastmod>
-    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/calibration/</loc>
+    <lastmod>2019-09-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -67,33 +98,18 @@
   </url>
   
   <url>
-    <loc>https://sahirbhatnagar.github.io/blog/categories/r/</loc>
-    <lastmod>2019-09-05T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/calibration/</loc>
-    <lastmod>2019-09-05T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/goodness-of-fit/</loc>
     <lastmod>2019-09-05T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/prediction/</loc>
     <lastmod>2019-09-05T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/regression/</loc>
     <lastmod>2019-09-05T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -104,42 +120,36 @@
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/computing/</loc>
     <lastmod>2019-07-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/parallel-computing/</loc>
     <lastmod>2019-07-30T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://sahirbhatnagar.github.io/blog/2019/04/16/variable-selection-prediction-competing-risk-regression/</loc>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/competing-risks/</loc>
     <lastmod>2019-04-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/categories/competing-risks/</loc>
     <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/competing-risks/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/categories/variable-selection/</loc>
-    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/variable-selection/</loc>
     <lastmod>2019-04-16T00:00:00+00:00</lastmod>
-    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/categories/variable-selection/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2019/04/16/variable-selection-prediction-competing-risk-regression/</loc>
+    <lastmod>2019-04-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -175,7 +185,6 @@
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/bayesian/</loc>
     <lastmod>2017-02-23T15:09:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -186,13 +195,21 @@
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/multilevel/</loc>
     <lastmod>2017-02-23T15:09:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/regression/</loc>
     <lastmod>2017-02-23T15:09:00+00:00</lastmod>
-    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/genomics/</loc>
+    <lastmod>2017-02-07T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/limma/</loc>
+    <lastmod>2017-02-07T15:09:00+00:00</lastmod>
   </url>
   
   <url>
@@ -201,27 +218,13 @@
   </url>
   
   <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/genomics/</loc>
-    <lastmod>2017-02-07T15:09:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/limma/</loc>
-    <lastmod>2017-02-07T15:09:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/statistics/</loc>
     <lastmod>2017-02-07T15:09:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/t-test/</loc>
     <lastmod>2017-02-07T15:09:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
@@ -235,26 +238,38 @@
   </url>
   
   <url>
-    <loc>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</loc>
-    <lastmod>2016-02-25T15:09:00+00:00</lastmod>
+    <loc>https://sahirbhatnagar.github.io/blog/</loc>
+    <lastmod>2016-05-05T21:48:51-07:00</lastmod>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/ggplot2/</loc>
     <lastmod>2016-02-25T15:09:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/power/</loc>
     <lastmod>2016-02-25T15:09:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/sample-size/</loc>
     <lastmod>2016-02-25T15:09:00+00:00</lastmod>
-    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</loc>
+    <lastmod>2016-02-25T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</loc>
+    <lastmod>2016-02-08T15:09:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/labels/</loc>
+    <lastmod>2016-02-08T15:09:00+00:00</lastmod>
   </url>
   
   <url>
@@ -263,49 +278,33 @@
   </url>
   
   <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/facet_wrap/</loc>
-    <lastmod>2016-02-08T15:09:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/labels/</loc>
-    <lastmod>2016-02-08T15:09:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://sahirbhatnagar.github.io/blog/2015/07/23/hello-r-markdown/</loc>
+    <lastmod>2015-07-23T21:13:14-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/tags/plot/</loc>
     <lastmod>2015-07-23T21:13:14-05:00</lastmod>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/r-markdown/</loc>
     <lastmod>2015-07-23T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/tags/plot/</loc>
-    <lastmod>2015-07-23T21:13:14-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://sahirbhatnagar.github.io/blog/2015/06/10/heatmaps-in-r/</loc>
-    <lastmod>2015-06-10T15:09:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/gene-expression/</loc>
     <lastmod>2015-06-10T15:09:00+00:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
     <loc>https://sahirbhatnagar.github.io/blog/tags/heatmap/</loc>
     <lastmod>2015-06-10T15:09:00+00:00</lastmod>
-    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://sahirbhatnagar.github.io/blog/2015/06/10/heatmaps-in-r/</loc>
+    <lastmod>2015-06-10T15:09:00+00:00</lastmod>
   </url>
   
   <url>

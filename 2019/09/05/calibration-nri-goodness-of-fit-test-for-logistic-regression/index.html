@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.55.5" />
+<meta name="generator" content="Hugo 0.66.0" />
 
 
 <title>Calibration, Net Re-Classification Index and Goodness-of-Fit Test for Logistic Regression - Sahir&#39;s blog</title>
@@ -82,14 +82,7 @@ pacman::p_load(aod)
 pacman::p_load(ggplot2)
 
 # packages for ggplot2 themes
-pacman::p_load_gh(&quot;hrbrmstr/hrbrthemes&quot;)
 pacman::p_load(ggrepel)
-pacman::p_load(Cairo)
-pacman::p_load(extrafont)
-extrafont::loadfonts()
-
-
-
 
 # colors and themes -------------------------------------------------------
 
@@ -215,7 +208,7 @@ ggplot(dfplot, aes(x = admit, y = predicted, fill = model)) +
        title=&quot;Predicted probability by observed outcome for each model&quot;,
        subtitle=&quot;Based on logistic regression model adjusted for GRE and GPA&quot;,
        caption=&quot;&quot;) +
-  theme_ipsum_rc() + 
+  # theme_ipsum_rc() + 
   theme(legend.position = &quot;bottom&quot;, 
         axis.text = element_text(size = 20),
         axis.title = element_text(size = 20), 
@@ -247,55 +240,34 @@ PredictABEL::reclassification(data = as.matrix(mydata$admit),
 ##  Outcome: absent 
 ##   
 ##              Updated Model
-## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]
-##     [0,0.2)        31        16         0         0       0
-##     [0.2,0.4)      52        99        24         0       0
-##     [0.4,0.6)       0        26        18         7       0
-##     [0.6,0.8)       0         0         0         0       0
-##     [0.8,1]         0         0         0         0       0
-##              Updated Model
-## Initial Model  % reclassified
-##     [0,0.2)                34
-##     [0.2,0.4)              43
-##     [0.4,0.6)              65
-##     [0.6,0.8)             NaN
-##     [0.8,1]               NaN
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]  % reclassified
+##     [0,0.2)        31        16         0         0       0              34
+##     [0.2,0.4)      52        99        24         0       0              43
+##     [0.4,0.6)       0        26        18         7       0              65
+##     [0.6,0.8)       0         0         0         0       0             NaN
+##     [0.8,1]         0         0         0         0       0             NaN
 ## 
 ##  
 ##  Outcome: present 
 ##   
 ##              Updated Model
-## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]
-##     [0,0.2)         7         2         0         0       0
-##     [0.2,0.4)      11        40        28         0       0
-##     [0.4,0.6)       0        11        15        13       0
-##     [0.6,0.8)       0         0         0         0       0
-##     [0.8,1]         0         0         0         0       0
-##              Updated Model
-## Initial Model  % reclassified
-##     [0,0.2)                22
-##     [0.2,0.4)              49
-##     [0.4,0.6)              62
-##     [0.6,0.8)             NaN
-##     [0.8,1]               NaN
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]  % reclassified
+##     [0,0.2)         7         2         0         0       0              22
+##     [0.2,0.4)      11        40        28         0       0              49
+##     [0.4,0.6)       0        11        15        13       0              62
+##     [0.6,0.8)       0         0         0         0       0             NaN
+##     [0.8,1]         0         0         0         0       0             NaN
 ## 
 ##  
 ##  Combined Data 
 ##   
 ##              Updated Model
-## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]
-##     [0,0.2)        38        18         0         0       0
-##     [0.2,0.4)      63       139        52         0       0
-##     [0.4,0.6)       0        37        33        20       0
-##     [0.6,0.8)       0         0         0         0       0
-##     [0.8,1]         0         0         0         0       0
-##              Updated Model
-## Initial Model  % reclassified
-##     [0,0.2)                32
-##     [0.2,0.4)              45
-##     [0.4,0.6)              63
-##     [0.6,0.8)             NaN
-##     [0.8,1]               NaN
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]  % reclassified
+##     [0,0.2)        38        18         0         0       0              32
+##     [0.2,0.4)      63       139        52         0       0              45
+##     [0.4,0.6)       0        37        33        20       0              63
+##     [0.6,0.8)       0         0         0         0       0             NaN
+##     [0.8,1]         0         0         0         0       0             NaN
 ##  _________________________________________
 ## 
 ##  NRI(Categorical) [95% CI]: 0.2789 [ 0.1343 - 0.4235 ] ; p-value: 0.00016 

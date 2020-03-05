@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>facet_wrap on Sahir&#39;s blog</title>
@@ -18,8 +18,7 @@
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/08/math-expressions-with-facets-in-ggplot2/</guid>
       <description>&lt;p&gt;In this post I show how we can use &lt;code&gt;$\LaTeX$&lt;/code&gt; math expressions to label the panels in facets to produce the following plot:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-08-facet_wrap_labels/unnamed-chunk-1-1.png&#34; title=&#34;plot of chunk unnamed-chunk-1&#34; alt=&#34;plot of chunk unnamed-chunk-1&#34; style=&#34;display: block; margin: auto;&#34; /&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

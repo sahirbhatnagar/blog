@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Sahir&#39;s blog</title>
@@ -6,17 +6,44 @@
     <description>Recent content in Tags on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 10 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 03 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>package</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/package/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/package/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pkgdown</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/pkgdown/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/pkgdown/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>R</title>
       <link>https://sahirbhatnagar.github.io/blog/tags/r/</link>
-      <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/tags/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>travis</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/travis/</link>
+      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/travis/</guid>
       <description></description>
     </item>
     
@@ -183,20 +210,20 @@
     </item>
     
     <item>
-      <title>R Markdown</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/r-markdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/r-markdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>plot</title>
       <link>https://sahirbhatnagar.github.io/blog/tags/plot/</link>
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/tags/plot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R Markdown</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/r-markdown/</link>
+      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/r-markdown/</guid>
       <description></description>
     </item>
     
