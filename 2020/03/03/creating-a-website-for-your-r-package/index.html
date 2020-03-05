@@ -157,11 +157,10 @@ git push origin master</code></pre>
 <li>Clicking on your name in the upper right hand corner of the site will bring up a list of your public GitHub repositories with a switch next to each repo. If you turn the switch on then the next time you push to that repository Travis will look for a <code>.travis.yml</code> file in the root of the repository, and it will run tests on your package accordingly (see images below):</li>
 </ol>
 <p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis1.png" alt="final image" width="800"/></p>
-<p><img src="/post/2020-03-03-creating-a-website-for-your-r-package_files/travis1.png" width="800" /></p>
 <p><br></p>
 <p>Scroll to the <code>pkgdowntravis</code> repository:</p>
 <p><br></p>
-<p><img src="/images/travis2.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis2.png" alt="final image" width="800"/></p>
 <ol start="4" style="list-style-type: decimal">
 <li>Now add, commit, and push your changes to GitHub, which will trigger the first build of your package on Travis. Go back to <a href="https://travis-ci.org" class="uri">https://travis-ci.org</a> to watch your package be built and tested at the same time! For further customizations to your .travis.yml file, see all of the options available in <a href="https://docs.travis-ci.com/user/languages/r">this guide</a>.</li>
 </ol>
@@ -171,7 +170,7 @@ git push origin master</code></pre>
 <p>First initialize the website using the following command, which will basically setup the website skeleton for you:</p>
 <pre class="r"><code>pkgdown::build_site()</code></pre>
 <p>This should automatically open up your web browser with the built website. The homepage should look like this:</p>
-<p><img src="/images/travis3.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis3.png" alt="final image" width="800"/></p>
 <p>You should additionally see that a <code>docs/</code> folder has been created in the root of your package directory which contains all the source files for your website.</p>
 </div>
 <div id="step-5-host-the-website-using-github-pages" class="section level1">
@@ -189,11 +188,11 @@ git push origin master</code></pre>
 git commit -m &quot;added pkgdown files&quot;
 git push origin master</code></pre>
 <p>Then head over to the <em>Settings</em> on your GitHub repo:</p>
-<p><img src="/images/travis4.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis4.png" alt="final image" width="800"/></p>
 <p>Scroll to the <em>GitHub Pages</em> section and select <em>master branch /docs folder</em> in the dropdown menu:</p>
-<p><img src="/images/travis5.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis5.png" alt="final image" width="800"/></p>
 <p>Refresh the page a few times and if all worked out you should see the following:</p>
-<p><img src="/images/travis6.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis6.png" alt="final image" width="800"/></p>
 <p>That’s it! To update your website, simply re-build locally using <code>pkgdown::build_site()</code> and then push to GitHub. GitHub Pages will then always use the files in the <code>docs/</code> folder for the source code of your website.</p>
 </div>
 <div id="the-hard-way-using-travis" class="section level2">
@@ -219,9 +218,9 @@ development:
 <p>Create a GitHub PAT with:</p>
 <pre class="r"><code>usethis::browse_github_token()</code></pre>
 <p>Login to your GitHub account if prompted. Then you will see a page like this with repo and gist already selected:</p>
-<p><img src="/images/travis8.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis8.png" alt="final image" width="800"/></p>
 <p>Then click on the <em>Generate Token</em> button:</p>
-<p><img src="/images/travis9.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis9.png" alt="final image" width="800"/></p>
 <p>COPY the GitHub PAT to your <code>_.Renviron</code> file. If you don’t have one, create a file called <code>.Renviron</code> and save it in your home directory. The variables in the <code>.Renviron</code> file are available to your R session upon startup. Store your GitHub PAT with a line like:</p>
 <pre class="bash"><code>GITHUB_PAT=paste your PAT here
 
@@ -234,9 +233,9 @@ system(&#39;echo $GITHUB_PAT&#39;)</code></pre>
 <p>Generate a Travis API key with</p>
 <pre class="r"><code>travis::browse_travis_token()</code></pre>
 <p>You will likely be prompted to logon to Travis:</p>
-<p><img src="/images/travis7.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis7.png" alt="final image" width="800"/></p>
 <p>Then you should be in the <em>Settings</em> page of your Travis account. Under <em>API Authentication</em>, click on <em>Copy Token</em>:</p>
-<p><img src="/images/travis10.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis10.png" alt="final image" width="800"/></p>
 <p>Paste this token in your <code>.Renviron</code> file. Also take note of if you’re using the <code>.com</code> or <code>.org</code> endpoint which you can tell by looking at the travis website address. Here I’m using the <code>.org</code> endpoint:</p>
 <pre class="bash"><code>R_TRAVIS_ORG = paste your travis token here</code></pre>
 <p>If you’re using the <code>.com</code> endpoint, you should enter the following in your <code>.Renviron</code> file:</p>
@@ -252,11 +251,11 @@ R_TRAVIS_COM = paste your travis token here</code></pre>
 # if the above doesn&#39;t work, try:
 travis::use_travis_deploy(endpoint = &#39;.org&#39;)</code></pre>
 <p>If that worked, you should see the following in R:</p>
-<p><img src="/images/travis11.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis11.png" alt="final image" width="800"/></p>
 <p>Head over to the <em>Settings</em> page for the repo on Travis:</p>
-<p><img src="/images/travis12.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis12.png" alt="final image" width="800"/></p>
 <p>You should also see that there’s an environment variable called <code>TRAVIS_DEPLOY_KEY</code>:</p>
-<p><img src="/images/travis13.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis13.png" alt="final image" width="800"/></p>
 <p>Add the following to your <code>.travis.yml</code> file which is found in the root of your package directory:</p>
 <pre class="yml"><code>before_cache: Rscript -e &#39;remotes::install_cran(&quot;pkgdown&quot;)&#39;
 deploy:
@@ -265,9 +264,9 @@ deploy:
   skip_cleanup: true</code></pre>
 <p>Commit and push your changes to the remote which should trigger a new build on Travis.</p>
 <p>If everything worked you should see the following in your Travis build logs:</p>
-<p><img src="/images/travis14.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis14.png" alt="final image" width="800"/></p>
 <p>And the following on the <code>gh-pages</code> branch of your repository:</p>
-<p><img src="/images/travis15.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis15.png" alt="final image" width="800"/></p>
 <p>NOTE: According to <a href="https://github.com/r-lib/pkgdown/issues/1223">issue #1223</a>, this will fail if there doesn’t exist a <code>gh-pages</code> branch on your GitHub repo. So if this did fail, follow the instructions to create an orphan <code>gh-pages</code> branch and then retart the travis build:</p>
 <pre class="bash"><code>git checkout --orphan gh-pages
 # Clean all (untracked) files:
@@ -278,7 +277,7 @@ git commit --allow-empty -m &quot;Initializing gh-pages branch&quot;</code></pre
 <div id="change-the-source-of-your-website" class="section level3">
 <h3>4. Change the source of your website</h3>
 <p>Head over to the settings of your GitHub repository, and scroll to the GitHub Pages section. Change the source to <code>gh-pages</code> branch:</p>
-<p><img src="/images/travis17.png" alt="drawing" width="800"/></p>
+<p><img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis17.png" alt="final image" width="800"/></p>
 </div>
 </div>
 </div>
