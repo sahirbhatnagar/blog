@@ -130,7 +130,7 @@ To start using Travis:
 <img src="/images/travis1.png" alt="drawing" width="800"/>
 
 ```{r}
-knitr::include_graphics("/images/travis1.png")
+knitr::include_graphics("../../static/images/travis1.png")
 ```
 
 
@@ -201,7 +201,7 @@ That's it! To update your website, simply re-build locally using `pkgdown::build
 
 We first need to create a `YAML` file for `pkgdown` in the root of your package directory called `_pkgdown.yml`. This file basically has a set of instructions for `pkgdown` to follow and can be used to [further customize the site](https://pkgdown.r-lib.org/articles/pkgdown.html). Below is a very basic example. A more complicated example can be found in our [`casebase` package](https://github.com/sahirbhatnagar/casebase/blob/master/_pkgdown.yml). Copy the following into your `_pkgdown.yml` file:
 
-```{yml}
+```{yml, eval=FALSE}
 url: http://sahirbhatnagar.com/pkgdowntravis
 
 template:
