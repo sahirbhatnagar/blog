@@ -1,7 +1,7 @@
 ---
 title: Creating a website for your R package
 author: null
-date: '2020-03-04'
+date: '2020-03-03'
 slug: creating-a-website-for-your-r-package
 categories: [R package, website]
 tags: [R, package, pkgdown, travis]
