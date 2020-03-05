@@ -22,23 +22,7 @@ pacman::p_load(aod)
 pacman::p_load(ggplot2)
 
 # packages for ggplot2 themes
-pacman::p_load_gh(&quot;hrbrmstr/hrbrthemes&quot;)
 pacman::p_load(ggrepel)
-pacman::p_load(Cairo)</code></pre>
-<pre><code>## Installing package into &#39;/home/sahir/R/x86_64-pc-linux-gnu-library/3.6&#39;
-## (as &#39;lib&#39; is unspecified)</code></pre>
-<pre><code>## Warning in utils::install.packages(package, ...): installation of package
-## &#39;Cairo&#39; had non-zero exit status</code></pre>
-<pre><code>## Warning in p_install(package, character.only = TRUE, ...):</code></pre>
-<pre><code>## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,
-## logical.return = TRUE, : there is no package called &#39;Cairo&#39;</code></pre>
-<pre><code>## Warning in pacman::p_load(Cairo): Failed to install/load:
-## Cairo</code></pre>
-<pre class="r"><code>pacman::p_load(extrafont)
-extrafont::loadfonts()
-
-
-
 
 # colors and themes -------------------------------------------------------
 
@@ -164,7 +148,7 @@ ggplot(dfplot, aes(x = admit, y = predicted, fill = model)) +
        title=&quot;Predicted probability by observed outcome for each model&quot;,
        subtitle=&quot;Based on logistic regression model adjusted for GRE and GPA&quot;,
        caption=&quot;&quot;) +
-  theme_ipsum_rc() + 
+  # theme_ipsum_rc() + 
   theme(legend.position = &quot;bottom&quot;, 
         axis.text = element_text(size = 20),
         axis.title = element_text(size = 20), 
