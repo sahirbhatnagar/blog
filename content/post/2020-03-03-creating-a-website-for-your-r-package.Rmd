@@ -130,16 +130,14 @@ To start using Travis:
 <img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis1.png" alt="final image" width="800"/>
 
 
-![](/post/2020-03-03-creating-a-website-for-your-r-package_files/travis1.png){width=800px}
-
-
 <br>
 
 Scroll to the `pkgdowntravis` repository:
 
 <br>
 
-<img src="/images/travis2.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis2.png" alt="final image" width="800"/>
+
 
 4. Now add, commit, and push your changes to GitHub, which will trigger the first build of your package on Travis. Go back to https://travis-ci.org to watch your package be built and tested at the same time! For further customizations to your .travis.yml file, see all of the options available in [this guide](https://docs.travis-ci.com/user/languages/r).
 
@@ -155,7 +153,8 @@ pkgdown::build_site()
 
 This should automatically open up your web browser with the built website. The homepage should look like this:
 
-<img src="/images/travis3.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis3.png" alt="final image" width="800"/>
+
 
 You should additionally see that a `docs/` folder has been created in the root of your package directory which contains all the source files for your website. 
 
@@ -183,15 +182,15 @@ git push origin master
 
 Then head over to the _Settings_ on your GitHub repo:
 
-<img src="/images/travis4.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis4.png" alt="final image" width="800"/>
 
 Scroll to the _GitHub Pages_ section and select _master branch /docs folder_ in the dropdown menu:
 
-<img src="/images/travis5.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis5.png" alt="final image" width="800"/>
 
 Refresh the page a few times and if all worked out you should see the following:
 
-<img src="/images/travis6.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis6.png" alt="final image" width="800"/>
 
 That's it! To update your website, simply re-build locally using `pkgdown::build_site()` and then push to GitHub. GitHub Pages will then always use the files in the `docs/` folder for the source code of your website. 
 
@@ -235,11 +234,11 @@ usethis::browse_github_token()
 
 Login to your GitHub account if prompted. Then you will see a page like this with repo and gist already selected:
 
-<img src="/images/travis8.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis8.png" alt="final image" width="800"/>
 
 Then click on the _Generate Token_ button:
 
-<img src="/images/travis9.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis9.png" alt="final image" width="800"/>
 
 COPY the GitHub PAT to your `_.Renviron` file. If you don't have one, create a file called `.Renviron` and save it in your home directory. The variables in the `.Renviron` file are available to your R session upon startup. Store your GitHub PAT with a line like:
 
@@ -261,12 +260,12 @@ travis::browse_travis_token()
 
 You will likely be prompted to logon to Travis:
 
-<img src="/images/travis7.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis7.png" alt="final image" width="800"/>
 
 
 Then you should be in the _Settings_ page of your Travis account. Under _API Authentication_, click on _Copy Token_:
 
-<img src="/images/travis10.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis10.png" alt="final image" width="800"/>
 
 Paste this token in your `.Renviron` file. Also take note of if you're using the `.com` or `.org` endpoint which you can tell by looking at the travis website address. Here I'm using the `.org` endpoint:
 
@@ -296,16 +295,16 @@ travis::use_travis_deploy(endpoint = '.org')
 
 If that worked, you should see the following in R:
 
-<img src="/images/travis11.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis11.png" alt="final image" width="800"/>
 
 
 Head over to the _Settings_ page for the repo on Travis:
 
-<img src="/images/travis12.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis12.png" alt="final image" width="800"/>
 
 You should also see that there's an environment variable called `TRAVIS_DEPLOY_KEY`:
 
-<img src="/images/travis13.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis13.png" alt="final image" width="800"/>
 
 
 Add the following to your `.travis.yml` file which is found in the root of your package directory:
@@ -323,12 +322,12 @@ Commit and push your changes to the remote which should trigger a new build on T
 
 If everything worked you should see the following in your Travis build logs:
 
-<img src="/images/travis14.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis14.png" alt="final image" width="800"/>
 
 
 And the following on the `gh-pages` branch of your repository:
 
-<img src="/images/travis15.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis15.png" alt="final image" width="800"/>
 
 
 NOTE: According to [issue #1223](https://github.com/r-lib/pkgdown/issues/1223), this will fail if there doesn't exist a `gh-pages` branch on your GitHub repo. So if this did fail, follow the instructions to create an orphan `gh-pages` branch and then retart the travis build:
@@ -346,7 +345,7 @@ git commit --allow-empty -m "Initializing gh-pages branch"
 
 Head over to the settings of your GitHub repository, and scroll to the GitHub Pages section. Change the source to `gh-pages` branch:
 
-<img src="/images/travis17.png" alt="drawing" width="800"/>
+<img src="/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis17.png" alt="final image" width="800"/>
 
 
 
