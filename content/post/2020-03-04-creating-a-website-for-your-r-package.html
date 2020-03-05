@@ -1,0 +1,229 @@
+---
+title: Creating a website for your R package
+author: null
+date: '2020-03-04'
+slug: creating-a-website-for-your-r-package
+categories: [R package, website]
+tags: [R, package, pkgdown, travis]
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>In this post, I try to outline the steps needed to create a website for your R package using the <a href="https://github.com/r-lib/pkgdown"><code>pkgdown</code></a> package. In particular, I will show you how to get <a href="https://travis-ci.org/">Travis-ci</a> to automatically build the website and deploy it to your <code>gh-pages</code> branch on GitHub.</p>
+<p>This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is. You must also have a GitHub account and have a <a href="https://pages.github.com/">GitHub Pages user site</a>.</p>
+<p>Note: the steps outlined below are a recollection of what I remember from recently doing the samething for our <a href="http://sahirbhatnagar.com/casebase/"><code>casebase</code> R package</a>. You can probably figure out most of this out using the documentation from the <a href="https://usethis.r-lib.org/"><code>usethis</code></a>, <a href="https://github.com/r-lib/pkgdown"><code>pkgdown</code></a> and <a href="https://docs.ropensci.org/travis/"><code>travis</code></a> R packages. However, I found that certain pieces of information were missing or I had to search beyond these docs to make everything work. Please feel free to comment below if this tutorial doesn’t work for you.</p>
+</div>
+<div id="pre-requisites" class="section level1">
+<h1>Pre-requisites</h1>
+<ol style="list-style-type: decimal">
+<li>A GitHub account</li>
+<li>A <a href="https://travis-ci.org/">Travis-ci</a> account linked to your GitHub account</li>
+<li>The following R packages:</li>
+</ol>
+<pre class="r"><code>install.packages(c(&quot;devtools&quot;,&quot;usethis&quot;,&quot;knitr&quot;,&quot;rmarkdown&quot;, &quot;roxygen2&quot;, &quot;pkgdown&quot;))
+devtools::install_github(&quot;ropenscilabs/travis&quot;)</code></pre>
+</div>
+<div id="step-1-create-an-r-package" class="section level1">
+<h1>Step 1: Create an R package</h1>
+<p>To demonstrate creating a website for an R package, we will first create a very simple one. I have previously written <a href="http://sahirbhatnagar.com/rpkg/">a more detailed tutorial on creating R packages</a> if you’re interested.</p>
+<p>I will first create a package called <code>pkgdowntravis</code> locally into an empty folder of the same name with an RStudio project file, and then push it to my <a href="https://github.com/sahirbhatnagar/pkgdowntravis">remote repository</a>.</p>
+<pre class="r"><code># setup R package structure
+usethis::create_package(&quot;pkgdowntravis&quot;)
+
+# created README.md for Github landing page
+usethis::use_readme_md(open = FALSE)
+
+# creates license file
+usethis::use_mit_license(&quot;Sahir Bhatnagar&quot;)
+
+# creates news file
+usethis::use_news_md(open = FALSE)
+
+# create a vignette
+usethis::use_vignette(&quot;package_intro&quot;)</code></pre>
+<p>Create a <code>.gitignore</code> file in the root of the directory with the following two lines:</p>
+<pre class="bash"><code>pkgdowntravis.Rproj
+.Rproj*</code></pre>
+<p>Save the following R function in a file called <code>simdata.R</code> in the <code>R/</code> folder:</p>
+<pre class="r"><code>#&#39; Simulate Multivariate Normal Distribution
+#&#39; @description Custom function to simulate multivariate normal distribution
+#&#39; @param n sample size (integer)
+#&#39; @param p number of variables (integer)
+#&#39; @param rho correlation between variables (between 0 and 1)
+#&#39; @return A nxp matrix of simulated data
+#&#39; @references
+#&#39; \url{https://gallery.rcpp.org/articles/simulate-multivariate-normal/}
+#&#39; @examples
+#&#39; dat &lt;- mvrnormR(n = 100, p = 10, rho = 0.8)
+#&#39; heatmap(cor(dat))
+#&#39; @export
+mvrnormR &lt;- function(n, p, rho) {
+
+  # covariance between Z_i and Z_j being rho^|i-j|
+  times &lt;- 1:p # used for creating covariance matrix
+  H &lt;- abs(outer(times, times, &quot;-&quot;))
+  sigma &lt;- rho^H
+
+  mu &lt;- rep(0, p)
+  ncols &lt;- ncol(sigma)
+  mu &lt;- rep(mu, each = n) ## not obliged to use a matrix (recycling)
+  mu + matrix(stats::rnorm(n * ncols), ncol = ncols) %*% chol(sigma)
+}</code></pre>
+<p>Modify the vignette file found in the vignettes folder. I added the following code chunk:</p>
+<pre class="r"><code>dat &lt;- mvrnormR(n = 100, p = 10, rho = 0.8)
+heatmap(cor(dat))</code></pre>
+<p>Create the documentation files and check that the package can build without errors:</p>
+<pre class="r"><code>devtools::document()
+devtools::check()</code></pre>
+</div>
+<div id="step-2-initialize-git-repository" class="section level1">
+<h1>Step 2: Initialize Git Repository</h1>
+<p>At this point you need to initialize the project as a git repo, commit your changes, set the remote and push to the remote. There are many ways to accomplish this <a href="http://sahirbhatnagar.com/rpkg/">which I explain in my tutorial</a>. Here I will use the command line to accomplish this:</p>
+<pre class="bash"><code>git init
+git add --all
+git commit -m &quot;initial commit&quot;
+git remote add origin https://github.com/sahirbhatnagar/pkgdowntravis.git
+git push origin master</code></pre>
+</div>
+<div id="step-3-setup-travis-ci" class="section level1">
+<h1>Step 3: Setup Travis-CI</h1>
+<p>Continous integration (aka checking your package after every commit) is a software development technique used to ensure that any changes to your code do not break the package’s functionality. Travis is a continuous integration service, which means that it runs automated testing code everytime you push to GitHub. For open source projects, Travis provides 50 minutes of free computation on a Ubuntu server for every push. For an <code>R</code> package, the most useful code to run is <code>devtools::check()</code>. Here we will also be using Travis to build and deploy our package website.</p>
+<p>To start using Travis:</p>
+<ol style="list-style-type: decimal">
+<li>Go to <a href="https://travis-ci.org" class="uri">https://travis-ci.org</a> and sign in with your GitHub account.</li>
+<li>Run <code>usethis::use_travis()</code> in the home directory of your R package.</li>
+<li>Clicking on your name in the upper right hand corner of the site will bring up a list of your public GitHub repositories with a switch next to each repo. If you turn the switch on then the next time you push to that repository Travis will look for a <code>.travis.yml</code> file in the root of the repository, and it will run tests on your package accordingly (see images below):</li>
+</ol>
+<p><img src="/images/travis1.png" alt="drawing" width="800"/></p>
+<p><br></p>
+<p>Scroll to the <code>pkgdowntravis</code> repository:</p>
+<p><br></p>
+<p><img src="/images/travis2.png" alt="drawing" width="800"/></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Now add, commit, and push your changes to GitHub, which will trigger the first build of your package on Travis. Go back to <a href="https://travis-ci.org" class="uri">https://travis-ci.org</a> to watch your package be built and tested at the same time! For further customizations to your .travis.yml file, see all of the options available in <a href="https://docs.travis-ci.com/user/languages/r">this guide</a>.</li>
+</ol>
+</div>
+<div id="step-4-initialize-website-using-pkgdown" class="section level1">
+<h1>Step 4: Initialize website using <code>pkgdown</code></h1>
+<p>First initialize the website using the following command, which will basically setup the website skeleton for you:</p>
+<pre class="r"><code>pkgdown::build_site()</code></pre>
+<p>This should automatically open up your web browser with the built website. The homepage should look like this:</p>
+<p><img src="/images/travis3.png" alt="drawing" width="800"/></p>
+<p>You should additionally see that a <code>docs/</code> folder has been created in the root of your package directory which contains all the source files for your website.</p>
+</div>
+<div id="step-5-host-the-website-using-github-pages" class="section level1">
+<h1>Step 5: Host the website using GitHub Pages</h1>
+<p>Next we need to publish the website online. There are two ways I can think of to do this:</p>
+<ol style="list-style-type: decimal">
+<li><p>Non-automatic way (easy): this requires you to build the website locally everytime you make a change to the documentation or vignettes, and then push to github. But the setup is easy and probably the one I would recommend if you don’t plan on making many changes to your package.</p></li>
+<li><p>Automatic way (hard): this requires more initial setup and some understanding of the GitHub and Travis APIs. Once this is done however, you never need to worry about updating your website, because anytime you make a change to your package (and push these changes to GitHub), the website will automatically get updated because Travis will re-build the site and deploy on GitHub.</p></li>
+</ol>
+<p>I will outline both ways below.</p>
+<div id="the-easy-way-using-the-docs-folder" class="section level2">
+<h2>The easy way using the <code>docs/</code> folder</h2>
+<p>Commit the changes (the newly created <code>docs/</code> folder) and push them to the remote (on the master branch):</p>
+<pre class="bash"><code>git add --all
+git commit -m &quot;added pkgdown files&quot;
+git push origin master</code></pre>
+<p>Then head over to the <em>Settings</em> on your GitHub repo:</p>
+<p><img src="/images/travis4.png" alt="drawing" width="800"/></p>
+<p>Scroll to the <em>GitHub Pages</em> section and select <em>master branch /docs folder</em> in the dropdown menu:</p>
+<p><img src="/images/travis5.png" alt="drawing" width="800"/></p>
+<p>Refresh the page a few times and if all worked out you should see the following:</p>
+<p><img src="/images/travis6.png" alt="drawing" width="800"/></p>
+<p>That’s it! To update your website, simply re-build locally using <code>pkgdown::build_site()</code> and then push to GitHub. GitHub Pages will then always use the files in the <code>docs/</code> folder for the source code of your website.</p>
+</div>
+<div id="the-hard-way-using-travis" class="section level2">
+<h2>The hard way using Travis</h2>
+<p>We first need to create a <code>YAML</code> file for <code>pkgdown</code> in the root of your package directory called <code>_pkgdown.yml</code>. This file basically has a set of instructions for <code>pkgdown</code> to follow and can be used to <a href="https://pkgdown.r-lib.org/articles/pkgdown.html">further customize the site</a>. Below is a very basic example. A more complicated example can be found in our <a href="https://github.com/sahirbhatnagar/casebase/blob/master/_pkgdown.yml"><code>casebase</code> package</a>. Copy the following into your <code>_pkgdown.yml</code> file:</p>
+<pre class="yml"><code>url: http://sahirbhatnagar.com/pkgdowntravis
+
+template:
+  params:
+    bootswatch: cosmo
+
+authors:
+  Sahir Bhatnagar:
+    href: http://sahirbhatnagar.com/
+
+development:
+  mode: release</code></pre>
+<p>You then need to add this file to the <code>.Rbuildignore</code> so that R doesn’t use this file in the build process (note that <code>usethis</code> will automatically escape special characters so I highly recommend this function so you don’t have to worry about it):</p>
+<pre class="r"><code>usethis::use_build_ignore(files = &quot;_pkgdown.yml&quot;)</code></pre>
+<p>Next we need to create a <a href="https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys">Deploy Key</a>, which is basically a way for Travis to securely have read and write access to the GitHub repository. This deploy key is stored securely on the repository of the package. The easiest way to do this (although it hides alot of the steps) is to use the <code>travis::use_travis_deploy()</code> function. However, before you can use this function, you must first give <strong>R access to GitHub</strong> via their API using a <a href="https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line">Personal Access Token or PAT</a>. You must also give <strong>R access to Travis</strong> via their <a href="https://docs.travis-ci.com/user/encryption-keys/">API Key</a>. Confused yet? In summary, we must complete the following steps:</p>
+<div id="create-a-github-pat" class="section level3">
+<h3>1. Create a GitHub PAT</h3>
+<p>Create a GitHub PAT with:</p>
+<pre class="r"><code>usethis::browse_github_token()</code></pre>
+<p>Login to your GitHub account if prompted. Then you will see a page like this with repo and gist already selected:</p>
+<p><img src="/images/travis8.png" alt="drawing" width="800"/></p>
+<p>Then click on the <em>Generate Token</em> button:</p>
+<p><img src="/images/travis9.png" alt="drawing" width="800"/></p>
+<p>COPY the GitHub PAT to your <code>_.Renviron</code> file. If you don’t have one, create a file called <code>.Renviron</code> and save it in your home directory. The variables in the <code>.Renviron</code> file are available to your R session upon startup. Store your GitHub PAT with a line like:</p>
+<pre class="bash"><code>GITHUB_PAT=paste your PAT here
+
+# if you want to see if this worked, restart your R session
+# then try the R command
+system(&#39;echo $GITHUB_PAT&#39;)</code></pre>
+</div>
+<div id="create-a-travis-api-key" class="section level3">
+<h3>2. Create a Travis API Key</h3>
+<p>Generate a Travis API key with</p>
+<pre class="r"><code>travis::browse_travis_token()</code></pre>
+<p>You will likely be prompted to logon to Travis:</p>
+<p><img src="/images/travis7.png" alt="drawing" width="800"/></p>
+<p>Then you should be in the <em>Settings</em> page of your Travis account. Under <em>API Authentication</em>, click on <em>Copy Token</em>:</p>
+<p><img src="/images/travis10.png" alt="drawing" width="800"/></p>
+<p>Paste this token in your <code>.Renviron</code> file. Also take note of if you’re using the <code>.com</code> or <code>.org</code> endpoint which you can tell by looking at the travis website address. Here I’m using the <code>.org</code> endpoint:</p>
+<pre class="bash"><code>R_TRAVIS_ORG = paste your travis token here</code></pre>
+<p>If you’re using the <code>.com</code> endpoint, you should enter the following in your <code>.Renviron</code> file:</p>
+<pre class="bash"><code># if you&#39;re using .com endpoint
+R_TRAVIS_COM = paste your travis token here</code></pre>
+<p>Restart your R session before moving on to the next step so that the new R session has access to these environment variables.</p>
+</div>
+<div id="create-the-deploy-key" class="section level3">
+<h3>3. Create the Deploy key</h3>
+<p>Now that R has access to both GitHub and Travis, you can create the deploy key with</p>
+<pre class="r"><code>travis::use_travis_deploy()
+
+# if the above doesn&#39;t work, try:
+travis::use_travis_deploy(endpoint = &#39;.org&#39;)</code></pre>
+<p>If that worked, you should see the following in R:</p>
+<p><img src="/images/travis11.png" alt="drawing" width="800"/></p>
+<p>Head over to the <em>Settings</em> page for the repo on Travis:</p>
+<p><img src="/images/travis12.png" alt="drawing" width="800"/></p>
+<p>You should also see that there’s an environment variable called <code>TRAVIS_DEPLOY_KEY</code>:</p>
+<p><img src="/images/travis13.png" alt="drawing" width="800"/></p>
+<p>Add the following to your <code>.travis.yml</code> file which is found in the root of your package directory:</p>
+<pre class="yml"><code>before_cache: Rscript -e &#39;remotes::install_cran(&quot;pkgdown&quot;)&#39;
+deploy:
+  provider: script
+  script: Rscript -e &#39;pkgdown::deploy_site_github(ssh_id = Sys.getenv(&quot;TRAVIS_DEPLOY_KEY&quot;, &quot;&quot;))&#39;
+  skip_cleanup: true</code></pre>
+<p>Commit and push your changes to the remote which should trigger a new build on Travis.</p>
+<p>If everything worked you should see the following in your Travis build logs:</p>
+<p><img src="/images/travis14.png" alt="drawing" width="800"/></p>
+<p>And the following on the <code>gh-pages</code> branch of your repository:</p>
+<p><img src="/images/travis15.png" alt="drawing" width="800"/></p>
+<p>NOTE: According to <a href="https://github.com/r-lib/pkgdown/issues/1223">issue #1223</a>, this will fail if there doesn’t exist a <code>gh-pages</code> branch on your GitHub repo. So if this did fail, follow the instructions to create an orphan <code>gh-pages</code> branch and then retart the travis build:</p>
+<pre class="bash"><code>git checkout --orphan gh-pages
+# Clean all (untracked) files:
+git reset --hard or git rm -rf .
+# Create first commit: 
+git commit --allow-empty -m &quot;Initializing gh-pages branch&quot;</code></pre>
+</div>
+<div id="change-the-source-of-your-website" class="section level3">
+<h3>4. Change the source of your website</h3>
+<p>Head over to the settings of your GitHub repository, and scroll to the GitHub Pages section. Change the source to <code>gh-pages</code> branch:</p>
+<p><img src="/images/travis17.png" alt="drawing" width="800"/></p>
+</div>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<p>The hardest part for me is/was figuring out all of these API keys and tokens and PATs. The <code>usethis</code> and <code>travis</code> R packages have made it easier for us to use these complex tools, but this comes at the cost of understand less about what’s actually going on. In this post I try to reason out some of the inner workings of whats actually going on when you call these functions.</p>
+</div>
