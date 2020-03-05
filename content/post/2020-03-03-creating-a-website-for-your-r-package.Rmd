@@ -1,6 +1,6 @@
 ---
 title: Creating a website for your R package
-author: null
+author: Sahir
 date: '2020-03-03'
 slug: creating-a-website-for-your-r-package
 categories: [R package, website]
@@ -348,6 +348,6 @@ Head over to the settings of your GitHub repository, and scroll to the GitHub Pa
 
 # Conclusion
 
-The hardest part for me is/was figuring out all of these API keys and tokens and PATs. The `usethis` and `travis` R packages have made it easier for us to use these complex tools, but this comes at the cost of understand less about what's actually going on. In this post I try to reason out some of the inner workings of whats actually going on when you call these functions. 
+The hardest part for me is/was figuring out all of these API keys and tokens and PATs. The `usethis` and `travis` R packages have made it easier for us to use these complex tools, but this comes at the cost of understanding less about what's actually going on behind the scenes. In this post I try to reason out some of the inner workings of whats actually going on when you call these functions. I've learned that their approach is to create the necessary tokens and PATs, and then store them in the `.Renviron` so that these values are available to your R session. 
 
 
