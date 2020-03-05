@@ -30,27 +30,27 @@ DT &lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)),
 
 head(DT)</code></pre>
 <pre><code>##   Subject_ID Item Importance
-## 1          1    1          5
-## 2          1    2          6
-## 3          1    3          5
+## 1          1    1          4
+## 2          1    2          3
+## 3          1    3          8
 ## 4          1    4          3
-## 5          1    5          6
+## 5          1    5          8
 ## 6          1    6          6</code></pre>
 <pre class="r"><code>str(DT)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    45000 obs. of  3 variables:
 ##  $ Subject_ID: Factor w/ 500 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ Item      : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ Importance: int  5 6 5 3 6 6 4 6 5 5 ...</code></pre>
+##  $ Importance: int  4 3 8 3 8 6 2 6 4 5 ...</code></pre>
 </div>
 <div id="calculate-icc" class="section level1">
 <h1>Calculate ICC</h1>
-<pre class="r"><code>fit0 &lt;- lme4::lmer(Importance ~ 1 + (1 | Subject_ID), data = DT)
-sjstats::icc(fit0)</code></pre>
+<pre class="r"><code>fit0 &lt;- lme4::lmer(Importance ~ 1 + (1 | Subject_ID), data = DT)</code></pre>
+<pre><code>## boundary (singular) fit: see ?isSingular</code></pre>
+<pre class="r"><code>sjstats::icc(fit0)</code></pre>
 <pre><code>## Warning: &#39;sjstats::icc&#39; is deprecated.
 ## Use &#39;performance::icc()&#39; instead.
 ## See help(&quot;Deprecated&quot;)</code></pre>
-<pre><code>## # Intraclass Correlation Coefficient
-## 
-##      Adjusted ICC: 0.000
-##   Conditional ICC: 0.000</code></pre>
+<pre><code>## Warning: Can&#39;t compute random effect variances. Some variance components equal zero.
+##   Solution: Respecify random structure!</code></pre>
+<pre><code>## [1] NA</code></pre>
 </div>
