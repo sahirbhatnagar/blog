@@ -1,6 +1,6 @@
 ---
 title: Creating a website for your R package
-author: null
+author: Sahir
 date: '2020-03-03'
 slug: creating-a-website-for-your-r-package
 categories: [R package, website]
@@ -225,5 +225,5 @@ git commit --allow-empty -m &quot;Initializing gh-pages branch&quot;</code></pre
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>
-<p>The hardest part for me is/was figuring out all of these API keys and tokens and PATs. The <code>usethis</code> and <code>travis</code> R packages have made it easier for us to use these complex tools, but this comes at the cost of understand less about what’s actually going on. In this post I try to reason out some of the inner workings of whats actually going on when you call these functions.</p>
+<p>The hardest part for me is/was figuring out all of these API keys and tokens and PATs. The <code>usethis</code> and <code>travis</code> R packages have made it easier for us to use these complex tools, but this comes at the cost of understanding less about what’s actually going on behind the scenes. In this post I try to reason out some of the inner workings of whats actually going on when you call these functions. I’ve learned that their approach is to create the necessary tokens and PATs, and then store them in the <code>.Renviron</code> so that these values are available to your R session.</p>
 </div>
