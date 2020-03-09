@@ -341,9 +341,11 @@ NOTE: According to [issue #1223](https://github.com/r-lib/pkgdown/issues/1223), 
 ```{bash, eval=FALSE}
 git checkout --orphan gh-pages
 # Clean all (untracked) files:
-git reset --hard or git rm -rf .
+git reset --hard 
 # Create first commit: 
 git commit --allow-empty -m "Initializing gh-pages branch"
+# push to remote
+git push origin gh-pages
 ```
 
 
