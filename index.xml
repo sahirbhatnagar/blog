@@ -17,8 +17,231 @@
       <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</guid>
-      <description>Overview In this post, I try to outline the steps needed to create a website for your R package using the pkgdown package. In particular, I will show you how to get Travis-ci to automatically build the website and deploy it to your gh-pages branch on GitHub.
-This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is.</description>
+      <description>
+
+
+&lt;div id=&#34;overview&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Overview&lt;/h1&gt;
+&lt;p&gt;In this post, I try to outline the steps needed to create a website for your R package using the &lt;a href=&#34;https://github.com/r-lib/pkgdown&#34;&gt;&lt;code&gt;pkgdown&lt;/code&gt;&lt;/a&gt; package. In particular, I will show you how to get &lt;a href=&#34;https://travis-ci.org/&#34;&gt;Travis-ci&lt;/a&gt; to automatically build the website and deploy it to your &lt;code&gt;gh-pages&lt;/code&gt; branch on GitHub.&lt;/p&gt;
+&lt;p&gt;This tutorial assumes you have basic knowledge of Git commands pull, push, commit, and what a branch is. It also assumes working knowledge of R, and what continuous integration is. You must also have a GitHub account and have a &lt;a href=&#34;https://pages.github.com/&#34;&gt;GitHub Pages user site&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Note: the steps outlined below are a recollection of what I remember from recently doing the samething for our &lt;a href=&#34;http://sahirbhatnagar.com/casebase/&#34;&gt;&lt;code&gt;casebase&lt;/code&gt; R package&lt;/a&gt;. You can probably figure out most of this out using the documentation from the &lt;a href=&#34;https://usethis.r-lib.org/&#34;&gt;&lt;code&gt;usethis&lt;/code&gt;&lt;/a&gt;, &lt;a href=&#34;https://github.com/r-lib/pkgdown&#34;&gt;&lt;code&gt;pkgdown&lt;/code&gt;&lt;/a&gt; and &lt;a href=&#34;https://docs.ropensci.org/travis/&#34;&gt;&lt;code&gt;travis&lt;/code&gt;&lt;/a&gt; R packages. However, I found that certain pieces of information were missing or I had to search beyond these docs to make everything work. Please feel free to comment below if this tutorial doesn’t work for you.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pre-requisites&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Pre-requisites&lt;/h1&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;A GitHub account&lt;/li&gt;
+&lt;li&gt;A &lt;a href=&#34;https://travis-ci.org/&#34;&gt;Travis-ci&lt;/a&gt; account linked to your GitHub account&lt;/li&gt;
+&lt;li&gt;The following R packages:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;install.packages(c(&amp;quot;devtools&amp;quot;,&amp;quot;usethis&amp;quot;,&amp;quot;knitr&amp;quot;,&amp;quot;rmarkdown&amp;quot;, &amp;quot;roxygen2&amp;quot;, &amp;quot;pkgdown&amp;quot;))
+devtools::install_github(&amp;quot;ropenscilabs/travis&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-1-create-an-r-package&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Step 1: Create an R package&lt;/h1&gt;
+&lt;p&gt;To demonstrate creating a website for an R package, we will first create a very simple one. I have previously written &lt;a href=&#34;http://sahirbhatnagar.com/rpkg/&#34;&gt;a more detailed tutorial on creating R packages&lt;/a&gt; if you’re interested.&lt;/p&gt;
+&lt;p&gt;I will first create a package called &lt;code&gt;pkgdowntravis&lt;/code&gt; locally into an empty folder of the same name with an RStudio project file, and then push it to my &lt;a href=&#34;https://github.com/sahirbhatnagar/pkgdowntravis&#34;&gt;remote repository&lt;/a&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# setup R package structure
+usethis::create_package(&amp;quot;pkgdowntravis&amp;quot;)
+
+# created README.md for Github landing page
+usethis::use_readme_md(open = FALSE)
+
+# creates license file
+usethis::use_mit_license(&amp;quot;Sahir Bhatnagar&amp;quot;)
+
+# creates news file
+usethis::use_news_md(open = FALSE)
+
+# create a vignette
+usethis::use_vignette(&amp;quot;package_intro&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create a &lt;code&gt;.gitignore&lt;/code&gt; file in the root of the directory with the following two lines:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;pkgdowntravis.Rproj
+.Rproj*&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Save the following R function in a file called &lt;code&gt;simdata.R&lt;/code&gt; in the &lt;code&gt;R/&lt;/code&gt; folder:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#&amp;#39; Simulate Multivariate Normal Distribution
+#&amp;#39; @description Custom function to simulate multivariate normal distribution
+#&amp;#39; @param n sample size (integer)
+#&amp;#39; @param p number of variables (integer)
+#&amp;#39; @param rho correlation between variables (between 0 and 1)
+#&amp;#39; @return A nxp matrix of simulated data
+#&amp;#39; @references
+#&amp;#39; \url{https://gallery.rcpp.org/articles/simulate-multivariate-normal/}
+#&amp;#39; @examples
+#&amp;#39; dat &amp;lt;- mvrnormR(n = 100, p = 10, rho = 0.8)
+#&amp;#39; heatmap(cor(dat))
+#&amp;#39; @export
+mvrnormR &amp;lt;- function(n, p, rho) {
+
+  # covariance between Z_i and Z_j being rho^|i-j|
+  times &amp;lt;- 1:p # used for creating covariance matrix
+  H &amp;lt;- abs(outer(times, times, &amp;quot;-&amp;quot;))
+  sigma &amp;lt;- rho^H
+
+  mu &amp;lt;- rep(0, p)
+  ncols &amp;lt;- ncol(sigma)
+  mu &amp;lt;- rep(mu, each = n) ## not obliged to use a matrix (recycling)
+  mu + matrix(stats::rnorm(n * ncols), ncol = ncols) %*% chol(sigma)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Modify the vignette file found in the vignettes folder. I added the following code chunk:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dat &amp;lt;- mvrnormR(n = 100, p = 10, rho = 0.8)
+heatmap(cor(dat))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Create the documentation files and check that the package can build without errors:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;devtools::document()
+devtools::check()&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-2-initialize-git-repository&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Step 2: Initialize Git Repository&lt;/h1&gt;
+&lt;p&gt;At this point you need to initialize the project as a git repo, commit your changes, set the remote and push to the remote. There are many ways to accomplish this &lt;a href=&#34;http://sahirbhatnagar.com/rpkg/&#34;&gt;which I explain in my tutorial&lt;/a&gt;. Here I will use the command line to accomplish this:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;git init
+git add --all
+git commit -m &amp;quot;initial commit&amp;quot;
+git remote add origin https://github.com/sahirbhatnagar/pkgdowntravis.git
+git push origin master&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-3-setup-travis-ci&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Step 3: Setup Travis-CI&lt;/h1&gt;
+&lt;p&gt;Continous integration (aka checking your package after every commit) is a software development technique used to ensure that any changes to your code do not break the package’s functionality. Travis is a continuous integration service, which means that it runs automated testing code everytime you push to GitHub. For open source projects, Travis provides 50 minutes of free computation on a Ubuntu server for every push. For an &lt;code&gt;R&lt;/code&gt; package, the most useful code to run is &lt;code&gt;devtools::check()&lt;/code&gt;. Here we will also be using Travis to build and deploy our package website.&lt;/p&gt;
+&lt;p&gt;To start using Travis:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Go to &lt;a href=&#34;https://travis-ci.org&#34; class=&#34;uri&#34;&gt;https://travis-ci.org&lt;/a&gt; and sign in with your GitHub account.&lt;/li&gt;
+&lt;li&gt;Run &lt;code&gt;usethis::use_travis()&lt;/code&gt; in the home directory of your R package.&lt;/li&gt;
+&lt;li&gt;Clicking on your name in the upper right hand corner of the site will bring up a list of your public GitHub repositories with a switch next to each repo. If you turn the switch on then the next time you push to that repository Travis will look for a &lt;code&gt;.travis.yml&lt;/code&gt; file in the root of the repository, and it will run tests on your package accordingly (see images below):&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis1.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;Scroll to the &lt;code&gt;pkgdowntravis&lt;/code&gt; repository:&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis2.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Now add, commit, and push your changes to GitHub, which will trigger the first build of your package on Travis. Go back to &lt;a href=&#34;https://travis-ci.org&#34; class=&#34;uri&#34;&gt;https://travis-ci.org&lt;/a&gt; to watch your package be built and tested at the same time! For further customizations to your .travis.yml file, see all of the options available in &lt;a href=&#34;https://docs.travis-ci.com/user/languages/r&#34;&gt;this guide&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-4-initialize-website-using-pkgdown&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Step 4: Initialize website using &lt;code&gt;pkgdown&lt;/code&gt;&lt;/h1&gt;
+&lt;p&gt;First initialize the website using the following command, which will basically setup the website skeleton for you:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pkgdown::build_site()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This should automatically open up your web browser with the built website. The homepage should look like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis3.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;You should additionally see that a &lt;code&gt;docs/&lt;/code&gt; folder has been created in the root of your package directory which contains all the source files for your website.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;step-5-host-the-website-using-github-pages&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Step 5: Host the website using GitHub Pages&lt;/h1&gt;
+&lt;p&gt;Next we need to publish the website online. There are two ways I can think of to do this:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Non-automatic way (easy): this requires you to build the website locally everytime you make a change to the documentation or vignettes, and then push to github. But the setup is easy and probably the one I would recommend if you don’t plan on making many changes to your package.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Automatic way (hard): this requires more initial setup and some understanding of the GitHub and Travis APIs. Once this is done however, you never need to worry about updating your website, because anytime you make a change to your package (and push these changes to GitHub), the website will automatically get updated because Travis will re-build the site and deploy on GitHub.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I will outline both ways below.&lt;/p&gt;
+&lt;div id=&#34;the-easy-way-using-the-docs-folder&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The easy way using the &lt;code&gt;docs/&lt;/code&gt; folder&lt;/h2&gt;
+&lt;p&gt;Commit the changes (the newly created &lt;code&gt;docs/&lt;/code&gt; folder) and push them to the remote (on the master branch):&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;git add --all
+git commit -m &amp;quot;added pkgdown files&amp;quot;
+git push origin master&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then head over to the &lt;em&gt;Settings&lt;/em&gt; on your GitHub repo:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis4.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Scroll to the &lt;em&gt;GitHub Pages&lt;/em&gt; section and select &lt;em&gt;master branch /docs folder&lt;/em&gt; in the dropdown menu:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis5.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Refresh the page a few times and if all worked out you should see the following:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis6.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;That’s it! To update your website, simply re-build locally using &lt;code&gt;pkgdown::build_site()&lt;/code&gt; and then push to GitHub. GitHub Pages will then always use the files in the &lt;code&gt;docs/&lt;/code&gt; folder for the source code of your website.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-hard-way-using-travis&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The hard way using Travis&lt;/h2&gt;
+&lt;p&gt;We first need to create a &lt;code&gt;YAML&lt;/code&gt; file for &lt;code&gt;pkgdown&lt;/code&gt; in the root of your package directory called &lt;code&gt;_pkgdown.yml&lt;/code&gt;. This file basically has a set of instructions for &lt;code&gt;pkgdown&lt;/code&gt; to follow and can be used to &lt;a href=&#34;https://pkgdown.r-lib.org/articles/pkgdown.html&#34;&gt;further customize the site&lt;/a&gt;. Below is a very basic example. A more complicated example can be found in our &lt;a href=&#34;https://github.com/sahirbhatnagar/casebase/blob/master/_pkgdown.yml&#34;&gt;&lt;code&gt;casebase&lt;/code&gt; package&lt;/a&gt;. Copy the following into your &lt;code&gt;_pkgdown.yml&lt;/code&gt; file (adjust the url to your user site, e.g. username.github.io/pkgdowntravis, and change the author):&lt;/p&gt;
+&lt;pre class=&#34;yml&#34;&gt;&lt;code&gt;url: http://sahirbhatnagar.com/pkgdowntravis
+
+template:
+  params:
+    bootswatch: cosmo
+
+authors:
+  Sahir Bhatnagar:
+    href: http://sahirbhatnagar.com/
+
+development:
+  mode: release&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You then need to add this file to the &lt;code&gt;.Rbuildignore&lt;/code&gt; so that R doesn’t use this file in the build process (note that &lt;code&gt;usethis&lt;/code&gt; will automatically escape special characters so I highly recommend this function so you don’t have to worry about it):&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;usethis::use_build_ignore(files = &amp;quot;_pkgdown.yml&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next we need to create a &lt;a href=&#34;https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys&#34;&gt;Deploy Key&lt;/a&gt;, which is basically a way for Travis to securely have read and write access to the GitHub repository. This deploy key is stored securely on the repository of the package. The easiest way to do this (although it hides alot of the steps) is to use the &lt;code&gt;travis::use_travis_deploy()&lt;/code&gt; function. However, before you can use this function, you must first give &lt;strong&gt;R access to GitHub&lt;/strong&gt; via their API using a &lt;a href=&#34;https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line&#34;&gt;Personal Access Token or PAT&lt;/a&gt;. You must also give &lt;strong&gt;R access to Travis&lt;/strong&gt; via their &lt;a href=&#34;https://docs.travis-ci.com/user/encryption-keys/&#34;&gt;API Key&lt;/a&gt;. Confused yet? In summary, we must complete the following steps:&lt;/p&gt;
+&lt;div id=&#34;create-a-github-pat&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;1. Create a GitHub PAT&lt;/h3&gt;
+&lt;p&gt;Create a GitHub PAT with:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;usethis::browse_github_token()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Login to your GitHub account if prompted. Then you will see a page like this with repo and gist already selected:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis8.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Then click on the &lt;em&gt;Generate Token&lt;/em&gt; button:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis9.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;COPY the GitHub PAT to your &lt;code&gt;.Renviron&lt;/code&gt; file. If you don’t have one, create a file called &lt;code&gt;.Renviron&lt;/code&gt; and save it in your home directory. The variables in the &lt;code&gt;.Renviron&lt;/code&gt; file are available to your R session upon startup. Store your GitHub PAT with a line like:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;GITHUB_PAT=paste your PAT here
+
+# if you want to see if this worked, restart your R session
+# then try the R command
+system(&amp;#39;echo $GITHUB_PAT&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;create-a-travis-api-key&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;2. Create a Travis API Key&lt;/h3&gt;
+&lt;p&gt;Generate a Travis API key with&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;travis::browse_travis_token()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You will likely be prompted to login to Travis:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis7.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Then you should be in the &lt;em&gt;Settings&lt;/em&gt; page of your Travis account. Under &lt;em&gt;API Authentication&lt;/em&gt;, click on &lt;em&gt;Copy Token&lt;/em&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis10.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Paste this token in your &lt;code&gt;.Renviron&lt;/code&gt; file. Also take note of if you’re using the &lt;code&gt;.com&lt;/code&gt; or &lt;code&gt;.org&lt;/code&gt; endpoint which you can tell by looking at the travis website address. Here I’m using the &lt;code&gt;.org&lt;/code&gt; endpoint:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;R_TRAVIS_ORG = paste your travis token here&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you’re using the &lt;code&gt;.com&lt;/code&gt; endpoint, you should enter the following in your &lt;code&gt;.Renviron&lt;/code&gt; file:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;# if you&amp;#39;re using .com endpoint
+R_TRAVIS_COM = paste your travis token here&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Restart your R session before moving on to the next step so that the new R session has access to these environment variables. My &lt;code&gt;.Renviron&lt;/code&gt; file looks like this:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;GITHUB_PAT=myPATtoken
+R_TRAVIS_ORG = myTravisToken&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;create-the-deploy-key&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;3. Create the Deploy key&lt;/h3&gt;
+&lt;p&gt;Now that R has access to both GitHub and Travis, you can create the deploy key with&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;travis::use_travis_deploy()
+
+# if the above doesn&amp;#39;t work, try:
+travis::use_travis_deploy(endpoint = &amp;#39;.org&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If that worked, you should see the following in R:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis11.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Head over to the &lt;em&gt;Settings&lt;/em&gt; page for the repo on Travis:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis12.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;You should also see that there’s an environment variable called &lt;code&gt;TRAVIS_DEPLOY_KEY&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis13.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;Add the following to your &lt;code&gt;.travis.yml&lt;/code&gt; file which is found in the root of your package directory. These commands tell travis what to do, i.e., install the &lt;code&gt;pkgdown&lt;/code&gt; package, and then run the &lt;code&gt;pkgdown::deploy_site_github&lt;/code&gt; function:&lt;/p&gt;
+&lt;pre class=&#34;yml&#34;&gt;&lt;code&gt;before_cache: Rscript -e &amp;#39;remotes::install_cran(&amp;quot;pkgdown&amp;quot;)&amp;#39;
+deploy:
+  provider: script
+  script: Rscript -e &amp;#39;pkgdown::deploy_site_github(ssh_id = Sys.getenv(&amp;quot;TRAVIS_DEPLOY_KEY&amp;quot;, &amp;quot;&amp;quot;))&amp;#39;
+  skip_cleanup: true&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Commit and push your changes to the remote which should trigger a new build on Travis.&lt;/p&gt;
+&lt;p&gt;If everything worked you should see the following in your Travis build logs:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis14.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;And the following on the &lt;code&gt;gh-pages&lt;/code&gt; branch of your repository:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis15.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;NOTE: According to &lt;a href=&#34;https://github.com/r-lib/pkgdown/issues/1223&#34;&gt;issue #1223&lt;/a&gt;, this will fail if there doesn’t exist a &lt;code&gt;gh-pages&lt;/code&gt; branch on your GitHub repo. So if this did fail, follow the instructions to create an orphan &lt;code&gt;gh-pages&lt;/code&gt; branch and then retart the travis build:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;git checkout --orphan gh-pages
+# Clean all (untracked) files:
+git reset --hard 
+# Create first commit: 
+git commit --allow-empty -m &amp;quot;Initializing gh-pages branch&amp;quot;
+# push to remote
+git push origin gh-pages&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;change-the-source-of-your-website&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;4. Change the source of your website&lt;/h3&gt;
+&lt;p&gt;Head over to the settings of your GitHub repository, and scroll to the GitHub Pages section. Change the source to &lt;code&gt;gh-pages&lt;/code&gt; branch:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2020-03-03-creating-a-website-for-your-r-package_files/travis17.png&#34; alt=&#34;final image&#34; width=&#34;800&#34;/&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conclusion&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;The hardest part for me is/was figuring out all of these API keys and tokens and PATs. The &lt;code&gt;usethis&lt;/code&gt; and &lt;code&gt;travis&lt;/code&gt; R packages have made it easier for us to use these complex tools, but this comes at the cost of understanding less about what’s actually going on behind the scenes. In this post I try to reason out some of the inner workings of whats actually going on when you call these functions. I’ve learned that their approach is to create the necessary tokens and PATs, and then store them in the &lt;code&gt;.Renviron&lt;/code&gt; so that these values are available to your R session.&lt;/p&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -27,8 +250,53 @@ This tutorial assumes you have basic knowledge of Git commands pull, push, commi
       <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</guid>
-      <description>if (!requireNamespace(&amp;quot;pacman&amp;quot;)){ install.packages(&amp;quot;pacman&amp;quot;) } ## Loading required namespace: pacman pacman::p_load(sjstats) pacman::p_load(lme4) Simulate Data 500 participants will be ranking 90 items based on importance from 1-9.
-n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 8 ## 2 1 2 5 ## 3 1 3 4 ## 4 1 4 4 ## 5 1 5 5 ## 6 1 6 6 str(DT) ## &amp;#39;data.</description>
+      <description>
+
+
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;if (!requireNamespace(&amp;quot;pacman&amp;quot;)){
+  install.packages(&amp;quot;pacman&amp;quot;)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required namespace: pacman&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pacman::p_load(sjstats)
+pacman::p_load(lme4)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;simulate-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Simulate Data&lt;/h1&gt;
+&lt;p&gt;500 participants will be ranking 90 items based on importance from 1-9.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;n.participants &amp;lt;- 500
+n.items &amp;lt;- 90
+
+# Subject needs to be a factor for lmer
+DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)),
+                 Item = rep(1:n.items, n.participants),
+                 Importance = rpois(n.participants * n.items, lambda = 5))
+
+head(DT)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   Subject_ID Item Importance
+## 1          1    1          8
+## 2          1    2          2
+## 3          1    3          5
+## 4          1    4          4
+## 5          1    5          2
+## 6          1    6          8&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;str(DT)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    45000 obs. of  3 variables:
+##  $ Subject_ID: Factor w/ 500 levels &amp;quot;1&amp;quot;,&amp;quot;2&amp;quot;,&amp;quot;3&amp;quot;,&amp;quot;4&amp;quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Item      : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ Importance: int  8 2 5 4 2 8 5 6 3 6 ...&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;calculate-icc&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Calculate ICC&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit0 &amp;lt;- lme4::lmer(Importance ~ 1 + (1 | Subject_ID), data = DT)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## boundary (singular) fit: see ?isSingular&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sjstats::icc(fit0)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: &amp;#39;sjstats::icc&amp;#39; is deprecated.
+## Use &amp;#39;performance::icc()&amp;#39; instead.
+## See help(&amp;quot;Deprecated&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Can&amp;#39;t compute random effect variances. Some variance components equal zero.
+##   Solution: Respecify random structure!&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] NA&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -37,8 +305,222 @@ n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor
       <pubDate>Thu, 05 Sep 2019 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2019/09/05/calibration-nri-goodness-of-fit-test-for-logistic-regression/</guid>
-      <description>This post shows how to calculate the Net Re-Classification Index and Goodness-of-Fit Test (Hosmer-Lemeshow Test) for logistic regression models. In addition, we show how to plot the calibration curves.
-# load packages ---------------------------------------------------------- if (!requireNamespace(&amp;quot;pacman&amp;quot;, quietly = TRUE)) { install.packages(&amp;quot;pacman&amp;quot;) } pacman::p_load(PredictABEL) pacman::p_load(aod) pacman::p_load(ggplot2) # packages for ggplot2 themes pacman::p_load(ggrepel) # colors and themes ------------------------------------------------------- # color blind palette cbbPalette &amp;lt;- c(&amp;quot;#999999&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;) # my theme defaults gg_sy &amp;lt;- theme(legend.</description>
+      <description>
+
+
+&lt;p&gt;This post shows how to calculate the Net Re-Classification Index and Goodness-of-Fit Test (Hosmer-Lemeshow Test) for logistic regression models. In addition, we show how to plot the calibration curves.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#  load packages ----------------------------------------------------------
+
+if (!requireNamespace(&amp;quot;pacman&amp;quot;, quietly = TRUE)) {
+  install.packages(&amp;quot;pacman&amp;quot;)
+}
+pacman::p_load(PredictABEL)
+pacman::p_load(aod)
+pacman::p_load(ggplot2)
+
+# packages for ggplot2 themes
+pacman::p_load(ggrepel)
+
+# colors and themes -------------------------------------------------------
+
+# color blind palette
+cbbPalette &amp;lt;- c(&amp;quot;#999999&amp;quot;, &amp;quot;#E69F00&amp;quot;, &amp;quot;#56B4E9&amp;quot;, &amp;quot;#009E73&amp;quot;, &amp;quot;#F0E442&amp;quot;, &amp;quot;#0072B2&amp;quot;, &amp;quot;#D55E00&amp;quot;, &amp;quot;#CC79A7&amp;quot;)
+
+# my theme defaults
+gg_sy &amp;lt;- theme(legend.position = &amp;quot;bottom&amp;quot;, 
+               axis.text = element_text(size = 20),
+               axis.title = element_text(size = 20), 
+               legend.text = element_text(size = 20), 
+               legend.title = element_text(size = 20))
+
+
+
+
+#  load data --------------------------------------------------------------
+
+
+mydata &amp;lt;- read.csv(&amp;quot;https://stats.idre.ucla.edu/stat/data/binary.csv&amp;quot;)
+## view the first few rows of the data
+head(mydata)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   admit gre  gpa rank
+## 1     0 380 3.61    3
+## 2     1 660 3.67    3
+## 3     1 800 4.00    1
+## 4     1 640 3.19    4
+## 5     0 520 2.93    4
+## 6     1 760 3.00    2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mydata$rank &amp;lt;- factor(mydata$rank)
+mydata$admitf &amp;lt;- factor(mydata$admit, levels = c(0,1), labels = c(&amp;quot;no admit&amp;quot;, &amp;quot;admit&amp;quot;))
+
+# without rank
+m1 &amp;lt;- glm(admit ~ gre + gpa, data = mydata, family = &amp;quot;binomial&amp;quot;)
+preds_m1 &amp;lt;- predict(m1, type = &amp;quot;response&amp;quot;) # predicted probs from model 1
+
+# with rank
+m2 &amp;lt;- glm(admit ~ gre + gpa + rank, data = mydata, family = &amp;quot;binomial&amp;quot;)
+preds_m2 &amp;lt;- predict(m2, type = &amp;quot;response&amp;quot;) # predicted probs from model 2
+
+
+
+# Calibration plots and Hosmer Lemeshow test ------------------------------
+
+
+# In this example, we see that the $Chi_square value is smaller for m2, compared to m1
+# The null hypothesis is that we have a good fit. So the larger the p-value, the smaller the 
+# Chi_square statistic, the better the fit. So we can say that rank has added value to the model
+
+# Calibration plot for m1
+PredictABEL::plotCalibration(data = as.matrix(mydata$admit), # observed response
+                             cOutcome = 1, # the category corresponding to outcome of interest
+                             predRisk = preds_m1, # predicted probs
+                             groups = 10 # number of groups to bin the predicted probabilities into, usually 10 is default
+                             )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $Table_HLtest
+##                total meanpred meanobs predicted observed
+## [0.0978,0.184)    40    0.156   0.150      6.25        6
+## [0.1839,0.224)    40    0.202   0.125      8.09        5
+## [0.2241,0.254)    40    0.239   0.225      9.56        9
+## [0.2536,0.289)    40    0.272   0.275     10.89       11
+## [0.2894,0.311)    40    0.299   0.375     11.97       15
+## [0.3110,0.341)    40    0.326   0.375     13.04       15
+## [0.3406,0.370)    40    0.354   0.375     14.16       15
+## [0.3702,0.408)    40    0.391   0.450     15.64       18
+## [0.4079,0.461)    40    0.431   0.375     17.26       15
+## [0.4614,0.555]    40    0.503   0.450     20.13       18
+## 
+## $Chi_square
+## [1] 4.706
+## 
+## $df
+## [1] 8
+## 
+## $p_value
+## [1] 0.7885&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Calibration plot for m2
+PredictABEL::plotCalibration(data = as.matrix(mydata$admit), # observed response
+                             cOutcome = 1, # the category corresponding to outcome of interest
+                             predRisk = preds_m1, # predicted probs
+                             groups = 10 # number of groups to bin the predicted probabilities into, usually 10 is default, so you will see 10 categories and 10 points on the calibration plot
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2019-09-05-calibration-net-re-classification-and-goodness-of-fit-test-for-logistic-regression_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;## $Table_HLtest
+##                total meanpred meanobs predicted observed
+## [0.0978,0.184)    40    0.156   0.150      6.25        6
+## [0.1839,0.224)    40    0.202   0.125      8.09        5
+## [0.2241,0.254)    40    0.239   0.225      9.56        9
+## [0.2536,0.289)    40    0.272   0.275     10.89       11
+## [0.2894,0.311)    40    0.299   0.375     11.97       15
+## [0.3110,0.341)    40    0.326   0.375     13.04       15
+## [0.3406,0.370)    40    0.354   0.375     14.16       15
+## [0.3702,0.408)    40    0.391   0.450     15.64       18
+## [0.4079,0.461)    40    0.431   0.375     17.26       15
+## [0.4614,0.555]    40    0.503   0.450     20.13       18
+## 
+## $Chi_square
+## [1] 4.706
+## 
+## $df
+## [1] 8
+## 
+## $p_value
+## [1] 0.7885&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Boxplots for discrimination ---------------------------------------------
+
+df1 &amp;lt;- data.frame(admit = mydata$admitf, 
+                  model = &amp;quot;w/o rank&amp;quot;, 
+                  predicted = preds_m1,
+                  stringsAsFactors = FALSE)
+
+df2 &amp;lt;- data.frame(admit = mydata$admitf, 
+                  model = &amp;quot;with rank&amp;quot;, 
+                  predicted = preds_m2,
+                  stringsAsFactors = FALSE)
+dfplot &amp;lt;- rbind(df1, df2) 
+dfplot$model &amp;lt;- factor(dfplot$model)
+
+ggplot(dfplot, aes(x = admit, y = predicted, fill = model)) +
+  geom_boxplot() +
+  scale_fill_manual(values=cbbPalette[c(3,7)], guide=guide_legend(ncol = 2)) +
+  labs(x=&amp;quot;&amp;quot;, y=&amp;quot;Predicted probability&amp;quot;,
+       title=&amp;quot;Predicted probability by observed outcome for each model&amp;quot;,
+       subtitle=&amp;quot;Based on logistic regression model adjusted for GRE and GPA&amp;quot;,
+       caption=&amp;quot;&amp;quot;) +
+  # theme_ipsum_rc() + 
+  theme(legend.position = &amp;quot;bottom&amp;quot;, 
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 20), 
+        legend.text = element_text(size = 20), 
+        legend.title = element_text(size = 20))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2019-09-05-calibration-net-re-classification-and-goodness-of-fit-test-for-logistic-regression_files/figure-html/unnamed-chunk-1-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Net reclassification index ----------------------------------------------
+
+#&amp;#39; Re-classfication tables quantify the model improvement of one model over
+#&amp;#39; another by counting the number of individuals who move to another risk
+#&amp;#39; category or remain in the same risk category as a result of updating the risk
+#&amp;#39; model. Any _upward_ movement in categories for event subjects (i.e. those
+#&amp;#39; with admit=1) implies improved classification, and any _downward_ movement
+#&amp;#39; indicates worse reclassification. The interpretation is opposite for people
+#&amp;#39; who do not develop events (admit = 0). Smaller p-values indicate better
+#&amp;#39; reclassification accuracy.
+#&amp;#39; 
+
+PredictABEL::reclassification(data = as.matrix(mydata$admit), 
+                              cOutcome = 1, 
+                              predrisk1 = preds_m1, # original model
+                              predrisk2 = preds_m2, # updated model
+                              cutoff = seq(0, 1, by = 0.20))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  _________________________________________
+##  
+##      Reclassification table    
+##  _________________________________________
+## 
+##  Outcome: absent 
+##   
+##              Updated Model
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]  % reclassified
+##     [0,0.2)        31        16         0         0       0              34
+##     [0.2,0.4)      52        99        24         0       0              43
+##     [0.4,0.6)       0        26        18         7       0              65
+##     [0.6,0.8)       0         0         0         0       0             NaN
+##     [0.8,1]         0         0         0         0       0             NaN
+## 
+##  
+##  Outcome: present 
+##   
+##              Updated Model
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]  % reclassified
+##     [0,0.2)         7         2         0         0       0              22
+##     [0.2,0.4)      11        40        28         0       0              49
+##     [0.4,0.6)       0        11        15        13       0              62
+##     [0.6,0.8)       0         0         0         0       0             NaN
+##     [0.8,1]         0         0         0         0       0             NaN
+## 
+##  
+##  Combined Data 
+##   
+##              Updated Model
+## Initial Model [0,0.2) [0.2,0.4) [0.4,0.6) [0.6,0.8) [0.8,1]  % reclassified
+##     [0,0.2)        38        18         0         0       0              32
+##     [0.2,0.4)      63       139        52         0       0              45
+##     [0.4,0.6)       0        37        33        20       0              63
+##     [0.6,0.8)       0         0         0         0       0             NaN
+##     [0.8,1]         0         0         0         0       0             NaN
+##  _________________________________________
+## 
+##  NRI(Categorical) [95% CI]: 0.2789 [ 0.1343 - 0.4235 ] ; p-value: 0.00016 
+##  NRI(Continuous) [95% CI]: 0.4543 [ 0.2541 - 0.6545 ] ; p-value: 1e-05 
+##  IDI [95% CI]: 0.0546 [ 0.0309 - 0.0783 ] ; p-value: 1e-05&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;further-reading-updated-january-10-2020&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Further Reading (UPDATED January 10, 2020)&lt;/h1&gt;
+&lt;blockquote class=&#34;twitter-tweet&#34;&gt;
+&lt;p lang=&#34;en&#34; dir=&#34;ltr&#34;&gt;
+Good to raise aware of calibration but Hosmer-Lemeshow test doesn&#39;t assess calibration (and has many problems, e.g., summarised in Box G of &lt;a href=&#34;https://t.co/4yiJe4bDu3&#34;&gt;https://t.co/4yiJe4bDu3&lt;/a&gt;), plus there a number of problems with the NRI (e.g., &lt;a href=&#34;https://t.co/TkukdbV56l&#34;&gt;https://t.co/TkukdbV56l&lt;/a&gt;, &lt;a href=&#34;https://t.co/EYyfx55BQT&#34;&gt;https://t.co/EYyfx55BQT&lt;/a&gt;)
+&lt;/p&gt;
+— Gary Collins 🇪🇺 (&lt;span class=&#34;citation&#34;&gt;@GSCollins&lt;/span&gt;) &lt;a href=&#34;https://twitter.com/GSCollins/status/1169982080261996545?ref_src=twsrc%5Etfw&#34;&gt;September 6, 2019&lt;/a&gt;
+&lt;/blockquote&gt;
+&lt;script async src=&#34;https://platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -47,10 +529,176 @@ n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor
       <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2019/07/30/command-line-arguments-in-r/</guid>
-      <description>In this post, I explain how I sometimes conduct simulation studies on a compute cluster. In this example, I simulate a toy dataset, fit a linear mixed model, and collect the resulting regression coefficients.
-There are three main objectives which motivated this example:
-I want to run many replications for a given simulation scenario while leveraging the many CPUs available on a compute cluster
- I want to alter the simulation parameters with minimal effort I want to collect the results from each simulation scenario into a single data.</description>
+      <description>
+
+
+&lt;p&gt;In this post, I explain how I sometimes conduct simulation studies on a compute cluster. In this example, I simulate a toy dataset, fit a linear mixed model, and collect the resulting regression coefficients.&lt;/p&gt;
+&lt;p&gt;There are three main objectives which motivated this example:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;I want to run many replications for a given simulation scenario while leveraging the many CPUs available on a compute cluster&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;I want to alter the simulation parameters with minimal effort&lt;/li&gt;
+&lt;li&gt;I want to collect the results from each simulation scenario into a single &lt;code&gt;data.frame&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In this example, I alter both the sample size and the noise variance. Each take 3 different values for a total combination of 9 simulation scenarios. We want to be able to run each of these 9 scenarios as a different job (i.e. not in the same R session) so that they may run in parallel. The different combinations of simulation parameters will be stored in a &lt;code&gt;data.frame&lt;/code&gt;. They are referenced by a command line argument (outside of &lt;code&gt;R&lt;/code&gt;, at the job submission command), e.g.:&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;for i in {1..9..1} ; do qsub -v index=$i mclapplyExample.sh ; done&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is a simple loop which passes the value of &lt;code&gt;i&lt;/code&gt; to the bash script &lt;code&gt;mclapplyExample.sh&lt;/code&gt; which subsequently passes it to the &lt;code&gt;R&lt;/code&gt; script &lt;code&gt;mclapplyExample2.R&lt;/code&gt;. Below I provide the three scripts required for this example.&lt;/p&gt;
+&lt;div id=&#34;the-main-simulation-script&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The main simulation script&lt;/h2&gt;
+&lt;p&gt;The following script generates a &lt;code&gt;data.frame&lt;/code&gt; of all the simulation parameters. It then reads the command line argument which corresponds to the simulation scenario. The rest of the script runs the jobs using &lt;code&gt;mcmapply&lt;/code&gt;. i saved the following script to an &lt;code&gt;R&lt;/code&gt; file called &lt;code&gt;mclappyExample2.R&lt;/code&gt;. Carefully read the notes at the top of the script.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;##################################
+# R source code file for conducting simulations using the parallel package with 
+# command line arguments. The main idea is to define a data.frame of simulation 
+# parameters, and then use command line arguments to reference a particular 
+# combination of simulation parameters
+# Created: July 27, 2019
+# Updated: July 29, 2019
+# Notes: 
+# qsub command to cycle through all 9 combinations of simulation parameters:
+# for i in {1..9..1} ; do qsub -v index=$i mclapplyExample2.sh ; done
+# use mclapplyExample2.sh to submit to compute cluster
+# use collectResults.R to combine results in one data.frame
+##################################
+
+
+# load libraries ----------------------------------------------------------
+
+library(parallel)
+library(lme4)
+#detectCores()
+
+
+# Define a data.frame of simulation parameters ----------------------------
+
+parametersDf &amp;lt;- base::expand.grid(sampleSize = c(200, 500, 1000),
+                                  noiseSD = c(1,2,3),
+                                  replications = 10,
+                                  stringsAsFactors = FALSE)
+
+
+# get simulation scenario index from command line args --------------------
+
+parameterIndex &amp;lt;- base::as.numeric(base::as.character(base::commandArgs(trailingOnly = T)[1]))
+
+# select simulation parameters based on command line argument
+simulationParameters &amp;lt;- parametersDf[parameterIndex,, drop = F]
+replications &amp;lt;- 1:simulationParameters[[&amp;quot;replications&amp;quot;]]
+sampleSize &amp;lt;- simulationParameters[[&amp;quot;sampleSize&amp;quot;]]
+noiseSD &amp;lt;- simulationParameters[[&amp;quot;noiseSD&amp;quot;]]
+
+# Simulation function definition ------------------------------------------
+
+f &amp;lt;- function(i, n, sd, scenario = parameterIndex) {
+
+  # simulate data
+  x &amp;lt;- stats::runif(n*5)
+  z &amp;lt;- stats::rbinom(n*5,1,x)
+  ai &amp;lt;- base::rep(stats::rnorm(n), each = 5)
+  
+  # generate response with noise
+  y &amp;lt;- ai + 1 + x + z + stats::rnorm(n*5, sd = sd)
+  
+  # generate cluster ID
+  id &amp;lt;- base::rep(1:n, each = 5)
+
+  # fit linear mixed model and get summary
+  fit &amp;lt;- lme4::lmer(y ~ x + z + (1 | id))
+  sfit &amp;lt;- summary(fit)
+  
+  
+  # return list of simulation parameters and lmm coefficients
+  return(list(scenario = scenario,
+              replicate = i, 
+              sampleSize = n, 
+              noiseSD = sd, 
+              b0 = sfit$coefficients[1,1], 
+              bx = sfit$coefficients[2,1],
+              bz = sfit$coefficients[3,1]))
+}
+
+
+
+# Execute simulation ------------------------------------------------------
+
+MyOutput &amp;lt;- parallel::mcmapply(FUN = f, 
+                               i = replications,
+                               MoreArgs = list(n = sampleSize,
+                                               sd = noiseSD),
+                               SIMPLIFY = FALSE)
+
+
+# Collect results in a matrix ---------------------------------------------
+
+results &amp;lt;- base::do.call(base::rbind, MyOutput)
+
+
+# Write results to file ---------------------------------------------------
+
+# create filename with random pattern extension. assumes you have a directory called results
+# change tmpdir to the directory where you want to store results
+# depending on system, the PBS_O_WORKDIR might be set and can be used via
+# paste(Sys.getenv(&amp;quot;PBS_O_WORKDIR&amp;quot;),&amp;quot;results&amp;quot;, sep=&amp;quot;/&amp;quot;)
+filename &amp;lt;- base::tempfile(pattern = base::sprintf(&amp;quot;scenario_%1.0f_sampleSize_%1.0f_noiseSD_%1.0f_&amp;quot;,
+                                                   parameterIndex, 
+                                                   sampleSize, 
+                                                   noiseSD),
+                           tmpdir = &amp;quot;results&amp;quot;,
+                           fileext = &amp;quot;.txt&amp;quot;)
+
+utils::write.table(results,
+                   file = filename,
+                   quote = FALSE,
+                   row.names = FALSE,
+                   col.names = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-bash-script&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The bash script&lt;/h2&gt;
+&lt;p&gt;This is the &lt;code&gt;bash&lt;/code&gt; script which I saved as &lt;code&gt;mclappyExample2.sh&lt;/code&gt;.&lt;/p&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;#!/bin/bash
+#PBS -l walltime=1:30:00
+#PBS -o log/
+#PBS -e log/
+#PBS -N sim1
+#PBS -m ea
+#PBS -l mem=12G
+#PBS -l vmem=12G
+
+cd $PBS_O_WORKDIR
+
+SRC=$PBS_O_WORKDIR
+
+Rscript ${SRC}/mclappyExample2.R ${index}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;collect-results&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Collect Results&lt;/h2&gt;
+&lt;p&gt;The following is simply to collect all results and merge into a single &lt;code&gt;data.frame&lt;/code&gt;. Carefully read the notes at the top of the script.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;##################################
+# R source code file for gathering simulation results into one dataset
+# Created: July 27, 2019
+# Updated: July 29, 2019
+# Notes: 
+# This script is to be used only once mclapplyExample2.sh has been executed
+# Assumes results are stored in a directory called results. 
+# Change the path argument in list.files function accordingly
+##################################
+
+# To read in all the results and combine into 1 data.frame ----------------
+
+# list all files starting with the word scenario in the results directory
+# include the full path 
+files &amp;lt;- base::list.files(path = &amp;quot;results&amp;quot;, 
+                          pattern = &amp;quot;scenario&amp;quot;,
+                          full.names = TRUE)
+
+# read in all the results into a list
+resultsList &amp;lt;- base::lapply(files, utils::read.table)
+
+
+# combine results into a single data.frame
+resultsDF &amp;lt;- base::do.call(base::rbind, resultsList)
+colnames(resultsDF) &amp;lt;- c(&amp;quot;scenario&amp;quot;,&amp;quot;replicate&amp;quot;, &amp;quot;sampleSize&amp;quot;, &amp;quot;noiseSD&amp;quot;, &amp;quot;b0&amp;quot;, &amp;quot;bx&amp;quot;, &amp;quot;bz&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -59,10 +707,457 @@ I want to run many replications for a given simulation scenario while leveraging
       <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2019/04/16/variable-selection-prediction-competing-risk-regression/</guid>
-      <description>Objective The main goal of this post is to:
-Show one way of performing variable selection in a competing risks regression model
- Evaluate the predictive performance for a list of models using resampling methods   What the data looks like We will use the bmtcrr dataset from the casebase package available on CRAN. Here is what the data looks like:
-pacman::p_load(casebase) head(bmtcrr) ## Sex D Phase Age Status Source ftime ## 1 M ALL Relapse 48 2 BM+PB 0.</description>
+      <description>
+
+
+&lt;div id=&#34;objective&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Objective&lt;/h2&gt;
+&lt;p&gt;The main goal of this post is to:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Show one way of performing variable selection in a competing risks regression model&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;Evaluate the predictive performance for a list of models using resampling methods&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div id=&#34;what-the-data-looks-like&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What the data looks like&lt;/h2&gt;
+&lt;p&gt;We will use the &lt;code&gt;bmtcrr&lt;/code&gt; dataset from the &lt;a href=&#34;https://cran.r-project.org/package=casebase&#34;&gt;&lt;code&gt;casebase&lt;/code&gt;&lt;/a&gt; package available on CRAN. Here is what the data looks like:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pacman::p_load(casebase)
+head(bmtcrr)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   Sex   D   Phase Age Status Source  ftime
+## 1   M ALL Relapse  48      2  BM+PB   0.67
+## 2   F AML     CR2  23      1  BM+PB   9.50
+## 3   M ALL     CR3   7      0  BM+PB 131.77
+## 4   F ALL     CR2  26      2  BM+PB  24.03
+## 5   F ALL     CR2  36      2  BM+PB   1.47
+## 6   M ALL Relapse  17      2  BM+PB   2.23&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;
+We will perform a competing risk analysis on data from 177 patients who received a stem cell transplant for acute leukemia. The event of interest in relapse, but other competing causes (e.g. transplant-related death) need to be taken into account. We also want to take into account the effect of several covariates such as Sex, Disease (lymphoblastic or myeloblastic leukemia, abbreviated as ALL and AML, respectively), Phase at transplant (Relapse, CR1, CR2, CR3), Source of stem cells (bone marrow and peripheral blood, coded as BM+PB, or peripheral blood, coded as PB), and Age. Below, is the Table 1:
+&lt;/p&gt;
+&lt;table style=&#34;width:76%;&#34;&gt;
+&lt;colgroup&gt;
+&lt;col width=&#34;12%&#34; /&gt;
+&lt;col width=&#34;31%&#34; /&gt;
+&lt;col width=&#34;31%&#34; /&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th&gt;
+Variable
+&lt;/th&gt;
+&lt;th&gt;
+Description
+&lt;/th&gt;
+&lt;th&gt;
+Statistical summary
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;
+Sex
+&lt;/td&gt;
+&lt;td&gt;
+Sex
+&lt;/td&gt;
+&lt;td&gt;
+M=Male (100) &lt;br&gt; F=Female (77)
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;
+D
+&lt;/td&gt;
+&lt;td&gt;
+Disease
+&lt;/td&gt;
+&lt;td&gt;
+ALL (73) &lt;br&gt; AML (104)
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;
+Phase
+&lt;/td&gt;
+&lt;td&gt;
+Phase
+&lt;/td&gt;
+&lt;td&gt;
+CR1 (47) &lt;br&gt; CR2 (45) &lt;br&gt; CR3 (12) &lt;br&gt; Relapse (73)
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;
+Source
+&lt;/td&gt;
+&lt;td&gt;
+Type of transplant
+&lt;/td&gt;
+&lt;td&gt;
+BM+PB (21) &lt;br&gt; PB (156)
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;
+Age
+&lt;/td&gt;
+&lt;td&gt;
+Age of patient (years)
+&lt;/td&gt;
+&lt;td&gt;
+4–62 &lt;br&gt; 30.47 (13.04)
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;
+Ftime
+&lt;/td&gt;
+&lt;td&gt;
+Failure time (months)
+&lt;/td&gt;
+&lt;td&gt;
+0.13–131.77 &lt;br&gt; 20.28 (30.78)
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;
+Status
+&lt;/td&gt;
+&lt;td&gt;
+Status indicator
+&lt;/td&gt;
+&lt;td&gt;
+0=censored (46) &lt;br&gt; 1=relapse (56) &lt;br&gt; 2=competing event (75)
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;
+The statistical summary is generated differently for continuous and categorical variables:
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+For continuous variables, we are given the range, followed by the mean and standard deviation.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+For categorical variables, we are given the counts for each category.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div id=&#34;variable-selection&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Variable Selection&lt;/h2&gt;
+&lt;p&gt;Here we compare the variables selected using three methods:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Full model: contains all of the predictors and no variable selection is being done.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;Backward selection based on the AIC.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;Backward selection based on the BIC.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div id=&#34;load-the-necessary-packages&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Load the necessary packages&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pacman::p_load(riskRegression) # for Fine-Gray Regression (FGR)
+pacman::p_load(prodlim) # for Hist function
+pacman::p_load(lava) # not sure, but its needed
+pacman::p_load(cmprsk) # competing risks
+pacman::p_load(crrstep) # for variable selection in FGR
+pacman::p_load(pec) # for resampling metrics&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;prepare-the-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Prepare the data&lt;/h3&gt;
+&lt;p&gt;This step is required if you have categorical data. You must convert the factors into indicator variables using &lt;code&gt;model.matrix&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fmla &amp;lt;- as.formula( ~ ftime + Status + Sex + 
+                      Phase + Source + Age + D)
+
+# remove intercept
+bmtcrr.expanded &amp;lt;- as.data.frame(model.matrix(fmla, 
+                              data = bmtcrr)[,-1])
+head(bmtcrr.expanded)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##    ftime Status SexM PhaseCR2 PhaseCR3 PhaseRelapse SourcePB Age DAML
+## 1   0.67      2    1        0        0            1        0  48    0
+## 2   9.50      1    0        1        0            0        0  23    1
+## 3 131.77      0    1        0        1            0        0   7    0
+## 4  24.03      2    0        1        0            0        0  26    0
+## 5   1.47      2    0        1        0            0        0  36    0
+## 6   2.23      2    1        0        0            1        0  17    0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# get the names of the covariates only
+covariates &amp;lt;- setdiff(colnames(bmtcrr.expanded), 
+                      c(&amp;quot;ftime&amp;quot;,&amp;quot;Status&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;run-the-variable-selection&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Run the variable selection&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# formula for the Full model
+(ff &amp;lt;- as.formula(paste0(&amp;quot;Hist(ftime, Status) ~ &amp;quot;,
+                 paste(covariates, collapse = &amp;quot;+&amp;quot;))))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Hist(ftime, Status) ~ SexM + PhaseCR2 + PhaseCR3 + PhaseRelapse + 
+##     SourcePB + Age + DAML&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Fit full model with Fine-Grey regression model
+fg &amp;lt;- riskRegression::FGR(ff, cause = 1, data = bmtcrr.expanded)
+
+# Backward selection based on the AIC
+sfgAIC &amp;lt;- pec::selectFGR(ff, cause = 1, data = bmtcrr.expanded, 
+                         rule = &amp;quot;AIC&amp;quot;, direction = &amp;quot;backward&amp;quot;)
+
+# Final FGR-model with selected variables
+sfgAIC$fit &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Right-censored response of a competing.risks model
+## 
+## No.Observations: 177 
+## 
+## Pattern:
+##          
+## Cause     event right.censored
+##   1          56              0
+##   2          75              0
+##   unknown     0             46
+## 
+## 
+## Fine-Gray model: analysis of cause 1 
+## 
+## Competing Risks Regression
+## 
+## Call:
+## riskRegression::FGR(formula = Hist(ftime, Status) ~ PhaseRelapse + 
+##     SourcePB + Age + DAML, data = data, cause = cause)
+## 
+##                coef exp(coef) se(coef)     z p-value
+## PhaseRelapse  1.021     2.776   0.2724  3.75 0.00018
+## SourcePB      0.889     2.434   0.5400  1.65 0.10000
+## Age          -0.019     0.981   0.0117 -1.63 0.10000
+## DAML         -0.463     0.630   0.2979 -1.55 0.12000
+## 
+##              exp(coef) exp(-coef)  2.5% 97.5%
+## PhaseRelapse     2.776      0.360 1.628  4.73
+## SourcePB         2.434      0.411 0.845  7.01
+## Age              0.981      1.019 0.959  1.00
+## DAML             0.630      1.588 0.351  1.13
+## 
+## Num. cases = 177
+## Pseudo Log-likelihood = -267 
+## Pseudo likelihood ratio test = 24.1  on 4 df,
+## 
+## Convergence: TRUE&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Backward selection based on the BIC
+sfgBIC &amp;lt;- pec::selectFGR(ff, cause = 1, data = bmtcrr.expanded, 
+                    rule = &amp;quot;BIC&amp;quot;, direction = &amp;quot;backward&amp;quot;)
+
+# Final FGR-model with selected variables
+sfgBIC$fit&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Right-censored response of a competing.risks model
+## 
+## No.Observations: 177 
+## 
+## Pattern:
+##          
+## Cause     event right.censored
+##   1          56              0
+##   2          75              0
+##   unknown     0             46
+## 
+## 
+## Fine-Gray model: analysis of cause 1 
+## 
+## Competing Risks Regression
+## 
+## Call:
+## riskRegression::FGR(formula = Hist(ftime, Status) ~ PhaseRelapse + 
+##     SourcePB + Age + DAML, data = data, cause = cause)
+## 
+##                coef exp(coef) se(coef)     z p-value
+## PhaseRelapse  1.021     2.776   0.2724  3.75 0.00018
+## SourcePB      0.889     2.434   0.5400  1.65 0.10000
+## Age          -0.019     0.981   0.0117 -1.63 0.10000
+## DAML         -0.463     0.630   0.2979 -1.55 0.12000
+## 
+##              exp(coef) exp(-coef)  2.5% 97.5%
+## PhaseRelapse     2.776      0.360 1.628  4.73
+## SourcePB         2.434      0.411 0.845  7.01
+## Age              0.981      1.019 0.959  1.00
+## DAML             0.630      1.588 0.351  1.13
+## 
+## Num. cases = 177
+## Pseudo Log-likelihood = -267 
+## Pseudo likelihood ratio test = 24.1  on 4 df,
+## 
+## Convergence: TRUE&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# create list of models
+models_list &amp;lt;- list(full.model = fg, selectedAIC = sfgAIC, selectedBIC = sfgBIC)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;bootstrap-cross-validation-performance&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Bootstrap cross-validation performance&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;## Lower Brier Score is better
+## The reference model is without any covariates
+set.seed(7)
+p2 &amp;lt;- pec::pec(models_list,
+               formula = ff,
+               data = bmtcrr.expanded,
+               B = 5,
+               splitMethod = &amp;quot;Boot632&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;p2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Prediction error curves
+## 
+## Prediction models:
+## 
+##   Reference  full.model selectedAIC selectedBIC 
+##   Reference  full.model selectedAIC selectedBIC 
+## 
+## Right-censored response of a competing.risks model
+## 
+## No.Observations: 177 
+## 
+## Pattern:
+##          
+## Cause     event right.censored
+##   1          56              0
+##   2          75              0
+##   unknown     0             46
+## 
+## IPCW: cox model
+## 
+## Method for estimating the prediction error:
+## 
+## Bootstrap cross-validation
+## 
+## Type: resampling
+## Bootstrap sample size:  177 
+## No. bootstrap samples:  5 
+## Sample size:  177 
+## 
+## Cumulative prediction error, aka Integrated Brier score  (IBS)
+##  aka Cumulative rank probability score
+## 
+## Range of integration: 0 and time=121.1 :
+## 
+## 
+## Integrated Brier score (crps):
+## 
+##             IBS[0;time=121.1)
+## Reference               0.200
+## full.model              0.190
+## selectedAIC             0.195
+## selectedBIC             0.195&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(p2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;calibration-plot&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Calibration Plot&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;calPlot(models_list,
+        formula=ff, splitMethod = &amp;quot;BootCv&amp;quot;, B=5)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;observed-vs.predicted-for-each-method&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Observed vs. Predicted for each Method&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Full Model
+b1 &amp;lt;- pec::calPlot(models_list[[1]],
+              formula = ff,
+              bars = TRUE, 
+              hanging = FALSE)
+print(b1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Calibration of risk predictions for 177 subjects.
+## 
+## Until time 6.63 a total of 88 were observed event-free, 
+##  - a total of 37 were observed to have the event of interest (cause: 1),
+##  - a total of 52 had a competing risk  
+##  - a total of 0 were lost to follow-up.
+## 
+## Average predictions and outcome in prediction quantiles:
+## 
+## $Model.1
+##                      Pred        Obs
+## [0.0456,0.087] 0.07135827 0.05555556
+## (0.087,0.103]  0.09430400 0.11111111
+## (0.103,0.124]  0.11175112 0.11764706
+## (0.124,0.146]  0.13458330 0.22222222
+## (0.146,0.18]   0.16277313 0.00000000
+## (0.18,0.209]   0.19717791 0.11764706
+## (0.209,0.24]   0.22618829 0.27777778
+## (0.24,0.292]   0.26695026 0.41176471
+## (0.292,0.45]   0.35246826 0.27777778
+## (0.45,0.593]   0.50029249 0.50000000
+## 
+## 
+## Outcome frequencies (Obs) were obtained with the Aalen-Johansen method.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(b1)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Selected AIC Model
+b2 &amp;lt;- pec::calPlot(models_list[[2]],
+                   formula = ff,
+                   bars = TRUE, 
+                   hanging = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2019-04-16-variable-selection-and-prediction-in-competing-risk-regression_files/figure-html/unnamed-chunk-7-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;print(b2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Calibration of risk predictions for 177 subjects.
+## 
+## Until time 6.63 a total of 88 were observed event-free, 
+##  - a total of 37 were observed to have the event of interest (cause: 1),
+##  - a total of 52 had a competing risk  
+##  - a total of 0 were lost to follow-up.
+## 
+## Average predictions and outcome in prediction quantiles:
+## 
+## $Model.1
+##                      Pred        Obs
+## [0.0467,0.087] 0.07468652 0.10526316
+## (0.087,0.104]  0.09825360 0.05263158
+## (0.104,0.122]  0.11424004 0.13333333
+## (0.122,0.143]  0.13148919 0.22222222
+## (0.143,0.182]  0.16298969 0.00000000
+## (0.182,0.211]  0.20063789 0.11764706
+## (0.211,0.243]  0.22723987 0.36842105
+## (0.243,0.292]  0.26637445 0.33333333
+## (0.292,0.45]   0.35913229 0.31578947
+## (0.45,0.59]    0.50223610 0.47058824
+## 
+## 
+## Outcome frequencies (Obs) were obtained with the Aalen-Johansen method.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(b2)
+
+
+# Selected BIC Model
+b3 &amp;lt;- pec::calPlot(models_list[[3]],
+                   formula = ff,
+                   bars = TRUE, 
+                   hanging = FALSE)
+print(b3)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Calibration of risk predictions for 177 subjects.
+## 
+## Until time 6.63 a total of 88 were observed event-free, 
+##  - a total of 37 were observed to have the event of interest (cause: 1),
+##  - a total of 52 had a competing risk  
+##  - a total of 0 were lost to follow-up.
+## 
+## Average predictions and outcome in prediction quantiles:
+## 
+## $Model.1
+##                      Pred        Obs
+## [0.0467,0.087] 0.07468652 0.10526316
+## (0.087,0.104]  0.09825360 0.05263158
+## (0.104,0.122]  0.11424004 0.13333333
+## (0.122,0.143]  0.13148919 0.22222222
+## (0.143,0.182]  0.16298969 0.00000000
+## (0.182,0.211]  0.20063789 0.11764706
+## (0.211,0.243]  0.22723987 0.36842105
+## (0.243,0.292]  0.26637445 0.33333333
+## (0.292,0.45]   0.35913229 0.31578947
+## (0.45,0.59]    0.50223610 0.47058824
+## 
+## 
+## Outcome frequencies (Obs) were obtained with the Aalen-Johansen method.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(b3)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -71,10 +1166,103 @@ pacman::p_load(casebase) head(bmtcrr) ## Sex D Phase Age Status Source ftime ## 
       <pubDate>Fri, 12 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2019/04/12/jekyll-hugo-blogdown/</guid>
-      <description>I currently have a Jekyll based website for my academic website hosted on GitHub using the al-folio theme.
-What I like about having a Jekyll based site Jekyll has been around for a long time now and thus has extensive documentation and support online. I also like the Jekyll-based al-folio theme because:
-It automatically generates publications from a BibTeX file using jekyll-scholar.
- Information can be spread across multiple pages (e.</description>
+      <description>
+
+
+&lt;p&gt;I currently have a &lt;a href=&#34;https://jekyllrb.com/&#34;&gt;Jekyll&lt;/a&gt; based website for my &lt;a href=&#34;https://sahirbhatnagar.com/&#34;&gt;academic website&lt;/a&gt; hosted on &lt;a href=&#34;https://github.com/sahirbhatnagar/sahirbhatnagar.github.io&#34;&gt;GitHub&lt;/a&gt; using the &lt;a href=&#34;https://github.com/alshedivat/al-folio&#34;&gt;al-folio&lt;/a&gt; theme.&lt;/p&gt;
+&lt;div id=&#34;what-i-like-about-having-a-jekyll-based-site&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What I like about having a Jekyll based site&lt;/h2&gt;
+&lt;p&gt;Jekyll has been around for a long time now and thus has extensive documentation and support online. I also like the Jekyll-based &lt;a href=&#34;https://github.com/alshedivat/al-folio&#34;&gt;al-folio&lt;/a&gt; theme because:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;It automatically generates publications from a BibTeX file using &lt;a href=&#34;https://github.com/inukshuk/jekyll-scholar&#34;&gt;jekyll-scholar&lt;/a&gt;.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;Information can be spread across multiple pages (e.g. papers, software, talks), which makes for a short landing page.&lt;/li&gt;
+&lt;li&gt;Support for news announcements.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-problem&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The problem&lt;/h2&gt;
+&lt;p&gt;My main issue with the Jekyll based site, is that there isn’t an efficient way of writing blog posts using &lt;code&gt;R Markdown&lt;/code&gt;. I want this functionality so that I can:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Blog about my experiences with certain &lt;code&gt;R&lt;/code&gt; packages.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;Remind myself of certain tips and tricks, i.e., a help page for my future self.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;a href=&#34;https://bookdown.org/yihui/blogdown/&#34;&gt;blogdown&lt;/a&gt; is a popular &lt;code&gt;R&lt;/code&gt; package that makes it easy to integrate &lt;code&gt;R Markdown&lt;/code&gt; posts in Hugo based websites. This framework came out after I had already spent lots of time on my Jekyll based website. There also wasn’t a Hugo theme I liked enough to make the switch.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-solution&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Solution&lt;/h2&gt;
+&lt;p&gt;I decided to do a hybrid Jekyll-based website with a Hugo-based blog. My main academic site at &lt;a href=&#34;https://sahirbhatnagar.com&#34;&gt;sahirbhatnagar.com&lt;/a&gt; remains within the Jekyll framework and hosted on &lt;a href=&#34;https://github.com/sahirbhatnagar/sahirbhatnagar.github.io&#34;&gt;GitHub&lt;/a&gt; with &lt;a href=&#34;https://help.github.com/en/articles/user-organization-and-project-pages&#34;&gt;GitHub User Pages&lt;/a&gt;, and my blogdown blog is also &lt;a href=&#34;https://github.com/sahirbhatnagar/blog&#34;&gt;hosted on GitHub&lt;/a&gt; on the &lt;code&gt;gh-pages&lt;/code&gt; branch with &lt;a href=&#34;https://help.github.com/en/articles/user-organization-and-project-pages&#34;&gt;GitHub Project Pages&lt;/a&gt; at &lt;a href=&#34;https://sahirbhatnagar.com/blog&#34;&gt;sahirbhatnagar.com/blog&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In this post I try to outline the steps I took to achieve this. This post assumes some familiarity with the &lt;code&gt;git&lt;/code&gt; command line and that you already have a &lt;a href=&#34;https://help.github.com/en/articles/user-organization-and-project-pages#user-and-organization-pages-sites&#34;&gt;User Pages site on Github&lt;/a&gt; at &lt;code&gt;http(s)://&amp;lt;username&amp;gt;.github.io&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;It goes something like this:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Go to your online Github account and create a new repository called &lt;code&gt;blog&lt;/code&gt;. Do not initiate with a &lt;code&gt;README.md&lt;/code&gt;. Do not initiate with a license.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;On your local machine, install the &lt;a href=&#34;https://cran.r-project.org/package=blogdown&#34;&gt;&lt;code&gt;blogdown R&lt;/code&gt; package&lt;/a&gt;.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;On your local machine, create a new folder called &lt;code&gt;blog&lt;/code&gt;. This will contain the source files of your blog. Make sure its empty (if its not empty, the command in Step 4 will return an error).&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;In &lt;code&gt;R&lt;/code&gt; enter the following command to create a skeleton of the blogdown site&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;blogdown::new_site(dir = &amp;quot;blog/&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;5&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;If all worked well, you should see a preview of the &lt;a href=&#34;https://github.com/yihui/hugo-lithium&#34;&gt;hugo lithium theme (modified by Yihui Xie)&lt;/a&gt; in the RStudio viewer pane.&lt;br /&gt;
+&lt;/li&gt;
+&lt;li&gt;The static files for the website are in the &lt;code&gt;public&lt;/code&gt; folder, while the source files are in the top level directory (in this case, the &lt;code&gt;blog&lt;/code&gt; folder). Initialize a git repository from the root of your blog folder and create a link with the remote repo created in Step 1 using:
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;git init
+git remote add origin https://github.com/username/blog.git
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;To create a new blog post run this command from the root of the blog directory (and on the &lt;code&gt;master&lt;/code&gt; branch):&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;blogdown::new_post(title = &amp;quot;Name of new post&amp;quot;, ext = &amp;quot;.Rmd&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;8&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Create a &lt;code&gt;deploy.sh&lt;/code&gt; script in the root of your &lt;code&gt;blog&lt;/code&gt; folder so that you can automate the publication process everytime you add to your blog. The script I use will automatically build the blogdown blog and push to the &lt;code&gt;gh-pages&lt;/code&gt; branch. Note that you first need to push the source code to the &lt;code&gt;master&lt;/code&gt; branch (the script first checks for any uncommitted changes). This script assumes that &lt;code&gt;blogdown::build_site()&lt;/code&gt; will create the static files in a folder called &lt;code&gt;public&lt;/code&gt;. This is what my &lt;code&gt;deploy.sh&lt;/code&gt; script looks like (it makes use of &lt;a href=&#34;https://gist.github.com/cobyism/4730490#gistcomment-2375522&#34;&gt;&lt;code&gt;git worktrees&lt;/code&gt;&lt;/a&gt;):&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;#!/bin/sh
+
+# Check if there are any uncommitted changes
+if ! git diff-index --quiet HEAD --; then
+    echo &#34;Changes to the following files are uncommitted:&#34;
+    git diff-index --name-only HEAD --
+    echo &#34;Please commit the changes to master branch (which contains the source files of this blog) before proceeding.&#34;
+    echo &#34;Aborting.&#34;
+    [[ &#34;$0&#34; = &#34;$BASH_SOURCE&#34; ]] &amp;&amp; exit 1 || return 1
+fi
+
+echo &#34;Deleting old publication&#34;
+rm -rf .git/worktrees/public/
+
+echo &#34;Make worktree&#34;
+git worktree add public gh-pages
+
+echo &#34;Generating site&#34;
+Rscript -e &#34;blogdown::build_site()&#34;
+
+echo &#34;Adding and committing to gh-pages branch&#34;
+cd public &amp;&amp; git add --all &amp;&amp; git commit -m &#34;$1&#34;
+
+echo &#34;Pushing to gh-pages branch&#34;
+git push origin gh-pages
+
+echo &#34;Cleaning up files&#34;
+cd ..
+git worktree prune
+
+rm -rf public
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;9&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;After running &lt;code&gt;chmod +x deploy.sh&lt;/code&gt;, you can then call the script using&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;bash&#34;&gt;&lt;code&gt;./deploy.sh &#34;commit message of your choice&#34;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;discussion&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Discussion&lt;/h2&gt;
+&lt;p&gt;That’s all I have for now. I hope this framework will work for me and meet my needs to maintain my academic website, as well as a blogdown blog.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -83,8 +1271,21 @@ It automatically generates publications from a BibTeX file using jekyll-scholar.
       <pubDate>Thu, 23 Aug 2018 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2018/08/23/getting-travis-to-auto-push-to-github/</guid>
-      <description>Following the advice given on the bookdown site, I use Travis-CI to automatically build my bookdown book and push it to gh-pages. I always forget how to do this, so I&amp;rsquo;m writing these notes to supplement what is already written there.
- Follow these instructions on GitHub to create a personal access token (PAT) Copy the generated PAT to your clipboard From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:  Note 1: I&amp;rsquo;m not entirely sure that I need to generate a new PAT for each bookdown repository that I create, but so far this strategy has worked for me.</description>
+      <description>&lt;p&gt;Following the advice given on the bookdown &lt;a href=&#34;https://bookdown.org/yihui/bookdown/github.html&#34;&gt;site&lt;/a&gt;, I use Travis-CI to automatically build my bookdown book and push it to &lt;code&gt;gh-pages&lt;/code&gt;. I always forget how to do this, so I&amp;rsquo;m writing these notes to supplement what is already written there.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Follow &lt;a href=&#34;https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/&#34;&gt;these instructions on GitHub&lt;/a&gt; to create a personal access token (PAT)&lt;/li&gt;
+&lt;li&gt;Copy the generated PAT to your clipboard&lt;/li&gt;
+&lt;li&gt;From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Note 1: I&amp;rsquo;m not entirely sure that I need to generate a new PAT for each bookdown repository that I create, but so far this strategy has worked for me. Comments are welcome.&lt;/p&gt;
+&lt;p&gt;Note 2: that the PAT must be within double quotes. the &lt;code&gt;--add&lt;/code&gt; flag will automatically add the encrypted token to the &lt;code&gt;.travis.yml&lt;/code&gt; file.&lt;/p&gt;
+&lt;p&gt;Note 3: if you get some error about a bad interpretor, trying re-installing travis:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -93,10 +1294,24 @@ It automatically generates publications from a BibTeX file using jekyll-scholar.
       <pubDate>Tue, 03 Apr 2018 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2018/04/03/documenting-r-packages/</guid>
-      <description>Some brief notes on my R package documentation workflow.
-styler I first use the styler package for pretty-printing of R source code
-pacman::p_load_gh(&amp;#34;r-lib/styler&amp;#34;) # run style_dir on R directory styler::style_dir(&amp;#34;./R&amp;#34;) prefixer Next I use the prefixer package to prefix all my functions with their NAMESPACE
-pacman::p_load_gh(&amp;#34;dreamRs/prefixer&amp;#34;) # launch the addin via RStudio&amp;#39;s Addins menu sinew In a third step, I use the sinew package to generate a roxygen2 skeleton on all my R source code files</description>
+      <description>&lt;p&gt;Some brief notes on my &lt;code&gt;R&lt;/code&gt; package documentation workflow.&lt;/p&gt;
+&lt;h2 id=&#34;styler&#34;&gt;&lt;code&gt;styler&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;I first use the &lt;a href=&#34;http://styler.r-lib.org/index.html&#34;&gt;&lt;code&gt;styler&lt;/code&gt;&lt;/a&gt; package for pretty-printing of &lt;code&gt;R&lt;/code&gt; source code&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pacman&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;p_load_gh&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;r-lib/styler&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;# run style_dir on R directory&lt;/span&gt;
+styler&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;style_dir&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;./R&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;prefixer&#34;&gt;&lt;code&gt;prefixer&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;Next I use the &lt;a href=&#34;https://github.com/dreamRs/prefixer&#34;&gt;&lt;code&gt;prefixer&lt;/code&gt;&lt;/a&gt; package to prefix all my functions with their NAMESPACE&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pacman&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;p_load_gh&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;dreamRs/prefixer&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;#  launch the addin via RStudio&amp;#39;s Addins menu&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;sinew&#34;&gt;&lt;code&gt;sinew&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;In a third step, I use the &lt;a href=&#34;https://github.com/metrumresearchgroup/sinew&#34;&gt;&lt;code&gt;sinew&lt;/code&gt;&lt;/a&gt; package to generate a roxygen2 skeleton on all my &lt;code&gt;R&lt;/code&gt; source code files&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;pacman&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;p_load_gh&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;metrumresearchgroup/sinew&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#75715e&#34;&gt;# the main function I use is sinew::makeOxyFile()&lt;/span&gt;
+sinew&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;makeOxyFile&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;./R/methods.R&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;devtools&#34;&gt;&lt;code&gt;devtools&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;Finish with &lt;code&gt;devtools::document()&lt;/code&gt;.&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -105,9 +1320,13 @@ pacman::p_load_gh(&amp;#34;dreamRs/prefixer&amp;#34;) # launch the addin via RSt
       <pubDate>Tue, 03 Apr 2018 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2018/04/03/i-am-color-blind/</guid>
-      <description>I recently gave a mini-course on regression trees. As I talked about the red region in the following figure:
-one of the audience members said they had no clue what I was referring to. It turns out they were color blind and could not identify the red region. Yikes!
-Here is a colorblind friendly pallette courtesy of Cookbook for R</description>
+      <description>&lt;p&gt;I recently gave a &lt;a href=&#34;https://sahirbhatnagar.github.io/blog/assets/pdf/cart_animation.pdf&#34;&gt;mini-course&lt;/a&gt; on regression trees. As I talked about the red region in the following figure:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/assets/img/cart.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;one of the audience members said they had no clue what I was referring to. It turns out they were color blind and could not identify the red region. Yikes!&lt;/p&gt;
+&lt;p&gt;Here is a colorblind friendly pallette courtesy of &lt;a href=&#34;http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette&#34;&gt;Cookbook for R&lt;/a&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+</description>
     </item>
     
     <item>
@@ -116,8 +1335,286 @@ Here is a colorblind friendly pallette courtesy of Cookbook for R</description>
       <pubDate>Thu, 12 Oct 2017 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2017/10/12/mixed-models-with-kinship-in-r/</guid>
-      <description>In this post, I describe how to estimate a kinship matrix and subsequently fit a mixed model using that estimated kinship. In particular, I show how this can be done on an arbitrary matrix of genotype data, which is not stored in plink format. I also show how to deal with missing genotypes.
-Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set Simulation Parameters # number of subjects n &amp;lt;- 1000 # number of genotypes p &amp;lt;- 1e4 # number of causal genotypes p_causal &amp;lt;- 50 # Signal to noise ratio signal_to_noise_ratio &amp;lt;- 2 # vector of allele frequencies from which to sample probs &amp;lt;- c(0.</description>
+      <description>&lt;p&gt;In this post, I describe how to estimate a kinship matrix and subsequently fit a mixed model using that estimated kinship. In particular, I show how this can be done on an arbitrary matrix of genotype data, which is not stored in &lt;code&gt;plink&lt;/code&gt; format. I also show how to deal with missing genotypes.&lt;/p&gt;
+&lt;h2 id=&#34;load-packages&#34;&gt;Load Packages&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# install.packages(&amp;#34;gaston&amp;#34;)&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(gaston)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;set-simulation-parameters&#34;&gt;Set Simulation Parameters&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# number of subjects&lt;/span&gt;
+n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# number of genotypes&lt;/span&gt;
+p &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1e4&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# number of causal genotypes&lt;/span&gt;
+p_causal &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Signal to noise ratio&lt;/span&gt;
+signal_to_noise_ratio &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# vector of allele frequencies from which to sample&lt;/span&gt;
+probs &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.05&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.3&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.4&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;generate-sample-data-with-missing-genotypes&#34;&gt;Generate Sample Data with Missing Genotypes&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;345321&lt;/span&gt;)
+geno &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;replicate&lt;/span&gt;(p, &lt;span style=&#34;color:#a6e22e&#34;&gt;rbinom&lt;/span&gt;(n, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;sample&lt;/span&gt;(probs, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)))
+&lt;span style=&#34;color:#a6e22e&#34;&gt;dim&lt;/span&gt;(geno)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1]  1000 10000
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;geno[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    0    0    1    1    0
+## [2,]    1    0    0    1    0
+## [3,]    1    1    0    0    0
+## [4,]    2    1    1    0    0
+## [5,]    1    2    1    0    0
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;geno&lt;span style=&#34;color:#a6e22e&#34;&gt;[sample&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;p, &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;)] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;NA&lt;/span&gt;
+geno[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    0    0    1    1    0
+## [2,]    1    0    0    1    0
+## [3,]    1    1    0    0    0
+## [4,]    2    1    1    0    0
+## [5,]    1    2    1    0    0
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;convert-to-bed-matrix&#34;&gt;Convert to BED Matrix&lt;/h2&gt;
+&lt;p&gt;This is so that we can use the functions in the &lt;code&gt;gaston&lt;/code&gt; package for fitting mixed models&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;DT &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; gaston&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;as.bed.matrix&lt;/span&gt;(geno)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# can access the data by &lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;as.matrix&lt;/span&gt;(DT)[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##   M_1 M_2 M_3 M_4 M_5
+## 1   0   0   1   1   0
+## 2   1   0   0   1   0
+## 3   1   1   0   0   0
+## 4   2   1   1   0   0
+## 5   1   2   1   0   0
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# see the contents of DT&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;slotNames&lt;/span&gt;(DT)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;ped&amp;quot;                  &amp;quot;snps&amp;quot;                 &amp;quot;bed&amp;quot;                 
+## [4] &amp;quot;p&amp;quot;                    &amp;quot;mu&amp;quot;                   &amp;quot;sigma&amp;quot;               
+## [7] &amp;quot;standardize_p&amp;quot;        &amp;quot;standardize_mu_sigma&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# to access the different contents of DT use @ &lt;/span&gt;
+DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;snps[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;,]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##   chr  id dist pos A1 A2  N0  N1  N2 NAs N0.f N1.f N2.f NAs.f callrate
+## 1  NA M_1   NA  NA NA NA 480 411 101   8   NA   NA   NA    NA    0.992
+## 2  NA M_2   NA  NA NA NA 349 477 167   7   NA   NA   NA    NA    0.993
+## 3  NA M_3   NA  NA NA NA 461 442  85  12   NA   NA   NA    NA    0.988
+## 4  NA M_4   NA  NA NA NA 781 200   9  10   NA   NA   NA    NA    0.990
+## 5  NA M_5   NA  NA NA NA 886  95   3  16   NA   NA   NA    NA    0.984
+##          maf         hz
+## 1 0.30897177 0.41431452
+## 2 0.40835851 0.48036254
+## 3 0.30971660 0.44736842
+## 4 0.11010101 0.20202020
+## 5 0.05132114 0.09654472
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;ped[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;,]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##   famid id father mother sex pheno   N0   N1  N2 NAs N0.x N1.x N2.x NAs.x
+## 1     1  1      0      0   0     0 6431 2916 652   1    0    0    0     0
+## 2     2  2      0      0   0     0 6450 2873 677   0    0    0    0     0
+## 3     3  3      0      0   0     0 6441 2899 660   0    0    0    0     0
+## 4     4  4      0      0   0     0 6374 2986 640   0    0    0    0     0
+## 5     5  5      0      0   0     0 6339 2978 683   0    0    0    0     0
+##   N0.y N1.y N2.y NAs.y N0.mt N1.mt N2.mt NAs.mt callrate    hz callrate.x
+## 1    0    0    0     0     0     0     0      0     -Inf -2916        NaN
+## 2    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+## 3    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+## 4    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+## 5    0    0    0     0     0     0     0      0      NaN   Inf        NaN
+##   hz.x callrate.y hz.y callrate.mt hz.mt
+## 1  NaN        NaN  NaN         NaN   NaN
+## 2  NaN        NaN  NaN         NaN   NaN
+## 3  NaN        NaN  NaN         NaN   NaN
+## 4  NaN        NaN  NaN         NaN   NaN
+## 5  NaN        NaN  NaN         NaN   NaN
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# p contains the alternate allele frequency &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# mu is equal to 2*p and is the expected value of the genotype (coded in 0, 1, 2)&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# sigma is the genotype standard error&lt;/span&gt;
+DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;p[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] 0.30897177 0.40835851 0.30971660 0.11010101 0.05132114 0.05393145
+##  [7] 0.28556911 0.04984894 0.30502513 0.39635996
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;mu[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] 0.61794355 0.81671702 0.61943320 0.22020202 0.10264228 0.10786290
+##  [7] 0.57113821 0.09969789 0.61005025 0.79271992
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;sigma[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##  [1] 0.6607853 0.6950724 0.6350671 0.4338020 0.3110142 0.3155285 0.6256291
+##  [8] 0.3053246 0.6458457 0.6949752
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;p, DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;mu)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;abline&lt;/span&gt;(a&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,b&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, col &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;red&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/lmm_example_files/figure-html/unnamed-chunk-4-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;If the Hardy-Weinberg equilibrium holds, &lt;code&gt;sigma&lt;/code&gt; should be close to &lt;code&gt;$\sqrt{2*p(1-p)}$&lt;/code&gt;. This is illustrated on the figure below&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot&lt;/span&gt;(DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;p, DT&lt;span style=&#34;color:#f92672&#34;&gt;@&lt;/span&gt;sigma, xlim&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;))
+t &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;seq&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,length&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;101&lt;/span&gt;);
+&lt;span style=&#34;color:#a6e22e&#34;&gt;lines&lt;/span&gt;(t, &lt;span style=&#34;color:#a6e22e&#34;&gt;sqrt&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;t&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;t)), col&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;red&amp;#34;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/lmm_example_files/figure-html/unnamed-chunk-5-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;h2 id=&#34;standardized-snp-matrix&#34;&gt;Standardized SNP matrix&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# this will center the columns of DT to mean 0, and standard deviation sqrt(2p(1-p))&lt;/span&gt;
+gaston&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;standardize&lt;/span&gt;(DT) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;p&amp;#34;&lt;/span&gt;
+X &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;as.matrix&lt;/span&gt;(DT)
+X[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##          M_1        M_2        M_3        M_4      M_5
+## 1 -0.9456415 -1.1749151  0.5819959  1.7615748 -0.32893
+## 2  0.5846625 -1.1749151 -0.9472912  1.7615748 -0.32893
+## 3  0.5846625  0.2636678 -0.9472912 -0.4974395 -0.32893
+## 4  2.1149665  0.2636678  0.5819959 -0.4974395 -0.32893
+## 5  0.5846625  1.7022506  0.5819959 -0.4974395 -0.32893
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;dealing-with-missing-values&#34;&gt;Dealing With Missing Values&lt;/h2&gt;
+&lt;p&gt;In standardized matrices, the &lt;code&gt;NA&lt;/code&gt; values are replaced by zeroes, which amount to impute the missing genotypes by the mean genotype.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;X&lt;span style=&#34;color:#a6e22e&#34;&gt;[is.na&lt;/span&gt;(X)] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+X[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##          M_1        M_2        M_3        M_4      M_5
+## 1 -0.9456415 -1.1749151  0.5819959  1.7615748 -0.32893
+## 2  0.5846625 -1.1749151 -0.9472912  1.7615748 -0.32893
+## 3  0.5846625  0.2636678 -0.9472912 -0.4974395 -0.32893
+## 4  2.1149665  0.2636678  0.5819959 -0.4974395 -0.32893
+## 5  0.5846625  1.7022506  0.5819959 -0.4974395 -0.32893
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The object &lt;code&gt;X&lt;/code&gt; is what will be used as the data matrix in the LMM analysis. We also need to create the kinship matrix, which we do next.&lt;/p&gt;
+&lt;h2 id=&#34;calculate-kinship-matrix&#34;&gt;Calculate Kinship Matrix&lt;/h2&gt;
+&lt;p&gt;If &lt;code&gt;$X_s$&lt;/code&gt; is a standardized &lt;code&gt;$n \times p$&lt;/code&gt; matrix of genotypes, a Genetic Relationship Matrix of individuals can be computed as&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$$GRM = \frac{1}{p-1} X_s X_s^\top$$&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;code&gt;$p$&lt;/code&gt; is the number of SNPs and &lt;code&gt;$n$&lt;/code&gt; is the number of individuals. This computation is done by the &lt;code&gt;gaston::GRM&lt;/code&gt; function. Note that we could also use&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; (p &lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)) &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;tcrossprod&lt;/span&gt;(X)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;to calculate the kinship (covariance) matrix, but the &lt;code&gt;gaston::GRM&lt;/code&gt; function is faster.&lt;/p&gt;
+&lt;p&gt;Note that the &lt;code&gt;gaston::GRM&lt;/code&gt; function internally standardizes the genotype data, which is why we provide it the object &lt;code&gt;DT&lt;/code&gt;. The object &lt;code&gt;X&lt;/code&gt; will be used for fitting the model. We specify &lt;code&gt;autosome.only = FALSE&lt;/code&gt; because we don&amp;rsquo;t have that information.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;kin &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; gaston&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;GRM&lt;/span&gt;(DT, autosome.only &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;FALSE&lt;/span&gt;)
+kin[1&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;##              1            2             3             4             5
+## 1  0.994037390 -0.020637164 -2.610047e-03  1.937922e-02 -0.0050506615
+## 2 -0.020637164  0.970255971  1.689422e-03 -1.211568e-02  0.0014872842
+## 3 -0.002610047  0.001689422  9.864578e-01 -9.975582e-05  0.0006858376
+## 4  0.019379225 -0.012115683 -9.975582e-05  9.979130e-01  0.0061614369
+## 5 -0.005050662  0.001487284  6.858376e-04  6.161437e-03  1.0134803057
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;principal-components&#34;&gt;Principal Components&lt;/h2&gt;
+&lt;p&gt;From the GRM, we can compute the Principal components. The eigenvectors are normalized. The Principal Components (PC) can be computed by multiplying them by the square root of the associated eigenvalues&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;eiK &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;eigen&lt;/span&gt;(kin)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# deal with a small negative eigen value&lt;/span&gt;
+eiK&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;values[ eiK&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;values &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt; ] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+
+PC &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;sweep&lt;/span&gt;(eiK&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;vectors, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;, &lt;span style=&#34;color:#a6e22e&#34;&gt;sqrt&lt;/span&gt;(eiK&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;values), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*&amp;#34;&lt;/span&gt;)
+&lt;span style=&#34;color:#a6e22e&#34;&gt;dim&lt;/span&gt;(PC)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] 1000 1000
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;plot&lt;/span&gt;(PC[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;], PC[,&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;])
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/lmm_example_files/figure-html/unnamed-chunk-10-1.png&#34; alt=&#34;&#34;&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;h2 id=&#34;simulate-phenotype&#34;&gt;Simulate Phenotype&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;p_causal&lt;/code&gt; SNPs are randomly assigned to a Uniform(0.9,1.1) distribution.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;beta &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;rep&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, p)
+beta&lt;span style=&#34;color:#a6e22e&#34;&gt;[sample&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;p, p_causal)] &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;runif&lt;/span&gt;(p_causal, min &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.9&lt;/span&gt;, max &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1.1&lt;/span&gt;)
+
+y.star &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; X &lt;span style=&#34;color:#f92672&#34;&gt;%*%&lt;/span&gt; beta 
+
+error &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; stats&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;rnorm&lt;/span&gt;(n)
+
+k &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;as.numeric&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;sqrt&lt;/span&gt;(stats&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;var&lt;/span&gt;(y.star)&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;(signal_to_noise_ratio&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;stats&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;var&lt;/span&gt;(error))))
+
+Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; y.star &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; k&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;error
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;run-univariate-lmm&#34;&gt;Run Univariate LMM&lt;/h2&gt;
+&lt;p&gt;There are two packages we can use to fit uni/multivariate LMMs.&lt;/p&gt;
+&lt;h3 id=&#34;gaston-package&#34;&gt;&lt;code&gt;gaston&lt;/code&gt; package&lt;/h3&gt;
+&lt;p&gt;Here we use the &lt;code&gt;gaston&lt;/code&gt; package {% cite gaston %}.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# make design matrix with intercept&lt;/span&gt;
+x1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;cbind&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, X[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;,drop&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;FALSE&lt;/span&gt;])
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# with 1 random effect this function is faster than lmm.aireml&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# in gaston::lmm.diago you provide the eigen decomposition &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# in gaston::lmm.aireml you provide the kinship matrix&lt;/span&gt;
+fit &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; gaston&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;lmm.diago&lt;/span&gt;(Y, x1, eigenK &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; eiK)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Optimization in interval [0, 1]
+## Optimizing with p = 0
+## [Iteration 1] Current point = 0 df = 28.579
+## [Iteration 2] Current point = 0.54494 df = 2.00363
+## [Iteration 3] Current point = 0.585132 df = -0.018836
+## [Iteration 4] Current point = 0.584762 df = -1.81023e-06
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# equivalently you can also fit using &lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# fit &amp;lt;- gaston::lmm.aireml(Y, x1, K = kin, verbose = FALSE)&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# the second coefficient is x1, the first is the intercept&lt;/span&gt;
+(z_score &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; fit&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;BLUP_beta[2]&lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;sqrt&lt;/span&gt;(fit&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;varbeta[2,&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;]))
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] 0.4642883
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# pvalue&lt;/span&gt;
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;pnorm&lt;/span&gt;(z_score, lower.tail &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; F)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] 0.6424412
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# random effect variance&lt;/span&gt;
+fit&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;tau
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] 44.29653
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# error variance&lt;/span&gt;
+fit&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;sigma2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] 31.45491
+&lt;/code&gt;&lt;/pre&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# error sd&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;sqrt&lt;/span&gt;(fit&lt;span style=&#34;color:#f92672&#34;&gt;$&lt;/span&gt;sigma2)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## [1] 5.608468
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;coxme-package&#34;&gt;&lt;code&gt;coxme&lt;/code&gt; package&lt;/h3&gt;
+&lt;p&gt;Here we use the &lt;code&gt;coxme&lt;/code&gt; package {% cite coxme %}.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# install.packages(&amp;#34;coxme&amp;#34;)&lt;/span&gt;
+&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(coxme)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# need an ID variable&lt;/span&gt;
+dat &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;data.frame&lt;/span&gt;(Y, x&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;X[,&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;], id &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;:&lt;/span&gt;n)
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# provide the kinship matrix &lt;/span&gt;
+gfit1 &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;lmekin&lt;/span&gt;(Y &lt;span style=&#34;color:#f92672&#34;&gt;~&lt;/span&gt; x &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;|&lt;/span&gt;id), data&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;dat, varlist&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;kin)
+gfit1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;## Linear mixed-effects kinship model fit by maximum likelihood
+##   Data: dat 
+##   Log-likelihood = -3572.846 
+##   n= 1000 
+## 
+## 
+## Model:  Y ~ x + (1 | id) 
+## Fixed coefficients
+##                 Value Std Error    z     p
+## (Intercept) 0.3185476 0.1720343 1.85 0.064
+## x           0.1320349 0.2748453 0.48 0.630
+## 
+## Random effects
+##  Group Variable Std Dev   Variance 
+##  id    Vmat.1    6.790932 46.116756
+## Residual error= 5.440202
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;p&gt;{% bibliography &amp;ndash;cited %}&lt;/p&gt;
+&lt;h2 id=&#34;session-info&#34;&gt;Session Info&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;##  setting  value                       
+##  version  R version 3.4.1 (2017-06-30)
+##  system   x86_64, linux-gnu           
+##  ui       X11                         
+##  language en_US                       
+##  collate  en_US.UTF-8                 
+##  tz       Canada/Eastern              
+##  date     2017-10-12                  
+## 
+##  package      * version date       source                          
+##  backports      1.1.0   2017-05-22 cran (@1.1.0)                   
+##  base         * 3.4.1   2017-07-08 local                           
+##  bdsmatrix    * 1.3-2   2014-08-22 CRAN (R 3.4.1)                  
+##  compiler       3.4.1   2017-07-08 local                           
+##  coxme        * 2.2-5   2015-06-15 CRAN (R 3.4.1)                  
+##  datasets     * 3.4.1   2017-07-08 local                           
+##  devtools       1.13.3  2017-08-02 CRAN (R 3.4.1)                  
+##  digest         0.6.12  2017-01-27 CRAN (R 3.4.1)                  
+##  evaluate       0.10.1  2017-06-24 cran (@0.10.1)                  
+##  gaston       * 1.5     2017-05-25 CRAN (R 3.4.1)                  
+##  graphics     * 3.4.1   2017-07-08 local                           
+##  grDevices    * 3.4.1   2017-07-08 local                           
+##  grid           3.4.1   2017-07-08 local                           
+##  htmltools      0.3.6   2017-04-28 cran (@0.3.6)                   
+##  knitr          1.17    2017-08-10 cran (@1.17)                    
+##  lattice        0.20-35 2017-03-25 CRAN (R 3.3.3)                  
+##  magrittr       1.5     2014-11-22 CRAN (R 3.4.1)                  
+##  Matrix         1.2-11  2017-08-16 CRAN (R 3.4.1)                  
+##  memoise        1.1.0   2017-04-21 CRAN (R 3.4.1)                  
+##  methods      * 3.4.1   2017-07-08 local                           
+##  nlme           3.1-131 2017-02-06 CRAN (R 3.4.0)                  
+##  Rcpp         * 0.12.12 2017-07-15 CRAN (R 3.4.1)                  
+##  RcppParallel * 4.3.20  2016-08-16 CRAN (R 3.4.1)                  
+##  rmarkdown      1.6     2017-06-15 CRAN (R 3.4.1)                  
+##  rprojroot      1.2     2017-01-16 CRAN (R 3.4.1)                  
+##  splines        3.4.1   2017-07-08 local                           
+##  stats        * 3.4.1   2017-07-08 local                           
+##  stringi        1.1.5   2017-04-07 CRAN (R 3.4.1)                  
+##  stringr        1.2.0   2017-02-18 CRAN (R 3.4.1)                  
+##  survival     * 2.41-3  2017-04-04 CRAN (R 3.4.0)                  
+##  tools          3.4.1   2017-07-08 local                           
+##  utils        * 3.4.1   2017-07-08 local                           
+##  withr          2.0.0   2017-09-18 Github (jimhester/withr@d1f0957)
+##  yaml           2.1.14  2016-11-12 cran (@2.1.14)
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
     <item>
@@ -128,7 +1625,29 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       <guid>https://sahirbhatnagar.github.io/blog/2017/08/11/polygenic-risks-scores-with-data.table-in-r/</guid>
       <description>&lt;p&gt;In this short post, I show how to calculate &lt;a href=&#34;https://en.wikipedia.org/wiki/Polygenic_score&#34;&gt;polygenic risk scores&lt;/a&gt; (PRS) using the &lt;a href=&#34;https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html&#34;&gt;&lt;code&gt;data.table&lt;/code&gt;&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. I will show an example on a small dataset, but can be easily extended to much larger datasets. The PRS based on &lt;code&gt;$p$&lt;/code&gt; SNPs is given by:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;$$ PRS_i = \sum_{j=1}^{p}\beta_j \times SNP_{ij} $$&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;where &lt;code&gt;$\beta_j$&lt;/code&gt; is the beta coefficient for the &lt;code&gt;$j^{th}$&lt;/code&gt; SNP, and &lt;code&gt;$SNP_{ij}$&lt;/code&gt; is the value of &lt;code&gt;$j^{th}$&lt;/code&gt; SNP for the &lt;code&gt;$i^{th}$&lt;/code&gt; individual.&lt;/p&gt;</description>
+&lt;p&gt;where &lt;code&gt;$\beta_j$&lt;/code&gt; is the beta coefficient for the &lt;code&gt;$j^{th}$&lt;/code&gt; SNP, and &lt;code&gt;$SNP_{ij}$&lt;/code&gt; is the value of &lt;code&gt;$j^{th}$&lt;/code&gt; SNP for the &lt;code&gt;$i^{th}$&lt;/code&gt; individual.&lt;/p&gt;
+&lt;p&gt;First we load the &lt;a href=&#34;https://github.com/Rdatatable/data.table/wiki&#34;&gt;&lt;code&gt;data.table&lt;/code&gt;&lt;/a&gt; package:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Next we create some sample data, where the rows are SNPs and the columns are individuals. This &lt;code&gt;data.table&lt;/code&gt; also contains a column with the beta coefficients for each SNP.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;In situations where there are many individuals, this can be a tedious calculation because standard methods would require to type out the name of all of the columns to be multiplied by. Instead, using the &lt;a href=&#34;https://stackoverflow.com/questions/14937165/using-dynamic-column-names-in-data-table?lq=1&#34;&gt;&lt;code&gt;.SDcols&lt;/code&gt;&lt;/a&gt; argument, greatly simplifies this process by allowing columns to be called on dynamically.&lt;/p&gt;
+&lt;p&gt;We first create a character vector of the column names that we want to multiply beta by as well as the new column names that we want to store the results in:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Now with a simple command we get the desired multiplication:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;The PRS for each individual can be calculated using the &lt;code&gt;colSums&lt;/code&gt; function in base &lt;code&gt;R&lt;/code&gt;:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
     <item>
@@ -140,7 +1659,58 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       <description>&lt;p&gt;Consider the following repeated measures model:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;$$y_{ij} =\beta_0 + \beta_1 a_{ij}  + \beta_1^2 b_{ij} + \mu_i + \varepsilon_{ij}$$&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;for &lt;code&gt;$i = 1, \ldots, n$&lt;/code&gt;, &lt;code&gt;$j = 1, 2$&lt;/code&gt; where &lt;code&gt;$n$&lt;/code&gt; is the sample size, &lt;code&gt;$j$&lt;/code&gt; represents the index of the repeated measure, i.e., each subject has two measurements, &lt;code&gt;$\mu_i$&lt;/code&gt; is a normally distributed random effect, &lt;code&gt;$\varepsilon_{ij}$&lt;/code&gt; is a normally distributed error term, &lt;code&gt;$y_{ij}$&lt;/code&gt; is the continuous response, and &lt;code&gt;$a_{ij}, b_{ij}$&lt;/code&gt; are covariates. This is a multilevel model because of the nested structure of the data, and also non-linear in the &lt;code&gt;$\beta_1$&lt;/code&gt; parameter. In this post I simulate some data under this model, and try to leverage Bayesian computation techniques to estimate the parameters using the &lt;a href=&#34;https://github.com/paul-buerkner/brms&#34;&gt;brms&lt;/a&gt; which is an interface to fit Bayesian generalized (non-)linear multilevel models using &lt;a href=&#34;http://mc-stan.org/&#34;&gt;Stan&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://i.imgur.com/r0IXN1w.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;load-packages&#34;&gt;Load Packages&lt;/h2&gt;
+&lt;p&gt;We first load the required packages:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h2 id=&#34;simulate-data-n--500-two-timepoints&#34;&gt;Simulate Data (n = 500, two timepoints)&lt;/h2&gt;
+&lt;p&gt;Next I simulate some multilevel data:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h2 id=&#34;fit-non-linear-multilevel-bayesian-model&#34;&gt;Fit Non-linear Multilevel Bayesian Model&lt;/h2&gt;
+&lt;p&gt;We first need to specify priors for &lt;code&gt;$\beta_1$&lt;/code&gt; and the random effect &lt;code&gt;$\mu_i$&lt;/code&gt;. I have found the easiest way to do this, is to first get information for which priors may be specified using the &lt;code&gt;brms::get_prior&lt;/code&gt; function:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;The &lt;code&gt;nl = TRUE&lt;/code&gt; argument indicates that this should be treated as a non-linear model. We need to specify priors for the population level effects as well as the standard deviation of the random effect (what is referred to as group-level effects in the output):&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;We can check the corresponding STAN code to verify that the prior information has been updated accordingly using the &lt;code&gt;brms::make_stancode&lt;/code&gt; function:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Next we fit the model with 6 Markov chains:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;We can check the summary to see if the model was able to accurately estimate &lt;code&gt;$\beta_1$&lt;/code&gt;:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;The estimate of interest in the output above is &lt;code&gt;beta_Intercept&lt;/code&gt; under &lt;code&gt;Population-Level Effects&lt;/code&gt;. This corresponds to the estimate of &lt;code&gt;$\beta_1$&lt;/code&gt; in the equation above. We see that the estimate is close to the true value of 3. We also see that the estimate of the standard deviation of the random effect is 2.13 [95% CI: 0.28, 3.42], indicating a strong subject specific effect (which is what we would expect since we generated the data this way).&lt;/p&gt;
+&lt;p&gt;We can also plot some model diagnostics to ensure proper mixing of the Markov chains:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-9&#34;&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-2.png&#34; alt=&#34;plot of chunk unnamed-chunk-9&#34;&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-3.png&#34; alt=&#34;plot of chunk unnamed-chunk-9&#34;&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2017-02-23-non_linear_bayesian/unnamed-chunk-9-4.png&#34; alt=&#34;plot of chunk unnamed-chunk-9&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;session-info&#34;&gt;Session Info&lt;/h2&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
     <item>
@@ -149,7 +1719,40 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2017/02/07/limma-moderated-and-ordinary-t-statistics/</guid>
-      <description>&lt;p&gt;When analyzing large amounts of genetic and genomic data, the first line of analysis is usually some sort of univariate test. That is, conduct a statistical test for each SNP or CpG site or Gene and then correct for multiple testing. The &lt;a href=&#34;https://bioconductor.org/packages/release/bioc/html/limma.html&#34;&gt;limma&lt;/a&gt; package on Bioconductor is a popular method for computing &lt;em&gt;moderated&lt;/em&gt; t-statistics using a combination of the &lt;code&gt;limma::lmFit&lt;/code&gt; and &lt;code&gt;limma::eBayes&lt;/code&gt; functions. In this post, I show how to calculate the &lt;em&gt;ordinary&lt;/em&gt; t-statistics from &lt;code&gt;limma&lt;/code&gt; output.&lt;/p&gt;</description>
+      <description>&lt;p&gt;When analyzing large amounts of genetic and genomic data, the first line of analysis is usually some sort of univariate test. That is, conduct a statistical test for each SNP or CpG site or Gene and then correct for multiple testing. The &lt;a href=&#34;https://bioconductor.org/packages/release/bioc/html/limma.html&#34;&gt;limma&lt;/a&gt; package on Bioconductor is a popular method for computing &lt;em&gt;moderated&lt;/em&gt; t-statistics using a combination of the &lt;code&gt;limma::lmFit&lt;/code&gt; and &lt;code&gt;limma::eBayes&lt;/code&gt; functions. In this post, I show how to calculate the &lt;em&gt;ordinary&lt;/em&gt; t-statistics from &lt;code&gt;limma&lt;/code&gt; output.&lt;/p&gt;
+&lt;p&gt;First we load the required packages&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Next, we extract some sample data and create a covariate of interest&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Then we calculate the moderated and ordinary t-statistics and compare them:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2017-02-07-ttest_limma/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We can calculate the corresponding p-values from the ordinary t-statistics. This is given by&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;We can also use the &lt;a href=&#34;https://cran.r-project.org/package=CpGassoc&#34;&gt;&lt;code&gt;CpGassoc&lt;/code&gt;&lt;/a&gt; package to calculate ordinary t-statistics and compare the result to our manual calculations:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2017-02-07-ttest_limma/unnamed-chunk-4-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-4&#34;&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2017-02-07-ttest_limma/unnamed-chunk-4-2.png&#34; alt=&#34;plot of chunk unnamed-chunk-4&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;session-info&#34;&gt;Session Info&lt;/h2&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
     <item>
@@ -158,8 +1761,22 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       <pubDate>Fri, 30 Dec 2016 21:49:57 -0700</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/12/30/a-plain-markdown-post/</guid>
-      <description>This is a post written in plain Markdown (*.md) instead of R Markdown (*.Rmd). The major differences are:
- You cannot run any R code in a plain Markdown document, whereas in an R Markdown document, you can embed R code chunks (```{r}); A plain Markdown post is rendered through Blackfriday, and an R Markdown document is compiled by rmarkdown and Pandoc.  There are many differences in syntax between Blackfriday&amp;rsquo;s Markdown and Pandoc&amp;rsquo;s Markdown.</description>
+      <description>&lt;p&gt;This is a post written in plain Markdown (&lt;code&gt;*.md&lt;/code&gt;) instead of R Markdown (&lt;code&gt;*.Rmd&lt;/code&gt;). The major differences are:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;You cannot run any R code in a plain Markdown document, whereas in an R Markdown document, you can embed R code chunks (&lt;code&gt;```{r}&lt;/code&gt;);&lt;/li&gt;
+&lt;li&gt;A plain Markdown post is rendered through &lt;a href=&#34;https://gohugo.io/overview/configuration/&#34;&gt;Blackfriday&lt;/a&gt;, and an R Markdown document is compiled by &lt;a href=&#34;http://rmarkdown.rstudio.com&#34;&gt;&lt;strong&gt;rmarkdown&lt;/strong&gt;&lt;/a&gt; and &lt;a href=&#34;http://pandoc.org&#34;&gt;Pandoc&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;There are many differences in syntax between Blackfriday&amp;rsquo;s Markdown and Pandoc&amp;rsquo;s Markdown. For example, you can write a task list with Blackfriday but not with Pandoc:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;input checked=&#34;&#34; disabled=&#34;&#34; type=&#34;checkbox&#34;&gt;Write an R package.&lt;/li&gt;
+&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt;Write a book.&lt;/li&gt;
+&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt;&amp;hellip;&lt;/li&gt;
+&lt;li&gt;&lt;input disabled=&#34;&#34; type=&#34;checkbox&#34;&gt;Profit!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Similarly, Blackfriday does not support LaTeX math and Pandoc does. I have added the MathJax support to this theme (&lt;a href=&#34;https://github.com/yihui/hugo-lithium&#34;&gt;hugo-lithium&lt;/a&gt;) but there is a caveat for plain Markdown posts: you have to include math expressions in a pair of backticks (inline: &lt;code&gt;`$ $`&lt;/code&gt;; display style: &lt;code&gt;`$$ $$`&lt;/code&gt;), e.g., &lt;code&gt;$S_n = \sum_{i=1}^n X_i$&lt;/code&gt;.^[This is because we have to protect the math expressions from being interpreted as Markdown. You may not need the backticks if your math expression does not contain any special Markdown syntax such as underscores or asterisks, but it is always a safer choice to use backticks. When you happen to have a pair of literal dollar signs inside the same element, you can escape one dollar sign, e.g., &lt;code&gt;\$50 and $100&lt;/code&gt; renders &amp;ldquo;$50 and $100&amp;rdquo;.] For R Markdown posts, you do not need the backticks, because Pandoc can identify and process math expressions.&lt;/p&gt;
+&lt;p&gt;When creating a new post, you have to decide whether the post format is Markdown or R Markdown, and this can be done via the &lt;code&gt;ext&lt;/code&gt; argument of the function &lt;code&gt;blogdown::new_post()&lt;/code&gt;, e.g.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;blogdown&lt;span style=&#34;color:#f92672&#34;&gt;::&lt;/span&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;new_post&lt;/span&gt;(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Post Title&amp;#34;&lt;/span&gt;, ext &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.Rmd&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
     <item>
@@ -168,7 +1785,8 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/about/</guid>
-      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.</description>
+      <description>&lt;p&gt;This is a &amp;ldquo;hello world&amp;rdquo; example website for the &lt;a href=&#34;https://github.com/rstudio/blogdown&#34;&gt;&lt;strong&gt;blogdown&lt;/strong&gt;&lt;/a&gt; package. The theme was forked from &lt;a href=&#34;https://github.com/jrutheiser/hugo-lithium-theme&#34;&gt;@jrutheiser/hugo-lithium-theme&lt;/a&gt; and modified by &lt;a href=&#34;https://github.com/yihui/hugo-lithium&#34;&gt;Yihui Xie&lt;/a&gt;.&lt;/p&gt;
+</description>
     </item>
     
     <item>
@@ -178,7 +1796,20 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/25/statistical-power-in-t-tests-with-unequal-group-sizes/</guid>
       <description>&lt;p&gt;When performing &lt;a href=&#34;https://en.wikipedia.org/wiki/Student%27s_t-test&#34;&gt;Student&amp;rsquo;s t-test&lt;/a&gt; to compare difference in means between two group, it is a useful exercise to determine the effect of unequal sample sizes in the comparison groups on power. Large imbalances generally will not have adequate statistical power to detect even large effect sizes associated with a factor, leading to a high Type II error rate as shown in the figure below:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2016-02-25-power_ttest_sample_size/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34;&gt;&lt;/p&gt;
+&lt;p&gt;To jusity this reasoning I performed a power analysis for different group sizes. I considered the following group sizes:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;n1 = 28, n2 = 1406: n1 represents 2% of the entire sample size of 1434&lt;/li&gt;
+&lt;li&gt;n1 = 144, n2 = 1290: n1 represents 10% of the entire sample size of 1434&lt;/li&gt;
+&lt;li&gt;n1 = 287, n2 = 1147: n1 represents 20% of the entire sample size of 1434&lt;/li&gt;
+&lt;li&gt;n1 = 430, n2 = 1004: n1 represents 30% of the entire sample size of 1434&lt;/li&gt;
+&lt;li&gt;n1 = 574, n2 = 860: n1 represents 40% of the entire sample size of 1434&lt;/li&gt;
+&lt;li&gt;n1 = 717, n2 = 717: equal size groups (this is optimal because it leads to the highest power for a given effect size)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In the figure above we plotted the power curves for the &lt;code&gt;$t$&lt;/code&gt;-test, as a function of the effect size, assuming a Type I error rate of 5%.&lt;/p&gt;
+&lt;h2 id=&#34;code&#34;&gt;Code&lt;/h2&gt;
+&lt;p&gt;Here is the code used to produce the above plot&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
     <item>
@@ -188,7 +1819,24 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       
       <guid>https://sahirbhatnagar.github.io/blog/2016/02/08/math-expressions-with-facets-in-ggplot2/</guid>
       <description>&lt;p&gt;In this post I show how we can use &lt;code&gt;$\LaTeX$&lt;/code&gt; math expressions to label the panels in facets to produce the following plot:&lt;/p&gt;
-&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;The updated version of &lt;a href=&#34;http://docs.ggplot2.org/dev/index.html&#34;&gt;ggplot2 V 2.0&lt;/a&gt; has improved the way we can label panels in &lt;a href=&#34;http://docs.ggplot2.org/dev/facet_wrap.html&#34;&gt;facet plots&lt;/a&gt; with the use of a &lt;a href=&#34;http://docs.ggplot2.org/dev/labeller.html&#34;&gt;generic labeller&lt;/a&gt; function. The &lt;a href=&#34;https://cran.r-project.org/web/packages/latex2exp/index.html&#34;&gt;latex2exp&lt;/a&gt; package has made it much easier to write &lt;code&gt;$\LaTeX$&lt;/code&gt; expressions in &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You will need to load the following packages for the code below to work:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://cran.r-project.org/web/packages/devtools/index.html&#34;&gt;devtools&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/&#34;&gt;ggplot2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://cran.r-project.org/web/packages/latex2exp/index.html&#34;&gt;latex2exp&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I have posted some sample data in a &lt;a href=&#34;https://gist.github.com/sahirbhatnagar/ed3caf50247cae8e3e1c&#34;&gt;GitHub Gist&lt;/a&gt; which you can import into your &lt;code&gt;R&lt;/code&gt; session using the &lt;code&gt;source_gist&lt;/code&gt; function from the devtools package:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Then we create a labelling function which takes as input a string and prepends &lt;code&gt;$\log(\lambda_{\gamma})$&lt;/code&gt; to it. Note that &lt;code&gt;latex2exp::TeX&lt;/code&gt; is the workhorse function that parses &lt;code&gt;$\LaTeX$&lt;/code&gt; syntax so that &lt;code&gt;R&lt;/code&gt; understands it. Otherwise it becomes very messy to try and write more complex math expressions in &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;The code to produce the plot above is given by:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Note that we need to provide the &lt;code&gt;default = label_parsed&lt;/code&gt; argument to the &lt;code&gt;facet_wrap&lt;/code&gt; function so that it interprets the result from the &lt;code&gt;appender&lt;/code&gt; function as math expressions.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -197,9 +1845,49 @@ Load Packages # install.packages(&amp;#34;gaston&amp;#34;) library(gaston) Set S
       <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2015/07/23/hello-r-markdown/</guid>
-      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
+      <description>
+
+
+&lt;div id=&#34;r-markdown&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R Markdown&lt;/h1&gt;
+&lt;p&gt;This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see &lt;a href=&#34;http://rmarkdown.rstudio.com&#34; class=&#34;uri&#34;&gt;http://rmarkdown.rstudio.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can embed an R code chunk like this:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(cars)
+##      speed           dist       
+##  Min.   : 4.0   Min.   :  2.00  
+##  1st Qu.:12.0   1st Qu.: 26.00  
+##  Median :15.0   Median : 36.00  
+##  Mean   :15.4   Mean   : 42.98  
+##  3rd Qu.:19.0   3rd Qu.: 56.00  
+##  Max.   :25.0   Max.   :120.00
+fit &amp;lt;- lm(dist ~ speed, data = cars)
+fit
+## 
+## Call:
+## lm(formula = dist ~ speed, data = cars)
+## 
+## Coefficients:
+## (Intercept)        speed  
+##     -17.579        3.932&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;including-plots&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Including Plots&lt;/h1&gt;
+&lt;p&gt;You can also embed plots. See Figure &lt;a href=&#34;#fig:pie&#34;&gt;1&lt;/a&gt; for example:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mar = c(0, 1, 0, 1))
+pie(
+  c(280, 60, 20),
+  c(&amp;#39;Sky&amp;#39;, &amp;#39;Sunny side of pyramid&amp;#39;, &amp;#39;Shady side of pyramid&amp;#39;),
+  col = c(&amp;#39;#0292D8&amp;#39;, &amp;#39;#F7EA39&amp;#39;, &amp;#39;#C4B632&amp;#39;),
+  init.angle = -50, border = NA
+)&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;&lt;span id=&#34;fig:pie&#34;&gt;&lt;/span&gt;
+&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2015-07-23-r-rmarkdown_files/figure-html/pie-1.png&#34; alt=&#34;A fancy pie chart.&#34; width=&#34;672&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;
+Figure 1: A fancy pie chart.
+&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
     </item>
     
     <item>
@@ -208,7 +1896,84 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
       <pubDate>Wed, 10 Jun 2015 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2015/06/10/heatmaps-in-r/</guid>
-      <description>&lt;p&gt;In every statistical analysis, the first thing one should do is try and visualise the data before any modeling. In microarray studies, a common visualisation is a heatmap of gene expression data. In this post I simulate some gene expression data and visualise it using the &lt;code&gt;pheatmap&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/pheatmap/&#34;&gt;pheatmap&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. You will also need the &lt;code&gt;mvrnorm&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/MASS/index.html&#34;&gt;MASS&lt;/a&gt; library to simulate from a multivariate normal distribution, and the &lt;code&gt;brewer.pal&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; library for easier customization of colors.&lt;/p&gt;</description>
+      <description>&lt;p&gt;In every statistical analysis, the first thing one should do is try and visualise the data before any modeling. In microarray studies, a common visualisation is a heatmap of gene expression data. In this post I simulate some gene expression data and visualise it using the &lt;code&gt;pheatmap&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/pheatmap/&#34;&gt;pheatmap&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. You will also need the &lt;code&gt;mvrnorm&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/MASS/index.html&#34;&gt;MASS&lt;/a&gt; library to simulate from a multivariate normal distribution, and the &lt;code&gt;brewer.pal&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; library for easier customization of colors.&lt;/p&gt;
+&lt;h2 id=&#34;components-of-a-heatmap&#34;&gt;Components of a Heatmap&lt;/h2&gt;
+&lt;p&gt;There are four main components that should be considered when drawing a heatmap:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;#data&#34;&gt;Formatting the data&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#color&#34;&gt;Choosing the color scheme&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#annotate&#34;&gt;Annotating the rows and/or columns&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#color&#34;&gt;Clustering&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;formatting-the-dataa-namedataa&#34;&gt;Formatting the data&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/h3&gt;
+&lt;p&gt;First I simulate some gene expression data, based on a function that I created, for genes which are correlated conditional on an exposure status (the function definition is given &lt;a href=&#34;#function&#34;&gt;at the end of this post&lt;/a&gt;):&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;In order to properly label the heatmap, we must label the matrix of gene expressions:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;choosing-the-color-schemea-namecolora&#34;&gt;Choosing the color scheme&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/h3&gt;
+&lt;p&gt;To avoid wasting time choosing colors, I recommend using the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; package based on the design of geographer &lt;a href=&#34;http://colorbrewer2.org/&#34;&gt;Cynthia Brewer&lt;/a&gt;. From the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; help page:&lt;/p&gt;
+&lt;p&gt;There are 3 types of palettes, sequential, diverging, and qualitative:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Sequential palettes are suited to ordered data that progress from low to high. Lightness steps dominate the look of these schemes, with light colors for low data values to dark colors for high data values.&lt;/li&gt;
+&lt;li&gt;Diverging palettes put equal emphasis on mid-range critical values and extremes at both ends of the data range. The critical class or break in the middle of the legend is emphasized with light colors and low and high extremes are emphasized with dark colors that have contrasting hues.&lt;/li&gt;
+&lt;li&gt;Qualitative palettes do not imply magnitude differences between legend classes, and hues are used to create the primary visual differences between classes. Qualitative schemes are best suited
+to representing nominal or categorical data&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;To see the palettes available for coloring the heatmap:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;You need to provide the &lt;code&gt;RColorBrewer::brewer.pal&lt;/code&gt; function with two arguments; the number of values (All the diverging palettes are available in variations from 3 different values up to 11 different values), and the name of the palette as shown in the figure above. We will use the &lt;em&gt;Reds&lt;/em&gt; palette which has a maximum number of 9 colors:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;annotating-the-rows-andor-columnsa-nameannotatea&#34;&gt;Annotating the rows and/or columns&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/h3&gt;
+&lt;p&gt;If the subjects can be contrasted, it is useful to display this information on the heatmap e.g. case/control status or exposed vs. unexposed. To do so, we first need to create a separate data frame which contains that information. This data frame can contain many columns or just one column. (Note that the rownames of this data frame need to correspond to the rownames i.e. Subjects IDs of the gene expression data created above). In this example we create a data frame which has exposure status and tumor type for each subject:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;We also want to annotate information on the genes, such as pathway membership. To do so, we create another data frame which has the gene annotations. Note once again that the rownames of this data frame need to correspond to the columnames i.e. Gene IDs of the gene expression data created above.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;clusteringa-nameclustera&#34;&gt;Clustering&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/h3&gt;
+&lt;p&gt;You need to decide if its important to cluster the rows and/or columns of your heatmap. If you decide to cluster, you must then choose the &lt;a href=&#34;https://stat.ethz.ch/R-manual/R-devel/library/stats/html/dist.html&#34;&gt;distance metric&lt;/a&gt; to use and the &lt;a href=&#34;https://stat.ethz.ch/R-manual/R-devel/library/stats/html/hclust.html&#34;&gt;clustering method&lt;/a&gt;.
+The pheatmap comes with lots of customizations (see the &lt;a href=&#34;http://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf&#34;&gt;help page&lt;/a&gt; for a complete list of options). In this example I only want to cluster the genes (i.e. the rows), and place a gap between subject who were exposed and unexposed. Note that we must pass the transpose of the matrix for the &lt;code&gt;pheatmap&lt;/code&gt; function, which is not the case for other functions such as &lt;code&gt;gplots::heatmap.2&lt;/code&gt;.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;update-june-25-2015&#34;&gt;&lt;em&gt;Update: June 25, 2015&lt;/em&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;interactive-heatmaps-using-d3heatmaphttpsgithubcomrstudiod3heatmap&#34;&gt;Interactive Heatmaps using &lt;a href=&#34;https://github.com/rstudio/d3heatmap&#34;&gt;&lt;code&gt;d3heatmap&lt;/code&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;It is also possible to create Interactive heatmaps (in the sense that you can see the actual values by hovering your mouse over the plot) using the &lt;a href=&#34;https://github.com/rstudio/d3heatmap&#34;&gt;&lt;code&gt;d3heatmap&lt;/code&gt;&lt;/a&gt; pacakge available on github:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;This is useful if you are producible markdown reports. The syntax is standard, though does not allow for multiple annotations as in &lt;code&gt;pheatmap&lt;/code&gt;.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/figure/posts/2015-06-10-heatmaps/unnamed-chunk-10-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-10&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For some reason, this map is not showing up on this website, but it should work when compiling Rmarkdown scripts and viewing the resulting HTML document in your browser or within RStudio.&lt;/p&gt;
+&lt;h2 id=&#34;update-august-7-2015&#34;&gt;&lt;em&gt;Update: August 7, 2015&lt;/em&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;interactive-heatmaps-using-plotlyhttpsplotlyrheatmaps&#34;&gt;Interactive Heatmaps using &lt;a href=&#34;https://plot.ly/r/heatmaps/&#34;&gt;&lt;code&gt;plotly&lt;/code&gt;&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;After some user setup (see the plotly &lt;a href=&#34;https://plot.ly/r/getting-started/&#34;&gt;help page&lt;/a&gt;), the following code creates an interactive heatmap:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;simulate-gene-expression-data-functiona-namefunctiona&#34;&gt;Simulate Gene Expression Data function&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/h3&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
     <item>
@@ -226,6 +1991,142 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
 &lt;ul&gt;
 &lt;li&gt;Control versus all 4 diseases combined&lt;/li&gt;
 &lt;li&gt;RA versus the combination of (SLE, Scleroderma, Myositis), leaving out the Controls&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;default-settings&#34;&gt;Default settings&lt;/h2&gt;
+&lt;p&gt;Let &lt;code&gt;$x_1,x_2,x_3,x_4$&lt;/code&gt; be the indicators for Myositis, RA, Scleroderma and SLE, respectively. The standard linear model &lt;code&gt;R&lt;/code&gt; will fit is given by (for simplicity I am ignoring age and sex, but it won&amp;rsquo;t make a difference when you add them in the model): &lt;code&gt;$$\mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_4$$&lt;/code&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;This is the default contrast matrix with unordered factor variables:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Myositis&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;RA&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Scleroderma&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;SLE&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Control&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Myositis&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;RA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Scleroderma&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;SLE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;This compares the mean of the response for the Controls to the mean of the response for Myositis, RA, Scleroderma, and SLE separately. The table can be read by column, and the numbers in the columns represent the weight of the regression coefficient, e.g. in the first column Myositis is being compare to Control.&lt;/p&gt;
+&lt;h2 id=&#34;custom-contrats&#34;&gt;Custom Contrats&lt;/h2&gt;
+&lt;p&gt;Since we want only two contrasts, we want &lt;code&gt;R&lt;/code&gt; to fit the following model: &lt;code&gt;$$\mu_y = \beta_0 + \beta_1 x_1 + \beta_2 x_2$$&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;where &lt;code&gt;$\beta_1$&lt;/code&gt; represents the contrast estimate for the comparison between controls and all other diseases, and &lt;code&gt;$\beta_2$&lt;/code&gt; represents the contrast estimate of RA versus the combination of SLE, Scleroderma, Myositis.&lt;/p&gt;
+&lt;p&gt;To create custom contrasts, we must specify the contrast matrix as follows:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Control_vs_All&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;RA_vs_Myos_Scle_SLE&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Control&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Myositis&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.3333333&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;RA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.0000000&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;Scleroderma&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.3333333&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;SLE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.3333333&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Again we look at the above table, column by column. The variables we want to contrast should have opposite signs and the columns should sum to 0. This contrast matrix leads to the following mean response equations for each of the groups:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$$\begin{align} \mu_{control} &amp;amp; = \beta_0 + 0.8 \beta_1\\ \mu_{myos} &amp;amp; = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta_2 \\ \mu_{ra} &amp;amp; = \beta_0 - 0.2 \beta_1 + \beta_2 \\ \mu_{scler} &amp;amp; = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta_2 \\ \mu_{sle} &amp;amp; = \beta_0 - 0.2 \beta_1 - \frac{1}{3} \beta_2 \\ \end{align}$$&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;To solve for &lt;code&gt;$\beta_0$&lt;/code&gt; we can add up all the equations to get&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$$  \begin{align} \mu_{control}+\mu_{myos}+\mu_{ra}+\mu_{scler}+\mu_{sle} &amp;amp; = 5 \beta_0 \\ \beta_0 &amp;amp; = \frac{\mu_{control}+\mu_{myos}+mu_{ra}+\mu_{scler}+\mu_{sle}}{5} \end{align} $$&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;To solve for &lt;code&gt;$\beta_1$&lt;/code&gt; we substract &lt;code&gt;$\mu_{control}$&lt;/code&gt; from the combined mean of &lt;code&gt;$\mu_{myos},\mu_{ra},\mu_{scler}$&lt;/code&gt; and &lt;code&gt;$\mu_{sle}$&lt;/code&gt; which gives:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$$ \begin{align} \mu_{control}-\frac{\mu_{myos}+\mu_{ra}+\mu_{scler}+\mu_{sle}}{4} &amp;amp; = \beta_0 + 0.8 \beta_1 - \frac{4\beta_0 -0.8\beta_1}{4}\\  &amp;amp; = \beta_0 + 0.8 \beta_1 - \beta_0 + 0.2 \beta_1 \\ &amp;amp; = \beta_1   \end{align} $$&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;To solve for &lt;code&gt;$\beta_2$&lt;/code&gt; we substract &lt;code&gt;$\mu_{ra}$&lt;/code&gt; from the combined mean of &lt;code&gt;$\mu_{myos},\mu_{scler}$&lt;/code&gt; and &lt;code&gt;$\mu_{sle}$&lt;/code&gt; which gives:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$$ \begin{align} \mu_{ra}-\frac{\mu_{myos}+\mu_{scler}+\mu_{sle}}{3} &amp;amp; = \beta_0 - 0.2 \beta_1 + \beta_2 - \frac{3\beta_0 -0.6\beta_1 - \beta_2}{3}\\  &amp;amp; = \beta_0 - 0.2 \beta_1 + \beta_2 - \beta_0 + 0.2 \beta_1 +\frac{1}{3}\beta_2 \\ &amp;amp; = \frac{4}{3} \beta_2 \\ \beta_2 &amp;amp; = \frac{3}{4} \left( \mu_{ra}-\frac{\mu_{myos}+\mu_{scler}+\mu_{sle}}{3}  \right) \end{align} $$&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;First we create the contrast matrix with appropriate row and column names for clarity:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Then we store the contrasts attribute to the &lt;em&gt;Disease&lt;/em&gt; variable. The &lt;code&gt;how.many&lt;/code&gt; argument specifies how many contrasts we want, therefore this should correspond to the number of columns in the contrast matrix.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Here we check to make sure that the &lt;code&gt;lm&lt;/code&gt; fit is giving the same result as the formulas derived above:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.unc.edu/courses/2006spring/ecol/145/001/docs/lectures/lecture26.htm&#34;&gt;http://www.unc.edu/courses/2006spring/ecol/145/001/docs/lectures/lecture26.htm&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.ats.ucla.edu/stat/r/library/contrast_coding.htm#User&#34;&gt;http://www.ats.ucla.edu/stat/r/library/contrast_coding.htm#User&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</description>
     </item>
     
@@ -236,7 +2137,25 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
       
       <guid>https://sahirbhatnagar.github.io/blog/2014/11/15/gradient-descent/</guid>
       <description>&lt;p&gt;I am taking the Machine Learning course on &lt;a href=&#34;https://class.coursera.org/ml-007/lecture&#34;&gt;Coursera&lt;/a&gt; being taught by Andrew Ng. It is turning out to be useful so far, and he has presented the material clearly. It&amp;rsquo;s a nice introduction to the Machine Learning/Computer Science language, since I come from a statistics background.&lt;/p&gt;
-&lt;p&gt;I learned about gradient descent today for simple linear regression. The following is my code in R and I compare it to the &lt;em&gt;lm&lt;/em&gt; function in base &lt;em&gt;R&lt;/em&gt;.&lt;/p&gt;</description>
+&lt;p&gt;I learned about gradient descent today for simple linear regression. The following is my code in R and I compare it to the &lt;em&gt;lm&lt;/em&gt; function in base &lt;em&gt;R&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;I am using the &lt;strong&gt;Prostate&lt;/strong&gt; dataset from the &lt;em&gt;lasso2&lt;/em&gt; package. The model I am fitting is:&lt;/p&gt;
+&lt;p&gt;$$ lpsa = \beta_0 + \beta_1 \times lcavol  $$&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
     <item>
@@ -245,7 +2164,19 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
       <pubDate>Fri, 04 Jul 2014 11:03:16 -0400</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2014/07/04/cdpath-in-bash/</guid>
-      <description>&lt;p&gt;Instead of constantly typing the full path when using the &lt;code&gt;cd&lt;/code&gt; command, &lt;code&gt;BASH&lt;/code&gt; has a built-in feature called &lt;code&gt;CDPATH&lt;/code&gt;. Thanks to &lt;em&gt;lhunath&lt;/em&gt; who explained in this &lt;a href=&#34;http://stackoverflow.com/questions/670488/how-to-manage-long-paths-in-bash&#34;&gt;SO Post&lt;/a&gt; how to use this feature.&lt;/p&gt;</description>
+      <description>&lt;p&gt;Instead of constantly typing the full path when using the &lt;code&gt;cd&lt;/code&gt; command, &lt;code&gt;BASH&lt;/code&gt; has a built-in feature called &lt;code&gt;CDPATH&lt;/code&gt;. Thanks to &lt;em&gt;lhunath&lt;/em&gt; who explained in this &lt;a href=&#34;http://stackoverflow.com/questions/670488/how-to-manage-long-paths-in-bash&#34;&gt;SO Post&lt;/a&gt; how to use this feature.&lt;/p&gt;
+&lt;p&gt;The first time you do this, you need to create a hidden folder and add &lt;strong&gt;CDPATH&lt;/strong&gt; to your bashrc (note this step only needs to be done once):&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Then to add symbolic links use:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;To update your bashrc:&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;Now you can enter the folders from anywhere by simply typing&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;</description>
     </item>
     
   </channel>
