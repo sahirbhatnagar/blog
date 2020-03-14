@@ -214,9 +214,11 @@ deploy:
 <p>NOTE: According to <a href="https://github.com/r-lib/pkgdown/issues/1223">issue #1223</a>, this will fail if there doesn’t exist a <code>gh-pages</code> branch on your GitHub repo. So if this did fail, follow the instructions to create an orphan <code>gh-pages</code> branch and then retart the travis build:</p>
 <pre class="bash"><code>git checkout --orphan gh-pages
 # Clean all (untracked) files:
-git reset --hard or git rm -rf .
+git reset --hard 
 # Create first commit: 
-git commit --allow-empty -m &quot;Initializing gh-pages branch&quot;</code></pre>
+git commit --allow-empty -m &quot;Initializing gh-pages branch&quot;
+# push to remote
+git push origin gh-pages</code></pre>
 </div>
 <div id="change-the-source-of-your-website" class="section level3">
 <h3>4. Change the source of your website</h3>
