@@ -272,17 +272,17 @@ DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items
 
 head(DT)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##   Subject_ID Item Importance
-## 1          1    1          8
-## 2          1    2          2
-## 3          1    3          5
-## 4          1    4          4
-## 5          1    5          2
-## 6          1    6          8&lt;/code&gt;&lt;/pre&gt;
+## 1          1    1          6
+## 2          1    2          8
+## 3          1    3          3
+## 4          1    4          3
+## 5          1    5          5
+## 6          1    6          5&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;str(DT)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    45000 obs. of  3 variables:
 ##  $ Subject_ID: Factor w/ 500 levels &amp;quot;1&amp;quot;,&amp;quot;2&amp;quot;,&amp;quot;3&amp;quot;,&amp;quot;4&amp;quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ Item      : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ Importance: int  8 2 5 4 2 8 5 6 3 6 ...&lt;/code&gt;&lt;/pre&gt;
+##  $ Importance: int  6 8 3 3 5 5 6 8 4 7 ...&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;calculate-icc&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Calculate ICC&lt;/h1&gt;
@@ -1814,29 +1814,46 @@ gfit1
     
     <item>
       <title>Math Expressions with Facets in ggplot2</title>
-      <link>https://sahirbhatnagar.github.io/blog/2016/02/08/math-expressions-with-facets-in-ggplot2/</link>
-      <pubDate>Mon, 08 Feb 2016 15:09:00 +0000</pubDate>
+      <link>https://sahirbhatnagar.github.io/blog/2016/02/08/ggplot2-facet-wrap-labels/</link>
+      <pubDate>Mon, 08 Feb 2016 00:00:00 +0000</pubDate>
       
-      <guid>https://sahirbhatnagar.github.io/blog/2016/02/08/math-expressions-with-facets-in-ggplot2/</guid>
-      <description>&lt;p&gt;In this post I show how we can use &lt;code&gt;$\LaTeX$&lt;/code&gt; math expressions to label the panels in facets to produce the following plot:&lt;/p&gt;
-&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+      <guid>https://sahirbhatnagar.github.io/blog/2016/02/08/ggplot2-facet-wrap-labels/</guid>
+      <description>
+
+
+&lt;p&gt;In this post I show how we can use &lt;code&gt;$\LaTeX$&lt;/code&gt; math expressions to label the panels in facets.&lt;/p&gt;
 &lt;p&gt;The updated version of &lt;a href=&#34;http://docs.ggplot2.org/dev/index.html&#34;&gt;ggplot2 V 2.0&lt;/a&gt; has improved the way we can label panels in &lt;a href=&#34;http://docs.ggplot2.org/dev/facet_wrap.html&#34;&gt;facet plots&lt;/a&gt; with the use of a &lt;a href=&#34;http://docs.ggplot2.org/dev/labeller.html&#34;&gt;generic labeller&lt;/a&gt; function. The &lt;a href=&#34;https://cran.r-project.org/web/packages/latex2exp/index.html&#34;&gt;latex2exp&lt;/a&gt; package has made it much easier to write &lt;code&gt;$\LaTeX$&lt;/code&gt; expressions in &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;You will need to load the following packages for the code below to work:&lt;/p&gt;
-&lt;ol&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
 &lt;li&gt;&lt;a href=&#34;https://cran.r-project.org/web/packages/devtools/index.html&#34;&gt;devtools&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://cran.r-project.org/web/packages/ggplot2/&#34;&gt;ggplot2&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://cran.r-project.org/web/packages/latex2exp/index.html&#34;&gt;latex2exp&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;I have posted some sample data in a &lt;a href=&#34;https://gist.github.com/sahirbhatnagar/ed3caf50247cae8e3e1c&#34;&gt;GitHub Gist&lt;/a&gt; which you can import into your &lt;code&gt;R&lt;/code&gt; session using the &lt;code&gt;source_gist&lt;/code&gt; function from the devtools package:&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pacman::p_load(devtools)
+pacman::p_load(ggplot2)
+pacman::p_load(latex2exp)
+data &amp;lt;- devtools::source_gist(id = &amp;quot;ed3caf50247cae8e3e1c&amp;quot;, filename = &amp;quot;facet_data.R&amp;quot;)$value&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Sourcing https://gist.githubusercontent.com/sahirbhatnagar/ed3caf50247cae8e3e1c/raw/39df84c05eb9ac518c687c88f938dc4401468f60/facet_data.R&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## SHA-1 hash of file is 3073e2ea147ce2818fa4e8841c6efa227378e1aa&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Then we create a labelling function which takes as input a string and prepends &lt;code&gt;$\log(\lambda_{\gamma})$&lt;/code&gt; to it. Note that &lt;code&gt;latex2exp::TeX&lt;/code&gt; is the workhorse function that parses &lt;code&gt;$\LaTeX$&lt;/code&gt; syntax so that &lt;code&gt;R&lt;/code&gt; understands it. Otherwise it becomes very messy to try and write more complex math expressions in &lt;code&gt;R&lt;/code&gt;.&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;p&gt;The code to produce the plot above is given by:&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;p&gt;Note that we need to provide the &lt;code&gt;default = label_parsed&lt;/code&gt; argument to the &lt;code&gt;facet_wrap&lt;/code&gt; function so that it interprets the result from the &lt;code&gt;appender&lt;/code&gt; function as math expressions.&lt;/p&gt;</description>
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;appender &amp;lt;- function(string) 
+    TeX(paste(&amp;quot;$\\log(\\lambda_{\\gamma}) = $&amp;quot;, string))  &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The code to produce the plot is given by:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data, aes(log(lambda.beta), ymin = lower, ymax = upper)) + 
+    geom_errorbar(color = &amp;quot;grey&amp;quot;) + 
+    geom_point(aes(x = log(lambda.beta), y = mse), 
+               colour = &amp;quot;red&amp;quot;) +
+    theme_bw() + 
+    facet_wrap(~lg, scales = &amp;quot;fixed&amp;quot;, 
+               labeller = as_labeller(appender, 
+                            default = label_parsed)) + 
+    theme(strip.background = element_blank(), 
+          strip.text.x = element_text(size = 14)) + 
+    xlab(TeX(&amp;quot;$\\log(\\lambda_{\\beta})$&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://sahirbhatnagar.github.io/blog/blog/post/2016-02-08-facet_wrap_labels_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Note that we need to provide the &lt;code&gt;default = label_parsed&lt;/code&gt; argument to the &lt;code&gt;facet_wrap&lt;/code&gt; function so that it interprets the result from the &lt;code&gt;appender&lt;/code&gt; function as math expressions.&lt;/p&gt;
+</description>
     </item>
     
     <item>
