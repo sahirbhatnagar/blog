@@ -12,6 +12,43 @@
     
     
     <item>
+      <title>GUI for Git</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/06/29/gui-for-git/</link>
+      <pubDate>Mon, 29 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/06/29/gui-for-git/</guid>
+      <description>
+
+
+&lt;div id=&#34;git-without-the-command-line&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Git without the command line&lt;/h1&gt;
+&lt;p&gt;I use &lt;a href=&#34;https://www.gitkraken.com/&#34;&gt;GitKraken&lt;/a&gt; as my preferred graphical user interface (GUI) for version control with &lt;code&gt;git&lt;/code&gt;. It’s very intuitive, has nice a visual commit history, and my favorite feature is the drag and drop for merging branches. In this post, I list some of the most used features. I will also constantly update this post with new things I learn about this tool.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;setting-the-default-merge-and-diff-tool&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Setting the default merge and diff tool&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://meldmerge.org/&#34;&gt;Meld&lt;/a&gt; is the tool I use when I want to compare two (or more) files. Recently I learned that Meld can be used for resolving merge conflicts in git. In order for GitKraken to automatically use Meld as the default merge tool, you need to modify your &lt;code&gt;.gitconfig&lt;/code&gt; file (which is usually found in your home directory). &lt;a href=&#34;https://stackoverflow.com/questions/34119866/setting-up-and-using-meld-as-your-git-difftool-and-mergetool&#34;&gt;This Stack Overlflow answer&lt;/a&gt; nicely explains the required commands.&lt;/p&gt;
+&lt;p&gt;Here is what my (the relevant part) &lt;code&gt;.gitconfig&lt;/code&gt; file looks like:&lt;/p&gt;
+&lt;pre class=&#34;git&#34;&gt;&lt;code&gt;[diff]
+  tool = meld
+[difftool]
+  prompt = false
+[difftool &amp;quot;meld&amp;quot;]
+  cmd = meld \&amp;quot;$LOCAL\&amp;quot; \&amp;quot;$REMOTE\&amp;quot;
+[merge]
+    tool = meld
+[mergetool &amp;quot;meld&amp;quot;]
+    # Choose one of these 2 lines (not both!).
+    cmd = meld \&amp;quot;$LOCAL\&amp;quot; \&amp;quot;$MERGED\&amp;quot; \&amp;quot;$REMOTE\&amp;quot; --output \&amp;quot;$MERGED\&amp;quot;
+    #cmd = meld &amp;quot;$LOCAL&amp;quot; &amp;quot;$BASE&amp;quot; &amp;quot;$REMOTE&amp;quot; --output &amp;quot;$MERGED&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When resolving a merge conflict Meld will display 3 panes with $LOCAL and $REMOTE in the left and right panes and either $MERGED or $BASE in the middle pane (depending on which of the two &lt;code&gt;cmd&lt;/code&gt; you uncomment above). As state in the SO post:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In BOTH cases the middle pane is the file that you should edit to resolve the merge conflicts. The difference is just in which starting edit position you’d prefer; $MERGED for the file which contains the partially merged file with the merge conflict information or $BASE for the shared commit ancestor of $LOCAL and $REMOTE&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Creating a website for your R package</title>
       <link>https://sahirbhatnagar.github.io/blog/2020/03/03/creating-a-website-for-your-r-package/</link>
       <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
@@ -273,28 +310,28 @@ DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items
 head(DT)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##   Subject_ID Item Importance
 ## 1          1    1          6
-## 2          1    2          8
-## 3          1    3          3
-## 4          1    4          3
-## 5          1    5          5
+## 2          1    2          4
+## 3          1    3          5
+## 4          1    4          7
+## 5          1    5          4
 ## 6          1    6          5&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;str(DT)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## &amp;#39;data.frame&amp;#39;:    45000 obs. of  3 variables:
 ##  $ Subject_ID: Factor w/ 500 levels &amp;quot;1&amp;quot;,&amp;quot;2&amp;quot;,&amp;quot;3&amp;quot;,&amp;quot;4&amp;quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ Item      : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ Importance: int  6 8 3 3 5 5 6 8 4 7 ...&lt;/code&gt;&lt;/pre&gt;
+##  $ Importance: int  6 4 5 7 4 5 8 1 5 4 ...&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;calculate-icc&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Calculate ICC&lt;/h1&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit0 &amp;lt;- lme4::lmer(Importance ~ 1 + (1 | Subject_ID), data = DT)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## boundary (singular) fit: see ?isSingular&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sjstats::icc(fit0)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fit0 &amp;lt;- lme4::lmer(Importance ~ 1 + (1 | Subject_ID), data = DT)
+sjstats::icc(fit0)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: &amp;#39;sjstats::icc&amp;#39; is deprecated.
 ## Use &amp;#39;performance::icc()&amp;#39; instead.
 ## See help(&amp;quot;Deprecated&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: Can&amp;#39;t compute random effect variances. Some variance components equal zero.
-##   Solution: Respecify random structure!&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] NA&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # Intraclass Correlation Coefficient
+## 
+##      Adjusted ICC: 0.000
+##   Conditional ICC: 0.000&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 </description>
     </item>

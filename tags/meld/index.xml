@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>meld on Sahir&#39;s blog</title>
+    <link>https://sahirbhatnagar.github.io/blog/tags/meld/</link>
+    <description>Recent content in meld on Sahir&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 29 Jun 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/meld/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>GUI for Git</title>
+      <link>https://sahirbhatnagar.github.io/blog/2020/06/29/gui-for-git/</link>
+      <pubDate>Mon, 29 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2020/06/29/gui-for-git/</guid>
+      <description>Git without the command line I use GitKraken as my preferred graphical user interface (GUI) for version control with git. It’s very intuitive, has nice a visual commit history, and my favorite feature is the drag and drop for merging branches. In this post, I list some of the most used features. I will also constantly update this post with new things I learn about this tool.
+ Setting the default merge and diff tool Meld is the tool I use when I want to compare two (or more) files.</description>
+    </item>
+    
+  </channel>
+</rss>
