@@ -1,0 +1,41 @@
+---
+title: GUI for Git
+author: Sahir Bhatnagar
+date: '2020-06-29'
+slug: gui-for-git
+categories: [git, version control]
+tags: [git, gui, gitkraken, meld, mergetool, difftool]
+---
+
+# Git without the command line
+
+
+I use [GitKraken](https://www.gitkraken.com/) as my preferred graphical user interface (GUI) for version control with `git`. It's very intuitive, has nice a visual commit history, and my favorite feature is the drag and drop for merging branches. In this post, I list some of the most used features. I will also constantly update this post with new things I learn about this tool. 
+
+
+# Setting the default merge and diff tool
+
+[Meld](https://meldmerge.org/) is the tool I use when I want to compare two (or more) files. Recently I learned that Meld can be used for resolving merge conflicts in git. In order for GitKraken to automatically use Meld as the default merge tool, you need to modify your `.gitconfig` file (which is usually found in your home directory). [This Stack Overlflow answer](https://stackoverflow.com/questions/34119866/setting-up-and-using-meld-as-your-git-difftool-and-mergetool) nicely explains the required commands. 
+
+Here is what my (the relevant part) `.gitconfig` file looks like:
+
+```{git, eval = FALSE}
+[diff]
+  tool = meld
+[difftool]
+  prompt = false
+[difftool "meld"]
+  cmd = meld \"$LOCAL\" \"$REMOTE\"
+[merge]
+    tool = meld
+[mergetool "meld"]
+    # Choose one of these 2 lines (not both!).
+    cmd = meld \"$LOCAL\" \"$MERGED\" \"$REMOTE\" --output \"$MERGED\"
+    #cmd = meld "$LOCAL" "$BASE" "$REMOTE" --output "$MERGED"
+```
+
+When resolving a merge conflict Meld will display 3 panes with \$LOCAL and \$REMOTE in the left and right panes and either \$MERGED or \$BASE in the middle pane (depending on which of the two `cmd` you uncomment above). As state in the SO post:
+
+> In BOTH cases the middle pane is the file that you should edit to resolve the merge conflicts. The difference is just in which starting edit position you'd prefer; $MERGED for the file which contains the partially merged file with the merge conflict information or $BASE for the shared commit ancestor of $LOCAL and $REMOTE
+
+

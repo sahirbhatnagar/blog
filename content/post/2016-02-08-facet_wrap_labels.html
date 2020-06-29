@@ -1,0 +1,45 @@
+---
+title: "Math Expressions with Facets in ggplot2"
+author: null
+date: '2016-02-08'
+slug: ggplot2-facet-wrap-labels
+categories: []
+tags: [R, ggplot2, facet_wrap, labels]
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+<p>In this post I show how we can use <code>$\LaTeX$</code> math expressions to label the panels in facets.</p>
+<p>The updated version of <a href="http://docs.ggplot2.org/dev/index.html">ggplot2 V 2.0</a> has improved the way we can label panels in <a href="http://docs.ggplot2.org/dev/facet_wrap.html">facet plots</a> with the use of a <a href="http://docs.ggplot2.org/dev/labeller.html">generic labeller</a> function. The <a href="https://cran.r-project.org/web/packages/latex2exp/index.html">latex2exp</a> package has made it much easier to write <code>$\LaTeX$</code> expressions in <code>R</code>.</p>
+<p>You will need to load the following packages for the code below to work:</p>
+<ol style="list-style-type: decimal">
+<li><a href="https://cran.r-project.org/web/packages/devtools/index.html">devtools</a></li>
+<li><a href="https://cran.r-project.org/web/packages/ggplot2/">ggplot2</a></li>
+<li><a href="https://cran.r-project.org/web/packages/latex2exp/index.html">latex2exp</a></li>
+</ol>
+<p>I have posted some sample data in a <a href="https://gist.github.com/sahirbhatnagar/ed3caf50247cae8e3e1c">GitHub Gist</a> which you can import into your <code>R</code> session using the <code>source_gist</code> function from the devtools package:</p>
+<pre class="r"><code>pacman::p_load(devtools)
+pacman::p_load(ggplot2)
+pacman::p_load(latex2exp)
+data &lt;- devtools::source_gist(id = &quot;ed3caf50247cae8e3e1c&quot;, filename = &quot;facet_data.R&quot;)$value</code></pre>
+<pre><code>## Sourcing https://gist.githubusercontent.com/sahirbhatnagar/ed3caf50247cae8e3e1c/raw/39df84c05eb9ac518c687c88f938dc4401468f60/facet_data.R</code></pre>
+<pre><code>## SHA-1 hash of file is 3073e2ea147ce2818fa4e8841c6efa227378e1aa</code></pre>
+<p>Then we create a labelling function which takes as input a string and prepends <code>$\log(\lambda_{\gamma})$</code> to it. Note that <code>latex2exp::TeX</code> is the workhorse function that parses <code>$\LaTeX$</code> syntax so that <code>R</code> understands it. Otherwise it becomes very messy to try and write more complex math expressions in <code>R</code>.</p>
+<pre class="r"><code>appender &lt;- function(string) 
+    TeX(paste(&quot;$\\log(\\lambda_{\\gamma}) = $&quot;, string))  </code></pre>
+<p>The code to produce the plot is given by:</p>
+<pre class="r"><code>ggplot(data, aes(log(lambda.beta), ymin = lower, ymax = upper)) + 
+    geom_errorbar(color = &quot;grey&quot;) + 
+    geom_point(aes(x = log(lambda.beta), y = mse), 
+               colour = &quot;red&quot;) +
+    theme_bw() + 
+    facet_wrap(~lg, scales = &quot;fixed&quot;, 
+               labeller = as_labeller(appender, 
+                            default = label_parsed)) + 
+    theme(strip.background = element_blank(), 
+          strip.text.x = element_text(size = 14)) + 
+    xlab(TeX(&quot;$\\log(\\lambda_{\\beta})$&quot;))</code></pre>
+<p><img src="/blog/post/2016-02-08-facet_wrap_labels_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Note that we need to provide the <code>default = label_parsed</code> argument to the <code>facet_wrap</code> function so that it interprets the result from the <code>appender</code> function as math expressions.</p>
