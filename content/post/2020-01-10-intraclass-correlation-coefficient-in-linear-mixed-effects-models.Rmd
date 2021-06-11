@@ -15,22 +15,27 @@ if (!requireNamespace("pacman")){
 }
 
 pacman::p_load(sjstats)
+pacman::p_load(sjPlot)
 pacman::p_load(lme4)
+pacman::p_load(MASS)
 ```
 
 
 # Simulate Data
 
-500 participants will be ranking 90 items based on importance from 1-9. 
+100 participants will be ranking 20 items based on importance simulated from a multivariate normal distribution. 
 
 ```{r}
-n.participants <- 500
-n.items <- 90
+n.participants <- 100
+n.items <- 20
+
+Sigma <- 0.9 ^ toeplitz(1:n.items)
+diag(Sigma) <- 1
 
 # Subject needs to be a factor for lmer
 DT <- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)),
                  Item = rep(1:n.items, n.participants),
-                 Importance = rpois(n.participants * n.items, lambda = 5))
+                 Importance = as.vector(replicate(n.participants, mvrnorm(1, mu = rep(0,n.items), Sigma = Sigma))))
 
 head(DT)
 str(DT)
@@ -43,6 +48,7 @@ str(DT)
 
 ```{r}
 fit0 <- lme4::lmer(Importance ~ 1 + (1 | Subject_ID), data = DT)
-sjstats::icc(fit0)
+sjPlot::tab_model(fit0)
+performance::icc(fit0)
 ```
 

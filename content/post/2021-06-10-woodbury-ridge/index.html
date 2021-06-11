@@ -1,0 +1,93 @@
+---
+title: woodbury-ridge
+author: sahir
+date: '2021-06-10'
+slug: woodbury-ridge
+categories: [regression]
+tags: [ridge]
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code>library(myTridge)
+library(rsvd)
+library(ggplot2)
+library(glmnet)
+
+num.obs &lt;- 500
+num.par &lt;- 5000
+family &lt;- &quot;gaussian&quot;
+
+data&lt;-myTridge::genDataList(n = num.obs,
+                            mu = rep(0, num.par),
+                            p = num.par,
+                            rho = 0.2,
+                            beta = rnorm(num.par, mean = 0, sd = 1),
+                            SNR = 10,
+                            family = family)
+X &lt;- data$normData
+y &lt;- data$y
+X_new &lt;- cbind(rep(1,num.obs),X)
+r &lt;- 0.5 # tuning parameter
+
+
+tt &lt;- bench::mark(
+
+  svd = {
+
+    ##### the following commands should only be calculated once for all tuning parameters ####
+    mysvd &lt;- base::svd(X_new) # uses the base implementation of svd
+    R &lt;- mysvd$u %*% diag(mysvd$d)
+    RTR &lt;- crossprod(R) # R^TR
+    IN &lt;- diag(num.obs) # NxN identity matrix
+    RTY &lt;- crossprod(R,y) # R^TY
+    #############################################################################################
+
+    mysvd$v %*% (solve(RTR + r*IN) %*% RTY) # ridge estimator
+  },
+
+  rsvd = {
+
+    ##### the following commands should only be calculated once for all tuning parameters ####
+    mysvd &lt;- rsvd::rsvd(X_new)   #uses the rsvd package
+    R &lt;- mysvd$u %*% diag(mysvd$d)
+    RTR &lt;- crossprod(R) # R^TR
+    IN &lt;- diag(num.obs) # NxN identity matrix
+    RTY &lt;- crossprod(R,y) # R^TY
+    #############################################################################################
+
+    mysvd$v %*% (solve(RTR + r*IN) %*% RTY) # ridge estimator
+  },
+
+  woodbury = {
+
+    ##### the following commands should only be calculated once for all tuning parameters ####
+    XXT &lt;- tcrossprod(X_new)
+    XTY &lt;- crossprod(X_new,y)
+    IN &lt;- diag(num.obs) # NxN identity matrix
+    XXTY &lt;- XXT %*% y
+    #############################################################################################
+
+    XTY/r - crossprod(X_new, solve(IN + XXT/r) %*% XXTY) / r^2   # ridge estimator
+  },
+
+
+  glmnet = {
+    coef(glmnet(X, y, alpha = 0, lambda = r))
+  },
+
+  check = FALSE,
+  relative = FALSE
+)
+
+tt</code></pre>
+<pre><code>## # A tibble: 4 x 6
+##   expression      min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 svd        459.04ms  495.1ms     2.02    120.4MB     2.02
+## 2 rsvd          4.72s    4.72s     0.212   626.2MB     1.27
+## 3 woodbury    35.52ms  41.63ms    22.2      11.6MB     1.85
+## 4 glmnet     305.12ms 324.77ms     3.08     59.3MB     0</code></pre>
+<pre class="r"><code>ggplot2::autoplot(tt)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>

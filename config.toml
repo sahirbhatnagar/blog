@@ -4,7 +4,7 @@ title = "Sahir's blog"
 theme = "hugo-lithium"
 googleAnalytics = "UA-60189402-1"
 disqusShortname = "sahirbhatnagar"
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$"]
 
 [permalinks]
     post = "/:year/:month/:day/:slug/"
@@ -43,3 +43,8 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     height = 50
     alt = "Logo"
 
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

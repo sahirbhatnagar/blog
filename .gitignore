@@ -2,7 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-public
+/public
 public/*
-public/
+/public/
 .Rproj.user/*
+.DS_Store
+Thumbs.db
