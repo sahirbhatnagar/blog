@@ -20,5 +20,32 @@
       <description>&lt;p&gt;In every statistical analysis, the first thing one should do is try and visualise the data before any modeling. In microarray studies, a common visualisation is a heatmap of gene expression data. In this post I simulate some gene expression data and visualise it using the &lt;code&gt;pheatmap&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/pheatmap/&#34;&gt;pheatmap&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. You will also need the &lt;code&gt;mvrnorm&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/MASS/index.html&#34;&gt;MASS&lt;/a&gt; library to simulate from a multivariate normal distribution, and the &lt;code&gt;brewer.pal&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; library for easier customization of colors.&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>Heatmaps in R</title>
+      <link>https://sahirbhatnagar.github.io/blog/2015/06/10/heatmaps/</link>
+      <pubDate>Wed, 10 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2015/06/10/heatmaps/</guid>
+      <description>
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3v3/./d3v3.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3heatmapcore/heatmapcore.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3heatmapcore/heatmapcore.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3v3-tip/index.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3heatmap-binding/d3heatmap.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/plotly-binding/plotly.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/typedarray/typedarray.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;{{&lt; blogdown/postref &gt;}}index_files/crosstalk/css/crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/crosstalk/js/crosstalk.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;{{&lt; blogdown/postref &gt;}}index_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/plotly-main/plotly-latest.min.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;In every statistical analysis, the first thing one should do is try and visualise the data before any modeling. In microarray studies, a common visualisation is a heatmap of gene expression data. In this post I simulate some gene expression data and visualise it using the &lt;code&gt;pheatmap&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/pheatmap/&#34;&gt;pheatmap&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. You will also need the &lt;code&gt;mvrnorm&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/MASS/index.html&#34;&gt;MASS&lt;/a&gt; library to simulate from a multivariate normal distribution, and the &lt;code&gt;brewer.pal&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; library for easier customization of colors.&lt;/p&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>

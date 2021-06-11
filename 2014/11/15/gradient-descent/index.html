@@ -22,6 +22,11 @@
 
 
 
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
 <link rel="stylesheet" href="/blog/css/fonts.css" media="all">
 <link rel="stylesheet" href="/blog/css/main.css" media="all">
 
@@ -51,7 +56,7 @@
 
   <article class="article">
     
-    <span class="article-duration">1 min read</span>
+    <span class="article-duration">2 min read</span>
     
 
     <h1 class="article-title">Gradient Descent</h1>
@@ -65,22 +70,87 @@
 <p>I learned about gradient descent today for simple linear regression. The following is my code in R and I compare it to the <em>lm</em> function in base <em>R</em>.</p>
 <p>I am using the <strong>Prostate</strong> dataset from the <em>lasso2</em> package. The model I am fitting is:</p>
 <p>$$ lpsa = \beta_0 + \beta_1 \times lcavol  $$</p>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+<pre class="r"><code>#prostate cancer data set
+library(lasso2)
+</code></pre>
+<pre class="r"><code>## R Package to solve regression problems while imposing
+## 	 an L1 constraint on the parameters. Based on S-plus Release 2.1
+## Copyright (C) 1998, 1999
+## Justin Lokhorst   <jlokhors@stats.adelaide.edu.au>
+## Berwin A. Turlach <bturlach@stats.adelaide.edu.au>
+## Bill Venables     <wvenable@stats.adelaide.edu.au>
+## 
+## Copyright (C) 2002
+## Martin Maechler <maechler@stat.math.ethz.ch>
+</code></pre>
+<pre class="r"><code>data(Prostate)
+
+# hypothesis
+hypothesis <- function(x, theta0,theta1){
+    h <- theta0 + theta1*x
+    return(h)
+}
+
+# Jacobian
+deriv <- function(x,y,theta0,theta1){
+    dt0 <- (length(x))^(-1)* sum((hypothesis(x,theta0,theta1)-y))
+    dt1 <- (length(x))^(-1)* t(x) %*% (hypothesis(x,theta0,theta1)-y)
+    return(c(dt0,dt1))
+}
+
+theta <- c(0,0)
+alpha <- 0.5
+X <- Prostate$lcavol
+Y <- Prostate$lpsa
+i=1
+theta.star <- deriv(Prostate$lcavol,Prostate$lpsa,theta[1],theta[2])
+# set convergence threshold
+threshold <- 1e-7
+# logical to check if threshold has been achieved
+continue=TRUE
+
+while (continue){
+    theta[1] <- theta.star[1] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[1]
+    theta[2] <- theta.star[2] - alpha*deriv(x=X,y=Y,theta.star[1],theta.star[2])[2]
+    continue <- (abs((theta.star-theta)[1])>threshold & abs((theta.star-theta)[2])>threshold)
+    theta.star[1] <- theta[1]
+    theta.star[2] <- theta[2]
+    i=i+1
+}
+
+# number of iterations
+i
+</code></pre>
+<pre class="r"><code>## [1] 214
+</code></pre>
+<pre class="r"><code># beta0 and beta1
+theta.star
+</code></pre>
+<pre class="r"><code>## [1] 1.5072975 0.7193205
+</code></pre>
+<pre class="r"><code># compare to lm
+fit <- lm(lpsa~lcavol, data=Prostate)
+summary(fit)
+</code></pre>
+<pre class="r"><code>## 
+## Call:
+## lm(formula = lpsa ~ lcavol, data = Prostate)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.67624 -0.41648  0.09859  0.50709  1.89672 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  1.50730    0.12194   12.36   <2e-16 ***
+## lcavol       0.71932    0.06819   10.55   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.7875 on 95 degrees of freedom
+## Multiple R-squared:  0.5394,	Adjusted R-squared:  0.5346 
+## F-statistic: 111.3 on 1 and 95 DF,  p-value: < 2.2e-16
+</code></pre>
     </div>
   </article>
 
@@ -124,6 +194,18 @@
 
     </div>
     
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
 
     
 <script src="/blog/js/math-code.js"></script>

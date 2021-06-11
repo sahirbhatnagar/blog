@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.66.0" />
+
+
+<title>woodbury-ridge - Sahir&#39;s blog</title>
+<meta property="og:title" content="woodbury-ridge - Sahir&#39;s blog">
+
+
+  <link href='https://sahirbhatnagar.github.io/blog/favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
+<link rel="stylesheet" href="/blog/css/main.css" media="all">
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/blog/" class="nav-logo">
+    <img src="/blog/images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="https://sahirbhatnagar.github.io/">Home</a></li>
+    
+  </ul>
+</nav>
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">woodbury-ridge</h1>
+
+    
+    <span class="article-date">2021-06-10</span>
+    
+
+    <div class="article-content">
+      
+<script src="https://sahirbhatnagar.github.io/blog/2021/06/10/woodbury-ridge/index_files/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code>library(myTridge)
+library(rsvd)
+library(ggplot2)
+library(glmnet)
+
+num.obs &lt;- 500
+num.par &lt;- 5000
+family &lt;- &quot;gaussian&quot;
+
+data&lt;-myTridge::genDataList(n = num.obs,
+                            mu = rep(0, num.par),
+                            p = num.par,
+                            rho = 0.2,
+                            beta = rnorm(num.par, mean = 0, sd = 1),
+                            SNR = 10,
+                            family = family)
+X &lt;- data$normData
+y &lt;- data$y
+X_new &lt;- cbind(rep(1,num.obs),X)
+r &lt;- 0.5 # tuning parameter
+
+
+tt &lt;- bench::mark(
+
+  svd = {
+
+    ##### the following commands should only be calculated once for all tuning parameters ####
+    mysvd &lt;- base::svd(X_new) # uses the base implementation of svd
+    R &lt;- mysvd$u %*% diag(mysvd$d)
+    RTR &lt;- crossprod(R) # R^TR
+    IN &lt;- diag(num.obs) # NxN identity matrix
+    RTY &lt;- crossprod(R,y) # R^TY
+    #############################################################################################
+
+    mysvd$v %*% (solve(RTR + r*IN) %*% RTY) # ridge estimator
+  },
+
+  rsvd = {
+
+    ##### the following commands should only be calculated once for all tuning parameters ####
+    mysvd &lt;- rsvd::rsvd(X_new)   #uses the rsvd package
+    R &lt;- mysvd$u %*% diag(mysvd$d)
+    RTR &lt;- crossprod(R) # R^TR
+    IN &lt;- diag(num.obs) # NxN identity matrix
+    RTY &lt;- crossprod(R,y) # R^TY
+    #############################################################################################
+
+    mysvd$v %*% (solve(RTR + r*IN) %*% RTY) # ridge estimator
+  },
+
+  woodbury = {
+
+    ##### the following commands should only be calculated once for all tuning parameters ####
+    XXT &lt;- tcrossprod(X_new)
+    XTY &lt;- crossprod(X_new,y)
+    IN &lt;- diag(num.obs) # NxN identity matrix
+    XXTY &lt;- XXT %*% y
+    #############################################################################################
+
+    XTY/r - crossprod(X_new, solve(IN + XXT/r) %*% XXTY) / r^2   # ridge estimator
+  },
+
+
+  glmnet = {
+    coef(glmnet(X, y, alpha = 0, lambda = r))
+  },
+
+  check = FALSE,
+  relative = FALSE
+)
+
+tt</code></pre>
+<pre><code>## # A tibble: 4 x 6
+##   expression      min   median `itr/sec` mem_alloc `gc/sec`
+##   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+## 1 svd        459.04ms  495.1ms     2.02    120.4MB     2.02
+## 2 rsvd          4.72s    4.72s     0.212   626.2MB     1.27
+## 3 woodbury    35.52ms  41.63ms    22.2      11.6MB     1.85
+## 4 glmnet     305.12ms 324.77ms     3.08     59.3MB     0</code></pre>
+<pre class="r"><code>ggplot2::autoplot(tt)</code></pre>
+<p><img src="https://sahirbhatnagar.github.io/blog/2021/06/10/woodbury-ridge/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//sahirbhatnagar.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="/blog/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-60189402-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

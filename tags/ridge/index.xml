@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ridge on Sahir&#39;s blog</title>
+    <link>https://sahirbhatnagar.github.io/blog/tags/ridge/</link>
+    <description>Recent content in ridge on Sahir&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Jun 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/ridge/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>woodbury-ridge</title>
+      <link>https://sahirbhatnagar.github.io/blog/2021/06/10/woodbury-ridge/</link>
+      <pubDate>Thu, 10 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2021/06/10/woodbury-ridge/</guid>
+      <description>library(myTridge) library(rsvd) library(ggplot2) library(glmnet) num.obs &amp;lt;- 500 num.par &amp;lt;- 5000 family &amp;lt;- &amp;quot;gaussian&amp;quot; data&amp;lt;-myTridge::genDataList(n = num.obs, mu = rep(0, num.par), p = num.par, rho = 0.2, beta = rnorm(num.par, mean = 0, sd = 1), SNR = 10, family = family) X &amp;lt;- data$normData y &amp;lt;- data$y X_new &amp;lt;- cbind(rep(1,num.obs),X) r &amp;lt;- 0.5 # tuning parameter tt &amp;lt;- bench::mark( svd = { ##### the following commands should only be calculated once for all tuning parameters #### mysvd &amp;lt;- base::svd(X_new) # uses the base implementation of svd R &amp;lt;- mysvd$u %*% diag(mysvd$d) RTR &amp;lt;- crossprod(R) # R^TR IN &amp;lt;- diag(num.</description>
+    </item>
+    
+  </channel>
+</rss>

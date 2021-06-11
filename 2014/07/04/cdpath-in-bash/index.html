@@ -24,6 +24,11 @@
 
 
 
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
 <link rel="stylesheet" href="/blog/css/fonts.css" media="all">
 <link rel="stylesheet" href="/blog/css/main.css" media="all">
 
@@ -65,17 +70,22 @@
     <div class="article-content">
       <p>Instead of constantly typing the full path when using the <code>cd</code> command, <code>BASH</code> has a built-in feature called <code>CDPATH</code>. Thanks to <em>lhunath</em> who explained in this <a href="http://stackoverflow.com/questions/670488/how-to-manage-long-paths-in-bash">SO Post</a> how to use this feature.</p>
 <p>The first time you do this, you need to create a hidden folder and add <strong>CDPATH</strong> to your bashrc (note this step only needs to be done once):</p>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+<pre class="bash"><code>mkdir ~/.paths
+cd ~/.paths
+echo 'CDPATH=~/.paths' >> ~/.bashrc
+</code></pre>
 <p>Then to add symbolic links use:</p>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+<pre class="bash"><code>ln -s /my/very/long/path/name/to/my/project project
+ln -s /some/other/very/long/path/to/my/backups backups
+echo 'CDPATH=~/.paths' >> ~/.bashrc
+</code></pre>
 <p>To update your bashrc:</p>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+<pre class="bash"><code>source ~/.bashrc
+</code></pre>
 <p>Now you can enter the folders from anywhere by simply typing</p>
-<!-- raw HTML omitted -->
-<!-- raw HTML omitted -->
+<pre class="bash"><code>cd projects
+cd backups
+</code></pre>
     </div>
   </article>
 
@@ -119,6 +129,18 @@
 
     </div>
     
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
 
     
 

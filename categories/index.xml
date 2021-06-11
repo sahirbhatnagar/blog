@@ -6,10 +6,28 @@
     <description>Recent content in Categories on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 10 Jun 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>R</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/r/</link>
+      <pubDate>Thu, 10 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>regression</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/regression/</link>
+      <pubDate>Thu, 10 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/regression/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>git</title>
@@ -26,15 +44,6 @@
       <pubDate>Mon, 29 Jun 2020 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/categories/version-control/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>R</title>
-      <link>https://sahirbhatnagar.github.io/blog/categories/r/</link>
-      <pubDate>Tue, 03 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/categories/r/</guid>
       <description></description>
     </item>
     
@@ -93,15 +102,6 @@
     </item>
     
     <item>
-      <title>regression</title>
-      <link>https://sahirbhatnagar.github.io/blog/categories/regression/</link>
-      <pubDate>Thu, 05 Sep 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/categories/regression/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>parallel computing</title>
       <link>https://sahirbhatnagar.github.io/blog/categories/parallel-computing/</link>
       <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
@@ -125,6 +125,15 @@
       <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/categories/variable-selection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>graphics</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/graphics/</link>
+      <pubDate>Wed, 10 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/graphics/</guid>
       <description></description>
     </item>
     

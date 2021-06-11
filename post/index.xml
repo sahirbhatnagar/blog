@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 29 Jun 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 10 Jun 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>woodbury-ridge</title>
+      <link>https://sahirbhatnagar.github.io/blog/2021/06/10/woodbury-ridge/</link>
+      <pubDate>Thu, 10 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2021/06/10/woodbury-ridge/</guid>
+      <description>library(myTridge) library(rsvd) library(ggplot2) library(glmnet) num.obs &amp;lt;- 500 num.par &amp;lt;- 5000 family &amp;lt;- &amp;quot;gaussian&amp;quot; data&amp;lt;-myTridge::genDataList(n = num.obs, mu = rep(0, num.par), p = num.par, rho = 0.2, beta = rnorm(num.par, mean = 0, sd = 1), SNR = 10, family = family) X &amp;lt;- data$normData y &amp;lt;- data$y X_new &amp;lt;- cbind(rep(1,num.obs),X) r &amp;lt;- 0.5 # tuning parameter tt &amp;lt;- bench::mark( svd = { ##### the following commands should only be calculated once for all tuning parameters #### mysvd &amp;lt;- base::svd(X_new) # uses the base implementation of svd R &amp;lt;- mysvd$u %*% diag(mysvd$d) RTR &amp;lt;- crossprod(R) # R^TR IN &amp;lt;- diag(num.</description>
+    </item>
     
     <item>
       <title>GUI for Git</title>
@@ -37,8 +46,8 @@ This tutorial assumes you have basic knowledge of Git commands pull, push, commi
       <pubDate>Fri, 10 Jan 2020 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2020/01/10/intraclass-correlation-coefficient-in-linear-mixed-effects-models/</guid>
-      <description>if (!requireNamespace(&amp;quot;pacman&amp;quot;)){ install.packages(&amp;quot;pacman&amp;quot;) } ## Loading required namespace: pacman pacman::p_load(sjstats) pacman::p_load(lme4) Simulate Data 500 participants will be ranking 90 items based on importance from 1-9.
-n.participants &amp;lt;- 500 n.items &amp;lt;- 90 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = rpois(n.participants * n.items, lambda = 5)) head(DT) ## Subject_ID Item Importance ## 1 1 1 6 ## 2 1 2 4 ## 3 1 3 5 ## 4 1 4 7 ## 5 1 5 4 ## 6 1 6 5 str(DT) ## &amp;#39;data.</description>
+      <description>if (!requireNamespace(&amp;quot;pacman&amp;quot;)){ install.packages(&amp;quot;pacman&amp;quot;) } ## Loading required namespace: pacman pacman::p_load(sjstats) pacman::p_load(sjPlot) pacman::p_load(lme4) pacman::p_load(MASS) Simulate Data 100 participants will be ranking 20 items based on importance simulated from a multivariate normal distribution.
+n.participants &amp;lt;- 100 n.items &amp;lt;- 20 Sigma &amp;lt;- 0.9 ^ toeplitz(1:n.items) diag(Sigma) &amp;lt;- 1 # Subject needs to be a factor for lmer DT &amp;lt;- data.frame(Subject_ID = factor(rep(1:n.participants, each = n.items)), Item = rep(1:n.items, n.participants), Importance = as.</description>
     </item>
     
     <item>
@@ -94,7 +103,7 @@ It automatically generates publications from a BibTeX file using jekyll-scholar.
       
       <guid>https://sahirbhatnagar.github.io/blog/2018/08/23/getting-travis-to-auto-push-to-github/</guid>
       <description>Following the advice given on the bookdown site, I use Travis-CI to automatically build my bookdown book and push it to gh-pages. I always forget how to do this, so I&amp;rsquo;m writing these notes to supplement what is already written there.
- Follow these instructions on GitHub to create a personal access token (PAT) Copy the generated PAT to your clipboard From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:  Note 1: I&amp;rsquo;m not entirely sure that I need to generate a new PAT for each bookdown repository that I create, but so far this strategy has worked for me.</description>
+ Follow these instructions on GitHub to create a personal access token (PAT) Copy the generated PAT to your clipboard From the command line and within the root directory of your repository hosting the source of the bookdown, enter the following command:  travis encrypt GITHUB_PAT=&#34;</description>
     </item>
     
     <item>
@@ -117,7 +126,8 @@ pacman::p_load_gh(&amp;#34;dreamRs/prefixer&amp;#34;) # launch the addin via RSt
       <guid>https://sahirbhatnagar.github.io/blog/2018/04/03/i-am-color-blind/</guid>
       <description>I recently gave a mini-course on regression trees. As I talked about the red region in the following figure:
 one of the audience members said they had no clue what I was referring to. It turns out they were color blind and could not identify the red region. Yikes!
-Here is a colorblind friendly pallette courtesy of Cookbook for R</description>
+Here is a colorblind friendly pallette courtesy of Cookbook for R
+cbbPalette  </description>
     </item>
     
     <item>
@@ -214,16 +224,56 @@ summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 2
     </item>
     
     <item>
+      <title>Heatmaps in R</title>
+      <link>https://sahirbhatnagar.github.io/blog/2015/06/10/heatmaps/</link>
+      <pubDate>Wed, 10 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2015/06/10/heatmaps/</guid>
+      <description>
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3v3/./d3v3.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3heatmapcore/heatmapcore.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3heatmapcore/heatmapcore.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3v3-tip/index.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/d3heatmap-binding/d3heatmap.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/plotly-binding/plotly.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/typedarray/typedarray.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;{{&lt; blogdown/postref &gt;}}index_files/crosstalk/css/crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/crosstalk/js/crosstalk.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;{{&lt; blogdown/postref &gt;}}index_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;{{&lt; blogdown/postref &gt;}}index_files/plotly-main/plotly-latest.min.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;p&gt;In every statistical analysis, the first thing one should do is try and visualise the data before any modeling. In microarray studies, a common visualisation is a heatmap of gene expression data. In this post I simulate some gene expression data and visualise it using the &lt;code&gt;pheatmap&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/pheatmap/&#34;&gt;pheatmap&lt;/a&gt; package in &lt;code&gt;R&lt;/code&gt;. You will also need the &lt;code&gt;mvrnorm&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/MASS/index.html&#34;&gt;MASS&lt;/a&gt; library to simulate from a multivariate normal distribution, and the &lt;code&gt;brewer.pal&lt;/code&gt; function from the &lt;a href=&#34;http://cran.r-project.org/web/packages/RColorBrewer/index.html&#34;&gt;RColorBrewer&lt;/a&gt; library for easier customization of colors.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Contrasts in R</title>
       <link>https://sahirbhatnagar.github.io/blog/2015/03/04/contrasts-in-r/</link>
       <pubDate>Wed, 04 Mar 2015 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/2015/03/04/contrasts-in-r/</guid>
       <description>&lt;p&gt;In this post I discuss how to create custom contrasts for factor variables in &lt;code&gt;R&lt;/code&gt;. First lets create some simulated data. Create the data, and factor Disease status:&lt;/p&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
-&lt;!-- raw HTML omitted --&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;
+Disease &lt;- c(rep(&#34;RA&#34;, 5), rep(&#34;SLE&#34;, 5), rep(&#34;Scleroderma&#34;, 5), 
+             rep(&#34;Myositis&#34;, 5), rep(&#34;Control&#34;, 5))
+set.seed(1234)
+sex &lt;-  rbinom(25,1, 0.5)
+age &lt;-  rnorm(25, 40, 5)
+y &lt;- rnorm(25, 0.5, 0.12)
+data &lt;- data.frame(y,sex,age,Disease=factor(Disease))
+str(data)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;
+## &#39;data.frame&#39;:	25 obs. of  4 variables:
+##  $ y      : num  0.506 0.323 0.552 0.492 0.513 ...
+##  $ sex    : int  0 1 1 1 1 1 0 0 1 1 ...
+##  $ age    : num  44.4 46.9 31.6 36.9 40.1 ...
+##  $ Disease: Factor w/ 5 levels &#34;Control&#34;,&#34;Myositis&#34;,..: 3 3 3 3 3 5 5 5 5 5 ...
+&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;We want the following contrasts:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Control versus all 4 diseases combined&lt;/li&gt;
