@@ -1,0 +1,177 @@
+---
+title: Standard errors for cross-validated precision macro
+author: sahir
+date: '2021-11-11'
+slug: standard-errors-for-cross-validated-precision-macro
+categories: [R, NPV, PPV, precision, standard errors]
+tags: [R, statistics]
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="simulation-function-response-is-a-quadratic-function-of-continuous-predictor" class="section level1">
+<h1>Simulation function – response is a quadratic function of continuous predictor</h1>
+<pre class="r"><code>sim_quadratic_logistic_data = function(sample_size = 25) {
+  x = rnorm(n = sample_size)
+  eta = -1.5 + 0.5 * x + x ^ 2 + rnorm(sample_size, sd = 2) # add some noise
+  p = 1 / (1 + exp(-eta))
+  y = rbinom(n = sample_size, size = 1, prob = p)
+  data.frame(y.factor = factor(y, levels = 1:0, labels = c(&quot;COPD&quot;,&quot;control&quot;)), x = x, y = y)
+}</code></pre>
+</div>
+<div id="fit-once-to-see-what-the-resulting-predicted-curve-looks-like" class="section level1">
+<h1>Fit once to see what the resulting predicted curve looks like</h1>
+<pre class="r"><code>set.seed(42)
+example_data &lt;- sim_quadratic_logistic_data(sample_size = 500)
+table(example_data$y.factor)</code></pre>
+<pre><code>## 
+##    COPD control 
+##     209     291</code></pre>
+<pre class="r"><code>fit_glm &lt;- glm(y ~ x + I(x^2), data = example_data, family = binomial)
+summary(fit_glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ x + I(x^2), family = binomial, data = example_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.0555  -0.8862  -0.8084   1.2208   1.6041  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -0.9058     0.1255  -7.217 5.30e-13 ***
+## x             0.3904     0.1118   3.491 0.000482 ***
+## I(x^2)        0.6619     0.1009   6.558 5.45e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 679.64  on 499  degrees of freedom
+## Residual deviance: 609.91  on 497  degrees of freedom
+## AIC: 615.91
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>plot(y ~ x, data = example_data,
+     pch = 20, ylab = &quot;Estimated Probability&quot;,
+     main = &quot;Logistic Regression, Quadratic Relationship&quot;)
+grid()
+curve(predict(fit_glm, data.frame(x), type = &quot;response&quot;),
+      add = TRUE, col = &quot;dodgerblue&quot;, lty = 2)
+curve(boot::inv.logit(-1.5 + 0.5 * x + x ^ 2),
+      add = TRUE, col = &quot;darkorange&quot;, lty = 1)
+legend(&quot;bottomleft&quot;, c(&quot;True Probability&quot;, &quot;Estimated Probability&quot;, &quot;Data&quot;), lty = c(1, 2, 0),
+       pch = c(NA, NA, 20), lwd = 2, col = c(&quot;darkorange&quot;, &quot;dodgerblue&quot;, &quot;black&quot;))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="run-cross-validation-experiment-once" class="section level1">
+<h1>Run cross-validation experiment once</h1>
+<pre class="r"><code>if(!requireNamespace(&quot;pacman&quot;)) install.packages(&quot;pacman&quot;)</code></pre>
+<pre><code>## Loading required namespace: pacman</code></pre>
+<pre class="r"><code>pacman::p_load(caret)
+pacman::p_load(MLmetrics)
+pacman::p_load(dplyr)
+pacman::p_load(tidyr)
+
+# function that returns the metrics of interest
+MySummary &lt;- function (data, lev = NULL, model = NULL) {
+  
+  PPV = caret::posPredValue(data = data$pred,
+                            reference = data$obs)
+  NPV = caret::negPredValue(data = data$pred,
+                            reference = data$obs)
+
+  tt &lt;- table(data$pred, data$obs)
+  n_call_COPD &lt;- sum(tt[1,]) # number of &#39;positives&#39; called by the model
+  n_call_control &lt;- sum(tt[2,]) # number of &#39;negatives&#39; called by the model
+
+  c(PPV = PPV,
+    NPV = NPV,
+    Macro = (PPV + NPV) / 2, # JH calls this ave.suuccess12
+    SE2_Macro =  (1/2^2) * (PPV * (1-PPV) / n_call_COPD + NPV * (1-NPV) / n_call_control) # JH calls this var.ave.success
+  )
+}</code></pre>
+<pre class="r"><code>set.seed(42)
+
+# sample size
+N &lt;- 500
+
+# folds 
+K &lt;- 5
+
+# simulate data
+df &lt;- sim_quadratic_logistic_data(sample_size = N)
+
+# fit the model with cross-validated metrics
+fit &lt;- caret::train(y.factor ~ x + I(x^2),
+                    data = df,
+                    method = &quot;glm&quot;,
+                    family = &quot;binomial&quot;,
+                    trControl = trainControl(method = &quot;cv&quot;,
+                                             number = K,
+                                             savePredictions = TRUE,
+                                             summaryFunction = MySummary,
+                                             classProbs = TRUE))
+
+fit$resample</code></pre>
+<pre><code>##         PPV       NPV     Macro   SE2_Macro Resample
+## 1 0.7307692 0.6891892 0.7099792 0.002615458    Fold1
+## 2 0.5000000 0.6000000 0.5500000 0.003875000    Fold2
+## 3 0.5652174 0.6282051 0.5967113 0.003419760    Fold3
+## 4 0.8400000 0.7297297 0.7848649 0.002010298    Fold4
+## 5 0.5909091 0.6282051 0.6095571 0.003495596    Fold5</code></pre>
+</div>
+<div id="run-cv-experiment-many-times" class="section level1">
+<h1>Run CV experiment many times</h1>
+<pre class="r"><code>set.seed(42)
+n.samples &lt;- 400 # number of replications
+
+# sample size
+N &lt;- 500
+
+# folds 
+K &lt;- 5
+
+# repeat experiment several times
+res.list &lt;- replicate(n.samples, expr = {
+
+  # simulate data
+  df &lt;- sim_quadratic_logistic_data(sample_size = N)
+  
+  # fit the model with cross-validated metrics
+  fit &lt;- caret::train(y.factor ~ x + I(x^2),
+                      data = df,
+                      method = &quot;glm&quot;,
+                      family = &quot;binomial&quot;,
+                      trControl = trainControl(method = &quot;cv&quot;,
+                                               number = K,
+                                               savePredictions = TRUE,
+                                               summaryFunction = MySummary,
+                                               classProbs = TRUE))
+  data.frame(
+    SE_pbar = sqrt((1/K)*mean(fit$resample$SE2_Macro)), # model based (what the reviewer suggested)
+    SEM = sd(fit$resample$Macro) / sqrt(K), # what we did aka the Standard error of the mean
+    corr_ppv_npv = cor(fit$resample$PPV, fit$resample$NPV)
+  )
+
+}, simplify = FALSE)
+
+
+res &lt;- do.call(rbind, res.list) %&gt;% 
+  mutate(replicate = 1:n())
+
+hist(res$corr_ppv_npv, 
+     col = &quot;lightblue&quot;, 
+     xlab = &quot;corr(PPV, NPV)&quot;,
+     main = sprintf(&quot;Average correlation(PPV, NPV) over %i samples = %0.2f&quot;,n.samples, mean(res$corr_ppv_npv)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>res %&gt;% 
+  dplyr::select(replicate, SE_pbar, SEM) %&gt;% 
+  tidyr::pivot_longer(cols = -1, names_to = &quot;SE_type&quot;) %&gt;% 
+  ggplot(aes(x = SE_type, y = value)) + geom_boxplot() + 
+  labs(title = &quot;Distribution of standard errors for SEM vs. Average of \nK fold model based variances over many replications&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>boxplot(res$SEM / res$SE_pbar, main = &quot;Ratio of SEM to SE_pbar&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+</div>
