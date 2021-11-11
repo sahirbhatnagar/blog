@@ -117,7 +117,7 @@ K <- 5
 # repeat experiment several times
 res.list <- replicate(n.samples, expr = {
 
-  # simulate data
+  # simulate data with samp size
   df <- sim_quadratic_logistic_data(sample_size = N)
   
   # fit the model with cross-validated metrics
