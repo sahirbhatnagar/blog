@@ -6,17 +6,53 @@
     <description>Recent content in Categories on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Jun 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 11 Nov 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>NPV</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/npv/</link>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/npv/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PPV</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/ppv/</link>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/ppv/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>precision</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/precision/</link>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/precision/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>R</title>
       <link>https://sahirbhatnagar.github.io/blog/categories/r/</link>
-      <pubDate>Thu, 10 Jun 2021 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>standard errors</title>
+      <link>https://sahirbhatnagar.github.io/blog/categories/standard-errors/</link>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/categories/standard-errors/</guid>
       <description></description>
     </item>
     

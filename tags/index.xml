@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Sahir&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Jun 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 11 Nov 2021 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://sahirbhatnagar.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,9 +14,18 @@
     <item>
       <title>R</title>
       <link>https://sahirbhatnagar.github.io/blog/tags/r/</link>
-      <pubDate>Thu, 10 Jun 2021 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/tags/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>statistics</title>
+      <link>https://sahirbhatnagar.github.io/blog/tags/statistics/</link>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/tags/statistics/</guid>
       <description></description>
     </item>
     
@@ -206,15 +215,6 @@
       <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
       
       <guid>https://sahirbhatnagar.github.io/blog/tags/limma/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>statistics</title>
-      <link>https://sahirbhatnagar.github.io/blog/tags/statistics/</link>
-      <pubDate>Tue, 07 Feb 2017 15:09:00 +0000</pubDate>
-      
-      <guid>https://sahirbhatnagar.github.io/blog/tags/statistics/</guid>
       <description></description>
     </item>
     

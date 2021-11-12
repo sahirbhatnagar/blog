@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>precision on Sahir&#39;s blog</title>
+    <link>https://sahirbhatnagar.github.io/blog/categories/precision/</link>
+    <description>Recent content in precision on Sahir&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 11 Nov 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://sahirbhatnagar.github.io/blog/categories/precision/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Standard errors for cross-validated precision macro</title>
+      <link>https://sahirbhatnagar.github.io/blog/2021/11/11/standard-errors-for-cross-validated-precision-macro/</link>
+      <pubDate>Thu, 11 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://sahirbhatnagar.github.io/blog/2021/11/11/standard-errors-for-cross-validated-precision-macro/</guid>
+      <description>Simulation function – response is a quadratic function of continuous predictor sim_quadratic_logistic_data = function(sample_size = 25) { x = rnorm(n = sample_size) eta = -1.5 + 0.5 * x + x ^ 2 + rnorm(sample_size, sd = 2) # add some noise p = 1 / (1 + exp(-eta)) y = rbinom(n = sample_size, size = 1, prob = p) data.frame(y.factor = factor(y, levels = 1:0, labels = c(&amp;quot;COPD&amp;quot;,&amp;quot;control&amp;quot;)), x = x, y = y) }  Fit once to see what the resulting predicted curve looks like set.</description>
+    </item>
+    
+  </channel>
+</rss>
